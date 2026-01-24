@@ -20,7 +20,7 @@ The framework defines a small set of agent entrypoints and artifacts:
 - **Builder**: implements tasks and small fixes quickly and safely.
 - **QA**: verifies changes and records evidence.
 - **Advisor**: handles freeform tasks like scoping work, explaining code, or drafting backlog task cards.
-- **Orchestrator**: runs Builder → Integration → QA → (optional) Quickfix headlessly when gates are present.
+- **Orchestrator**: runs Builder → Integration → QA → (optional) Quickfix headlessly based on gates and integration policy.
 
 Builder/QA runs consume prompt artifacts when present, and every outcome is recorded at the top of `agents/historylog.md` (newest first). Orchestration uses `agents/status.md` as the sole signaling file.
 

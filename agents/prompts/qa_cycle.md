@@ -38,10 +38,19 @@ Phase C — Outcomes:
     - Tests run (command + status).
     - Link to `agents/expectations.md` and whether it was satisfied.
     - Pointer to `agents/quickfix.md` if created.
-14. **Orchestration signal (if supervised):** When completely finished, set `agents/status.md` to the following marker on a new line by itself:
-   ```
-   ### QA_COMPLETE
-   ```
+14. **Orchestration signal (if supervised):** When completely finished, set `agents/status.md` on a new line by itself:
+   - Success: 
+     ```
+     ### QA_COMPLETE
+     ```
+   - Gaps found:
+     ```
+     ### QUICKFIX_NEEDED
+     ```
+   - Blocked:
+     ```
+     ### BLOCKED
+     ```
    This signals a supervisor agent (if running) that you have finished your cycle.
 
 Never rubber-stamp work. If validation is incomplete or blocked (e.g., missing data, failing build), stop and log the blocker instead of guessing.

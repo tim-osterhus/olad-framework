@@ -7,7 +7,7 @@ Context sources you may read:
 - `agents/historylog.md`, `agents/quickfix.md`, `agents/expectations.md`
 - Any relevant files referenced by the task card
 
-Do **not** modify repo files. Output only the prompt artifact text.
+Do **not** modify repo files, except you may prepend a short entry to `agents/historylog.md` once the prompt artifact is saved. Output should primarily be the prompt artifact text.
 
 Workflow:
 1. Confirm the task is suitable for a prompt artifact (multi-step work, more than trivial edits). If not, respond “Prompt artifact not required” with rationale.

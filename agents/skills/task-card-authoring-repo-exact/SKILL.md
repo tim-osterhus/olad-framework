@@ -223,8 +223,7 @@ Include:
 - Packing multiple unrelated changes into one card → split by subsystem (RAG API vs LibreChat vs infra).
 
 ## Progressive disclosure (one level deep)
-If this Skill needs detail, link it directly from HERE (avoid chains of references):
-- Advanced workflow: ./advanced.md
+If this Skill needs detail, link it directly from HERE (avoid chains of references).
 
 ## Verification pattern (recommended for medium/high risk)
 Use this when changes touch infra, retrieval logic, licensing, or security:

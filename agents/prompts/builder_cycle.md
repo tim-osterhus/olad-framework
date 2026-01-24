@@ -35,10 +35,15 @@ Workflow:
    - Tests/commands run and outcomes.
    - Known gaps/blockers.
    - Whether the history log was updated and any TODOs that remain.
-9. **Orchestration signal (if supervised):** When completely finished (success or blocked), set `agents/status.md` to the following marker on a new line by itself:
-   ```
-   ### BUILDER_COMPLETE
-   ```
+9. **Orchestration signal (if supervised):** When completely finished, set `agents/status.md` on a new line by itself:
+   - Success:
+     ```
+     ### BUILDER_COMPLETE
+     ```
+   - Blocked:
+     ```
+     ### BLOCKED
+     ```
    This signals a supervisor agent (if running) that you have finished your cycle.
 
 Stop immediately if blocked. Output the blocker details and the checkpoint you were addressing. Do not attempt to continue with guesses.

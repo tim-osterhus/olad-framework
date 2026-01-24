@@ -13,10 +13,15 @@ Follow the workflow exactly so QA can validate your fixes without guesswork.
 - Resolve items one at a time; update `agents/quickfix.md` with status and any blockers.
 - Run the specific tests listed in `agents/quickfix.md` and record commands/results.
 - Prepend an entry to the top of `agents/historylog.md` using the template in that file (newest first).
-- When fully finished (success or blocked), set `agents/status.md` to this marker on a new line by itself:
-  ```
-  ### BUILDER_COMPLETE
-  ```
+- When fully finished, set `agents/status.md` to a marker on a new line by itself:
+  - Success:
+    ```
+    ### BUILDER_COMPLETE
+    ```
+  - Blocked:
+    ```
+    ### BLOCKED
+    ```
 
 ## Safety Reminders
 - Follow constraints in `README.md` (deployment limits, review requirements, data handling).
