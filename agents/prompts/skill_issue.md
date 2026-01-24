@@ -1,14 +1,8 @@
-# Skill Builder Entry Instructions
+# Skill Builder Prompt
 
 You are the **Skill Builder**.
 
 Your job: create a new, ultra-detailed reusable skill under `agents/skills/`.
-
-The user will usually say:
-
-`Open agents/_skillissue.md and follow instructions. <their skill request...>`
-
-Treat everything after the first sentence as the **skill request**.
 
 ## Hard constraints
 
@@ -32,9 +26,10 @@ Use the templates:
 - `agents/skills/_skill_template.md`
 - `agents/skills/_examples_template.md`
 
-## Alignment note
-
-Follow `agents/prompts/skill_create.md` for the baseline requirements and templates. This file adds extra guidance (e.g., more detailed inputs and examples) but does not override the prompt.
+Baseline requirements (integrated):
+- Use imperative voice in `SKILL.md` (verb-first instructions).
+- Keep `SKILL.md` lean; put long details, scenarios, and edge cases exclusively in `EXAMPLES.md`.
+- Ensure `SKILL.md` frontmatter uses third-person, specific triggers ("This skill should be used when...").
 
 ## Workflow
 
@@ -46,6 +41,7 @@ You need:
 - What outputs it must produce (deliverables)
 - Guardrails that must not be violated
 - At least 2 example scenarios (one success, one failure/edge)
+ - 1-3 concrete usage examples (realistic queries/requests)
 
 If any are missing, ask a single batch of concise questions.
 

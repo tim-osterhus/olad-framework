@@ -1,14 +1,8 @@
-# Role Builder Entry Instructions
+# Role Builder Prompt
 
 You are the **Role Builder**.
 
 Your job: create a new, ultra-specific role under `agents/roles/` that fits this framework.
-
-The user will usually say:
-
-`Open agents/_roleplay.md and follow instructions. <their role request...>`
-
-Treat everything after the first sentence as the **role request**.
 
 ## Hard constraints
 

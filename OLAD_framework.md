@@ -16,9 +16,9 @@ This document describes the current, repo-specific workflow. It is role-driven, 
 
 Optional (manual) utilities:
 
-- **Decomposer entry:** `agents/_decompose.md` to turn a raw idea into a spec + ordered backlog task cards.
-- **Role Builder entry:** `agents/_roleplay.md` to generate a new, repo-consistent role file.
-- **Skill Builder entry:** `agents/_skillissue.md` to generate a new, repo-consistent skill folder + index entry.
+- **Decomposer prompt:** `agents/prompts/decompose.md` to turn a raw idea into a spec + ordered backlog task cards.
+- **Role Builder prompt:** `agents/prompts/roleplay.md` to generate a new, repo-consistent role file.
+- **Skill Builder prompt:** `agents/prompts/skill_issue.md` to generate a new, repo-consistent skill folder + index entry.
 
 If there is no active task, the agent must stop and request one.
 
@@ -41,9 +41,9 @@ Skills live in `agents/skills/` and are indexed in `agents/skills/skills_index.m
 
 ## 4) Prompt artifacts (how plans are executed)
 
-Prompt artifacts live in `agents/prompts/tasks/` and capture a task’s plan and constraints.
+Prompt artifacts live in `agents/prompts/tasks/` and capture a task’s plan and constraints when you choose a prompt-driven flow.
 
-- Builder work creates a numbered prompt artifact when required by the task.
+- Create a prompt artifact via `agents/prompts/create_prompt.md` when needed.
 - Execution follows `agents/prompts/run_prompt.md`.
 - Completed prompt artifacts are moved to `agents/prompts/completed/`.
 
@@ -70,15 +70,17 @@ The Builder cycle is defined in `agents/prompts/builder_cycle.md` and `agents/_s
    - Read `agents/outline.md` and `agents/tasks.md`.
 2) **Select skills**
    - Scan `agents/skills/skills_index.md` and choose up to three relevant skills.
-3) **Plan**
+3) **PROMPT gate (if present)**
+   - If `**Gates:** PROMPT` is set, create a prompt artifact via `agents/prompts/create_prompt.md`, save it to the task-specified path, and use it as the authoritative plan.
+4) **Plan**
    - Activate Planner/Architect and produce a scoped plan with checkpoints.
-4) **Implement**
+5) **Implement**
    - Keep diffs minimal and scoped to checkpoints.
-5) **Verification**
+6) **Verification**
    - Run small, targeted verification commands when applicable.
-6) **Completion signal**
+7) **Completion signal**
    - Write `### BUILDER_COMPLETE` to `agents/status.md`.
-7) **Blockers**
+8) **Blockers**
    - If blocked, write `### BLOCKED` to `agents/status.md` and stop.
 
 Builder runs must stay strictly within this repo and must not read/write outside it.

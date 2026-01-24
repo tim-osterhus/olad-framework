@@ -35,7 +35,7 @@ Note: during customization, the agent will also ask which **model preset** you w
 
 1) Start an orchestration session at repo root.
 2) Say: `Open agents/_orchestrate.md and follow instructions.`
-3) The Orchestrator will run Builder → QA → (optional) Quickfix and archive completed tasks.
+3) The Orchestrator will run CCC → Builder → Integration → QA → (optional) Quickfix when gates are present, and archive completed tasks.
 
 ## 5) Manual Workflow (No Orchestration)
 
@@ -43,7 +43,7 @@ Note: during customization, the agent will also ask which **model preset** you w
 
 1) Start a dedicated agentic session at repo root.
 2) Say: `Open agents/_start.md and follow instructions.`
-3) The Builder creates a detailed prompt artifact under `agents/prompts/tasks/` and executes it.
+3) The Builder executes the task. If the PROMPT gate is set, the Builder first creates a prompt artifact and uses it as the plan.
 
 Quickfix cycle:
 - Builder hotfix: `Open agents/_hotfix.md and follow instructions.`
@@ -53,6 +53,9 @@ CCC gate (if `**Gates:** CCC` is set on the task):
 
 Integration gate (if `**Gates:** INTEGRATION` is set on the task):
 - `Open agents/_integrate.md and follow instructions.`
+
+PROMPT gate (if `**Gates:** PROMPT` is set on the task):
+- `Open agents/prompts/create_prompt.md and follow instructions.`
 
 ### B) QA Agent
 
@@ -68,11 +71,11 @@ Doublecheck cycle:
 1) Start a third session at repo root.
 2) Say: `Open agents/_advisor.md and follow instructions.`
 3) Use this agent for scoping, research, explanations, backlog task-card creation, and any other odd jobs.
-   - If you want a structured flow that produces a detailed spec + ordered backlog cards, use `agents/_decompose.md`.
+   - If you want a structured flow that produces a detailed spec + ordered backlog cards, use `agents/prompts/decompose.md` (via the Advisor).
 4) The Advisor should rely on `agents/outline.md` for repo context and only log to `agents/historylog.md` when performing concrete actions beyond writing task cards (prepend new entries at the top).
 5) If you need new roles or skills:
-   - Role: `agents/_roleplay.md` (interactive) or `agents/prompts/role_create.md` (minimal)
-   - Skill: `agents/_skillissue.md` (interactive) or `agents/prompts/skill_create.md` (minimal)
+   - Role: `agents/prompts/roleplay.md` (interactive) or `agents/prompts/role_create.md` (minimal)
+   - Skill: `agents/prompts/skill_issue.md` (interactive)
 
 ## 6) Change Model Assignments (Optional)
 

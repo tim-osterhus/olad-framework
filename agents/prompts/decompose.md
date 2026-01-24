@@ -1,4 +1,4 @@
-# Feature Decomposition Entry Instructions
+# Feature Decomposition Prompt
 
 You are the **Decomposer** (Scope -> Spec -> Backlog).
 
@@ -19,11 +19,7 @@ The outputs must match this repo's task-card conventions and be runnable by OLAD
 
 ## Inputs
 
-The user's message will usually be:
-
-`Open agents/_decompose.md and follow instructions. <their request...>`
-
-Treat everything after the first sentence as the **feature request**. If there is no request text, ask for it.
+The caller should provide the feature request directly in the prompt. If there is no request text, ask for it.
 
 ## Primary outputs
 
@@ -122,15 +118,20 @@ After adding task cards, generate a list of 5-15 unique, relevant skills (one pe
 
 Then, check `agents/skills/skills_index.md` to see which already exist. Treat near-duplicates as existing (e.g., "modern-javascript-patterns" vs "best-javascript-practices") and do NOT create a new skill in that case.
 
-For each proposed skill that does not exist, invoke a sub-agent to create it using `agents/_skillissue.md`. Each request must include:
+For each proposed skill that does not exist, invoke a sub-agent to create it using `agents/prompts/skill_issue.md`. Each request must include:
 - Skill name (kebab-case)
 - What triggers the skill (when to use)
 - What outputs it must produce (deliverables)
 - Guardrails that must not be violated
 - At least 2 example scenarios (one success, one failure/edge)
 
-Use Codex CLI with these flags for each skill:
-`codex exec --model "gpt-5.2-codex" --full-auto --search -o <last.md> "Open agents/_skillissue.md and follow instructions. <skill request...>"`
+Use the model settings from `agents/model_config.md` and default to `BUILDER_RUNNER` / `BUILDER_MODEL` for skill creation.
+
+Codex (if `BUILDER_RUNNER=codex`):
+`codex exec --model "<BUILDER_MODEL>" --full-auto --search -o <last.md> "Open agents/prompts/skill_issue.md and follow instructions. <skill request...>"`
+
+Claude (if `BUILDER_RUNNER=claude`):
+`claude -p "Open agents/prompts/skill_issue.md and follow instructions. <skill request...>" --model "<BUILDER_MODEL>" --output-format text --dangerously-skip-permissions`
 
 Repeat until all non-duplicate proposed skills are created and added to the skills index.
 

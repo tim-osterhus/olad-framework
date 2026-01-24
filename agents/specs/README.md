@@ -4,7 +4,7 @@ This folder is for detailed, single-feature spec sheets created during scoping.
 
 Typical workflow:
 
-- Run `agents/_decompose.md` with a raw idea.
+- Run `agents/prompts/decompose.md` with a raw idea (via the Advisor).
 - The Decomposer writes a spec here (e.g., `chat-anon-messaging.md`).
 - It also injects ordered, executable task cards into `agents/tasksbacklog.md`.
 

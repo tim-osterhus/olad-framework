@@ -7,7 +7,7 @@
 - Integration gate and Integration Steward entrypoint (`agents/_integrate.md`)
 - Integration Steward role (`agents/roles/integration-steward.md`)
 - Centralized model config (`agents/model_config.md`) with presets
-- Skill decomposition helpers (`agents/_decompose.md` skill-creation step)
+- Decomposition/role/skill prompts (`agents/prompts/decompose.md`, `agents/prompts/roleplay.md`, `agents/prompts/skill_issue.md`)
 
 ### Changed
 - Orchestrator now supports CCC/Integration cycles and config-driven runners/models

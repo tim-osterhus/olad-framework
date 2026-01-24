@@ -20,9 +20,9 @@ The framework defines a small set of agent entrypoints and artifacts:
 - **Builder**: implements tasks and small fixes quickly and safely.
 - **QA**: verifies changes and records evidence.
 - **Advisor**: handles freeform tasks like scoping work, explaining code, or drafting backlog task cards.
-- **Orchestrator**: runs Builder → QA → (optional) Quickfix headlessly.
+- **Orchestrator**: runs CCC → Builder → Integration → QA → (optional) Quickfix headlessly when gates are present.
 
-Builder/QA runs create or consume prompt artifacts, and every outcome is recorded at the top of `agents/historylog.md` (newest first). Orchestration uses `agents/status.md` as the sole signaling file.
+Builder/QA runs consume prompt artifacts when present, and every outcome is recorded at the top of `agents/historylog.md` (newest first). Orchestration uses `agents/status.md` as the sole signaling file.
 
 Operational spec: see `OLAD_framework.md`.
 
@@ -68,14 +68,14 @@ This section follows the sequence you would encounter in a real workflow cycle.
 The Advisor is a dedicated, freeform session used to make the rest of the cycle clean and scoped.
 
 If you want a more structured, high-output scoping pass (raw idea -> spec -> ordered task cards), use:
-- `agents/_decompose.md`
+- `agents/prompts/decompose.md` (via the Advisor)
 
 Typical Advisor outputs:
 - A set of task cards that are small and executable.
 - A short explanation of how a subsystem works.
 - A recommendation memo with options and tradeoffs.
 
-If you want a more structured "idea -> spec -> ordered backlog" flow, use `agents/_decompose.md` instead.
+If you want a more structured "idea -> spec -> ordered backlog" flow, use `agents/prompts/decompose.md` instead.
 
 The Advisor should use `agents/_advisor.md`, rely on `agents/outline.md` as the primary repo overview, and place any task cards in `agents/tasksbacklog.md` (not `agents/prompts/tasks/`).
 Advisor runs only log to `agents/historylog.md` when they perform concrete actions beyond writing task cards (prepend new entries at the top).
@@ -83,32 +83,32 @@ When needed, the Advisor can also generate new roles and skills using the dedica
 
 ### 2) Orchestrate the Cycle (Orchestrator Session)
 
-The Orchestrator runs Builder → QA → (optional) Quickfix automatically against the backlog.
+The Orchestrator runs CCC → Builder → Integration → QA → (optional) Quickfix automatically against the backlog when gates are present.
 
 Key behavior:
 - Pulls the next task from `agents/tasksbacklog.md` into `agents/tasks.md`.
-- Runs Builder and QA in strict order.
+- Runs CCC/Integration when gates are present, then Builder and QA in strict order.
 - Allows a Quickfix pass if QA finds gaps.
 - Archives completed tasks to `agents/tasksarchive.md`.
 - Clears `agents/status.md` to `### IDLE` after each action.
 
 Use `agents/_orchestrate.md` for the exact runbook and guardrails.
 
-### 3) Author Task Prompts (Prompt Engineering Cycle)
+### 3) Author Task Prompts (Prompt Engineering Cycle, optional)
 
-Task prompts are the central artifacts of the framework. Each task becomes a prompt file that can be executed without re-planning.
+Task prompts are optional artifacts for teams that want explicit, reusable prompt files. They can be executed without re-planning.
 
-Core flow:
+Core flow (if using prompt artifacts):
 1) Create a task prompt with `agents/prompts/create_prompt.md`.
 2) Store it in `agents/prompts/tasks/`.
 3) Execute it with `agents/prompts/run_prompt.md`.
 4) Archive it to `agents/prompts/completed/` after execution.
 
-This is what makes the workflow repeatable and reviewable.
+This makes a prompt-driven workflow repeatable and reviewable.
 
 ### 4) Build and Quickfix (Builder Session)
 
-The Builder runs the task prompt and makes the smallest viable change set.
+The Builder executes the task and makes the smallest viable change set. If the PROMPT gate is set, the Builder creates a prompt artifact first and uses it as the authoritative plan.
 
 Builder guidance:
 - Use `agents/_start.md`.
@@ -132,6 +132,7 @@ Doublecheck QA uses `agents/_doublecheck.md` to validate quickfixes.
 
 - **CCC (Quality Contract):** `agents/_ccc.md` creates a pre-build Quality Contract in `agents/expectations.md`.
 - **Integration Steward:** `agents/_integrate.md` runs an integration sweep and writes an Integration Report.
+- **PROMPT gate:** `agents/prompts/create_prompt.md` creates a numbered prompt artifact before Builder planning when a fixed, reusable plan is required.
 
 ### 6) Roles and Specialization
 
@@ -139,7 +140,7 @@ Roles are defined in `agents/roles/` and used when a task benefits from a specif
 
 Roles make multi-agent collaboration more predictable and reduce churn.
 If a new role is needed, use `agents/prompts/role_create.md` to generate a role file that matches the repo’s conventions.
-Alternatively, use `agents/_roleplay.md` for an interactive, ultra-detailed role generator.
+Alternatively, use `agents/prompts/roleplay.md` for an interactive, ultra-detailed role generator.
 Most roles are broadly reusable across projects.
 
 ### 7) Skills (Reusable Procedures)
@@ -150,8 +151,7 @@ How they work:
 - Each skill defines a specific workflow, constraints, and outputs.
 - If a task matches a skill, the agent should follow it rather than improvising.
 - Skills are meant to reduce risk and improve consistency across repos.
-If a new skill is needed, use `agents/prompts/skill_create.md` to generate the skill and example scaffold.
-Alternatively, use `agents/_skillissue.md` for an interactive, ultra-detailed skill generator.
+If a new skill is needed, use `agents/prompts/skill_issue.md` for the full, interactive skill generator.
 Note: several starter skills are often project-specific and can be removed during customization.
 
 ### 8) History Logging

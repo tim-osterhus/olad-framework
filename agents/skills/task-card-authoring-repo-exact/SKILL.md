@@ -87,6 +87,7 @@ Gates are the *only* automation triggers. They are explicit.
 Allowed gates:
 - `CCC` — generate a Quality Contract (binary checklist + must-pass) before building
 - `INTEGRATION` — run an integration sweep/report after implementing a feature cluster or cross-cutting change
+- `PROMPT` — require a numbered prompt artifact before Builder starts
 
 Rules:
 - If a gate is present, the task card must name the expected artifact + location.
@@ -101,7 +102,7 @@ Rules:
 
 **Complexity:** <Simple|Moderate|Involved|Unknown>
 **Tags:** <TAG1 TAG2 TAG3>
-**Gates:** <NONE|CCC INTEGRATION>
+**Gates:** <NONE|CCC INTEGRATION PROMPT>
 
 ### Goal:
 - <One sentence objective>
@@ -126,6 +127,7 @@ Rules:
 ### Gate artifacts (only if Gates != NONE):
 - CCC: Quality Contract at: <path or anchor>
 - INTEGRATION: Integration Report at: <path>
+- PROMPT: Prompt artifact at: <agents/prompts/tasks/###-slug.md>
 
 ### Verification commands (copy/paste):
 - <command 1>
@@ -174,6 +176,7 @@ Run targeted searches:
 - Decide **Gates** explicitly (do not infer from Complexity):
   - Add `CCC` when success criteria must be formalized as binary checks.
   - Add `INTEGRATION` for cross-cutting changes or feature clusters.
+  - Add `PROMPT` when the task requires a numbered prompt artifact before Builder starts.
 - If Gates != NONE, add the expected artifact locations in the task card.
 
 

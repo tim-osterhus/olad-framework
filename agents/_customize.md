@@ -144,8 +144,8 @@ Avoid changing files not listed above.
 
 ## Step 5: Create Project-Specific Roles and Skills (Required)
 
-1) If the repo needs new roles, use `agents/_roleplay.md` to generate them.
-2) If the repo needs new skills, use `agents/_skillissue.md` to generate them.
+1) If the repo needs new roles, use `agents/prompts/roleplay.md` to generate them.
+2) If the repo needs new skills, use `agents/prompts/skill_issue.md` to generate them.
 3) Update `agents/roles/` and `agents/skills/skills_index.md` accordingly.
 4) If no new roles/skills are needed, write a short note in `agents/spec.md` explaining why.
 

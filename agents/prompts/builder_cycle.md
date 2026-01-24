@@ -10,7 +10,7 @@ Resources:
 
 Workflow:
 1. Before planning, scan `agents/skills/skills_index.md` and select up to 3 relevant skills. Apply them during the workflow.
-2. If a numbered prompt exists for this task, load it per `agents/prompts/run_prompt.md` and treat its `<plan>` as the authoritative baseline. Otherwise activate **Planner Architect** (see `agents/roles/planner-architect.md`). Read all of `agents/tasks.md`, extract the active request, restate scope/in/out, list assumptions, and draft a numbered plan with checkpoints mapped to specialist roles.
+2. If the task card includes the `PROMPT` gate, create a prompt artifact via `agents/prompts/create_prompt.md`, save it to the Gate artifacts path, then load it per `agents/prompts/run_prompt.md` and treat its `<plan>` as the authoritative baseline. Otherwise activate **Planner Architect** (see `agents/roles/planner-architect.md`). Read all of `agents/tasks.md`, extract the active request, restate scope/in/out, list assumptions, and draft a numbered plan with checkpoints mapped to specialist roles.
 3. For each checkpoint, activate the matching specialist:
    - Backend tasks → **Backend Systems Engineer**.
    - Infra/runtime tasks → **Infrastructure & DevOps Engineer**.
