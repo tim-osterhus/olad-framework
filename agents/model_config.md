@@ -5,9 +5,6 @@ This file is the **only** place you should change model choices for OLAD cycles.
 
 ## Active config (edit these KEY=value lines)
 
-CCC_RUNNER=codex
-CCC_MODEL=gpt-5.2-codex
-
 INTEGRATION_RUNNER=codex
 INTEGRATION_MODEL=gpt-5.2-codex
 
@@ -27,10 +24,7 @@ DOUBLECHECK_MODEL=sonnet
 
 ## Presets (copy/paste over the Active config section)
 
-### 1) Default (Codex CCC/Integration/Builder/Hotfix, Claude QA/Doublecheck)
-
-CCC_RUNNER=codex
-CCC_MODEL=gpt-5.2-codex
+### 1) Default (Codex Integration/Builder/Hotfix, Claude QA/Doublecheck)
 
 INTEGRATION_RUNNER=codex
 INTEGRATION_MODEL=gpt-5.2-codex
@@ -49,9 +43,6 @@ DOUBLECHECK_MODEL=sonnet
 
 ### 2) All Codex
 
-CCC_RUNNER=codex
-CCC_MODEL=gpt-5.2-codex
-
 INTEGRATION_RUNNER=codex
 INTEGRATION_MODEL=gpt-5.2-codex
 
@@ -68,9 +59,6 @@ DOUBLECHECK_RUNNER=codex
 DOUBLECHECK_MODEL=gpt-5.2-codex
 
 ### 3) All Claude
-
-CCC_RUNNER=claude
-CCC_MODEL=sonnet
 
 INTEGRATION_RUNNER=claude
 INTEGRATION_MODEL=sonnet

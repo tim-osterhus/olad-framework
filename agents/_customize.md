@@ -12,6 +12,7 @@ Create or update these files:
 - `agents/roadmap.md` — high-level roadmap template filled for this repo
 - `agents/expectations.md` — success criteria and verification notes
 - `agents/model_config.md` — model + runner assignments for all cycles
+- `agents/workflow_config.md` — integration mode + initialization state
 
 Keep all edits ASCII-only and minimal.
 
@@ -45,12 +46,12 @@ Ask the user which model preset they want for the agentic cycles, then apply it.
 ### Presets
 
 1) **Default (recommended)**
-   - CCC / Integration / Builder / Hotfix: `gpt-5.2-codex`
+   - Integration / Builder / Hotfix: `gpt-5.2-codex`
    - QA / Doublecheck: `claude-sonnet-4-5`
    - If chosen: **do not modify** `agents/model_config.md`.
 
 1.5) **Default Performance**
-   - CCC / Integration / Builder / Hotfix: `gpt-5.2-codex`
+   - Integration / Builder / Hotfix: `gpt-5.2-codex`
    - QA / Doublecheck: `claude-opus-4-5`
    - If chosen: update `agents/model_config.md` values accordingly.
 
@@ -59,7 +60,7 @@ Ask the user which model preset they want for the agentic cycles, then apply it.
    - If chosen: update `agents/model_config.md` values accordingly.
 
 2.5) **All Codex Performance**
-   - CCC / Integration / Builder / Hotfix: `gpt-5.2-codex`
+   - Integration / Builder / Hotfix: `gpt-5.2-codex`
    - QA / Doublecheck: `gpt-5.2`
    - If chosen: update `agents/model_config.md` values accordingly.
 
@@ -73,7 +74,6 @@ Ask the user which model preset they want for the agentic cycles, then apply it.
 
 4) **Custom**
    - Ask what models they want for:
-     - CCC
      - Integration
      - Builder
      - QA
@@ -111,6 +111,20 @@ Ask exactly:
 - If Custom: model id for Builder/Hotfix and model id for QA/Doublecheck.
 - Whether they want Claude Code runs to use `--dangerously-skip-permissions` (yes/no). If unknown, default to **yes** and note it in `agents/spec.md`.
 
+## Step 2.6: Integration Thoroughness (Required)
+
+Ask which integration mode they want and summarize each option in one line:
+- Manual: never auto-run integration; only run when explicitly requested.
+- Low: run only when tasks are tagged `INTEGRATION`.
+- Medium: run on `INTEGRATION` tasks and periodically every 3-6 tasks.
+- High: run integration every other task.
+
+Then update `agents/workflow_config.md`:
+- Set `## INTEGRATION_MODE=<choice>`.
+- Set `## INITIALIZED=true`.
+- Reset `## INTEGRATION_COUNT=0` and set `## INTEGRATION_TARGET` based on mode (Medium: 4, High: 1, Manual/Low: 0).
+- Apply the mode-specific revamp steps described in `agents/workflow_config.md`.
+
 ## Step 3: Write the Spec Sheet
 
 Create `agents/spec.md` with this structure:
@@ -134,6 +148,7 @@ Update the following using the spec sheet:
 - `agents/roadmap.md`: add 2-4 realistic themes and near-term goals.
 - `agents/expectations.md`: list verification expectations, evidence types, and quality gates.
 - `agents/model_config.md`: apply the chosen preset or custom per-cycle models.
+- `agents/workflow_config.md`: apply the chosen integration mode and set `INITIALIZED=true`.
 
 Use the user's answers to drive the edits:
 - Product description, constraints, guardrails, review gates -> `README.md` Project Context + Non-negotiables.

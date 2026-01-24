@@ -111,6 +111,14 @@ Rules:
   - Notes
 
 When possible, put explicit verification in Acceptance (commands, expected outputs, manual checks).
+For Acceptance quality, use these constraints:
+- 6-8 binary checks (YES/NO).
+- 2-3 MUST-PASS checks.
+- Avoid subjective words (clean, nice, good UX, robust).
+- If a check is not testable, add an Open Question instead of guessing.
+
+Integration gating guidance:
+- Add `INTEGRATION` for cross-cutting tasks or feature clusters.
 
 ### 7) Create relevant skills if necessary
 

@@ -13,7 +13,6 @@ You orchestrate by spawning headless runs of Builder/QA agents and by moving tas
 When you invoke a sub-agent, the prompt payload must be **exactly** one of the following strings (no prefixes, suffixes, extra notes, or formatting):
 
 ```
-Open agents/_ccc.md and follow instructions.
 Open agents/_integrate.md and follow instructions.
 Open agents/_start.md and follow instructions.
 Open agents/_check.md and follow instructions.
@@ -33,7 +32,6 @@ You must run from the repo root that contains:
 - `agents/_check.md`
 - `agents/_hotfix.md`
 - `agents/_doublecheck.md`
-- `agents/_ccc.md`
 - `agents/_integrate.md`
 
 And the task files (default paths):
@@ -56,9 +54,8 @@ If any of these are missing, create only what is necessary to proceed (prefer no
 
 Use `agents/status.md` as the sole signaling file. Do not scan `agents/historylog.md` for flags.
 
-The downstream prompt files (_ccc/_integrate/_start/_check/_hotfix/_doublecheck) are expected to write one of these flags to `agents/status.md`:
+The downstream prompt files (_integrate/_start/_check/_hotfix/_doublecheck) are expected to write one of these flags to `agents/status.md`:
 
-- `### CCC_COMPLETE`
 - `### INTEGRATION_COMPLETE`
 - `### BUILDER_COMPLETE`
 - `### QA_COMPLETE`
@@ -88,7 +85,6 @@ All per-cycle **runner** + **model** choices live in `agents/model_config.md`.
 
 Required keys in `agents/model_config.md`:
 
-- `CCC_RUNNER` / `CCC_MODEL`
 - `INTEGRATION_RUNNER` / `INTEGRATION_MODEL`
 - `BUILDER_RUNNER` / `BUILDER_MODEL`
 - `QA_RUNNER` / `QA_MODEL`
@@ -96,6 +92,17 @@ Required keys in `agents/model_config.md`:
 - `DOUBLECHECK_RUNNER` / `DOUBLECHECK_MODEL`
 
 **Important:** regardless of runner/model, the prompt text must stay **exactly** the allowed string.
+
+---
+
+## Workflow config (integration counters)
+
+Use `agents/workflow_config.md` to store integration counters when periodic/alternating integration is enabled.
+Read only the top flag block and update counters in **Finalize**.
+
+Top flags (read/modify only here):
+- `## INTEGRATION_COUNT=<int>`
+- `## INTEGRATION_TARGET=<int>`
 
 ---
 
@@ -171,18 +178,6 @@ function Invoke-OladCycle {
 }
 ```
 
-**CCC cycle**
-
-```powershell
-Invoke-OladCycle `
-  -Runner $cfg["CCC_RUNNER"] `
-  -Model  $cfg["CCC_MODEL"] `
-  -Prompt "Open agents/_ccc.md and follow instructions." `
-  -StdoutPath "$runDir\\ccc.stdout.log" `
-  -StderrPath "$runDir\\ccc.stderr.log" `
-  -LastMessagePath "$runDir\\ccc.last.md"
-```
-
 **Builder cycle (new task)**
 
 ```powershell
@@ -195,7 +190,7 @@ Invoke-OladCycle `
   -LastMessagePath "$runDir\\builder.last.md"
 ```
 
-**Integration cycle**
+**Integration cycle (run only if required by `agents/workflow_config.md`)**
 
 ```powershell
 Invoke-OladCycle `
@@ -291,15 +286,11 @@ run_cycle() {
   return 1
 }
 
-# CCC
-run_cycle "$CCC_RUNNER" "$CCC_MODEL" "Open agents/_ccc.md and follow instructions." \
-  "$RUN_DIR/ccc.stdout.log" "$RUN_DIR/ccc.stderr.log" "$RUN_DIR/ccc.last.md"
-
 # Builder
 run_cycle "$BUILDER_RUNNER" "$BUILDER_MODEL" "Open agents/_start.md and follow instructions." \
   "$RUN_DIR/builder.stdout.log" "$RUN_DIR/builder.stderr.log" "$RUN_DIR/builder.last.md"
 
-# Integration
+# Integration (run only if required by agents/workflow_config.md)
 run_cycle "$INTEGRATION_RUNNER" "$INTEGRATION_MODEL" "Open agents/_integrate.md and follow instructions." \
   "$RUN_DIR/integration.stdout.log" "$RUN_DIR/integration.stderr.log" "$RUN_DIR/integration.last.md"
 
@@ -331,6 +322,8 @@ Notes:
 4) Confirm task sources:
    - `agents/tasks.md` exists (may be empty placeholder)
    - `agents/tasksbacklog.md` exists and is not empty (unless a task is already active)
+5) Confirm integration config (if periodic/alternating integration is enabled):
+   - `agents/workflow_config.md` exists and has the top flags.
 
 If any preflight check fails and you cannot resolve quickly, go to **Blocker handler**.
 
@@ -354,9 +347,6 @@ Create a new run folder:
 - `agents/runs/YYYY-MM-DD_HHMMSS/`
 
 Inside it, you will store:
-- `ccc.last.md`
-- `ccc.stdout.log`
-- `ccc.stderr.log`
 - `builder.last.md` (or `.txt`)
 - `builder.stdout.log`
 - `builder.stderr.log`
@@ -368,18 +358,14 @@ Inside it, you will store:
 - `qa.stderr.log`
 - `runner_notes.md` (brief timeline + what you observed)
 
-### 2) CCC gate preflight (only if Gates include CCC)
-- Inspect the active task card for `**Gates:**` and check for `CCC`.
-- If CCC is present, run the CCC sub-agent headlessly **before** Builder using the exact prompt:
-  - `Open agents/_ccc.md and follow instructions.`
-- Wait until you observe `### CCC_COMPLETE`, then clear the flag (`agents/status.md` → `### IDLE`).
-- If you observe `### BLOCKED`, go to **Blocker handler**.
-- After CCC completes, confirm the Quality Contract exists:
-  - `agents/expectations.md` has `## Quality Contract: <Task Title>`, and
-  - The task card Acceptance references that contract location.
-- If the artifact is missing or ambiguous, treat as **BLOCKED** and go to **Blocker handler**.
+### 1.5) Load integration counters (per task)
+- Read the top flags in `agents/workflow_config.md` and capture:
+  - `INTEGRATION_COUNT`
+  - `INTEGRATION_TARGET`
+- Inspect the active task card for `**Gates:**` and note whether `INTEGRATION` is present.
+- Record the counters in `runner_notes.md`.
 
-### 3) Builder cycle (new task)
+### 2) Builder cycle (new task)
 Spawn the Builder headlessly with the exact prompt:
 
 - `Open agents/_start.md and follow instructions.`
@@ -395,16 +381,21 @@ Completion rule:
 
 If you instead observe `### BLOCKED`, go to **Blocker handler**.
 
-### 4) Integration cycle (only if Gates include INTEGRATION)
-- Inspect the active task card for `**Gates:**` and check for `INTEGRATION`.
-- If INTEGRATION is present, run the Integration sub-agent headlessly with the exact prompt:
-  - `Open agents/_integrate.md and follow instructions.`
+### 3) Integration cycle (conditional)
+
+Decide whether to run Integration based on counters and gates:
+- Run when the task has the `INTEGRATION` gate, or when `INTEGRATION_COUNT >= INTEGRATION_TARGET`.
+
+If Integration should run, execute the sub-agent headlessly with the exact prompt:
+- `Open agents/_integrate.md and follow instructions.`
+
+Then:
 - Wait until you observe `### INTEGRATION_COMPLETE`, then clear the flag (`agents/status.md` → `### IDLE`).
 - If you observe `### BLOCKED`, go to **Blocker handler**.
 - Confirm the Integration Report exists:
   - `agents/runs/<RUN_ID>/integration_report.md` or `agents/integration_report.md`.
 
-### 5) QA cycle (new task)
+### 4) QA cycle (new task)
 Spawn QA headlessly with the exact prompt:
 
 - `Open agents/_check.md and follow instructions.`
@@ -426,7 +417,7 @@ Clear the flag after reading it (status.md → `### IDLE`).
 
 Repeat for up to 2 attempts:
 
-### 6) Hotfix cycle
+### 5) Hotfix cycle
 Spawn Builder/Hotfix headlessly with:
 
 - `Open agents/_hotfix.md and follow instructions.`
@@ -437,7 +428,7 @@ Wait for either:
 
 Clear the flag.
 
-### 7) Doublecheck cycle (QA on quickfix)
+### 6) Doublecheck cycle (QA on quickfix)
 Spawn QA headlessly with:
 
 - `Open agents/_doublecheck.md and follow instructions.`
@@ -473,6 +464,10 @@ When you reach `### QA_COMPLETE` (either from the normal QA cycle or from double
    - QA result
    - quickfix attempts (if any)
    - timestamps
+
+5) Update `agents/workflow_config.md` counters (only when periodic/alternating integration is enabled):
+   - If Integration ran this cycle, set `INTEGRATION_COUNT=0` and, if periodic targets are used, advance `INTEGRATION_TARGET` by +1 (3→4→5→6→3).
+   - If Integration did not run, increment `INTEGRATION_COUNT` by 1.
 
 Then loop back to **0)**.
 

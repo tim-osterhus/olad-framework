@@ -85,7 +85,6 @@ Suggested vocabulary (pick what applies):
 Gates are the *only* automation triggers. They are explicit.
 
 Allowed gates:
-- `CCC` — generate a Quality Contract (binary checklist + must-pass) before building
 - `INTEGRATION` — run an integration sweep/report after implementing a feature cluster or cross-cutting change
 - `PROMPT` — require a numbered prompt artifact before Builder starts
 
@@ -102,7 +101,7 @@ Rules:
 
 **Complexity:** <Simple|Moderate|Involved|Unknown>
 **Tags:** <TAG1 TAG2 TAG3>
-**Gates:** <NONE|CCC INTEGRATION PROMPT>
+**Gates:** <NONE|INTEGRATION PROMPT>
 
 ### Goal:
 - <One sentence objective>
@@ -125,7 +124,6 @@ Rules:
 - [ ] Run: `<command>` and confirm: `<expected result>`
 
 ### Gate artifacts (only if Gates != NONE):
-- CCC: Quality Contract at: <path or anchor>
 - INTEGRATION: Integration Report at: <path>
 - PROMPT: Prompt artifact at: <agents/prompts/tasks/###-slug.md>
 
@@ -174,10 +172,12 @@ Run targeted searches:
 - Pick **Complexity** (metadata only): Simple / Moderate / Involved / Unknown.
 - Add **Tags** that describe what changes and where risk lives.
 - Decide **Gates** explicitly (do not infer from Complexity):
-  - Add `CCC` when success criteria must be formalized as binary checks.
   - Add `INTEGRATION` for cross-cutting changes or feature clusters.
   - Add `PROMPT` when the task requires a numbered prompt artifact before Builder starts.
 - If Gates != NONE, add the expected artifact locations in the task card.
+
+Integration gating guidance:
+- Add `INTEGRATION` for cross-cutting tasks or feature clusters.
 
 
 ### 4) Plan smallest safe change set

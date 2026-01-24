@@ -9,7 +9,6 @@ This document describes the current, repo-specific workflow. It is role-driven, 
 - **QA entry:** `agents/_check.md` is the QA entrypoint.
 - **Hotfix entry:** `agents/_hotfix.md` is the Builder entrypoint for quickfix cycles.
 - **Doublecheck entry:** `agents/_doublecheck.md` is the QA entrypoint for quickfix cycles.
-- **CCC entry:** `agents/_ccc.md` for Quality Contract preflight.
 - **Integration entry:** `agents/_integrate.md` for integration sweeps and reports.
 - **Advisor entry:** `agents/_advisor.md` for freeform advisory or scoping work.
 - **Orchestrator entry:** `agents/_orchestrate.md` for headless orchestration across tasks.
@@ -52,7 +51,6 @@ Prompt artifacts live in `agents/prompts/tasks/` and capture a task’s plan and
 `agents/status.md` is the authoritative signaling file for headless orchestration.
 
 Expected flags:
-- `### CCC_COMPLETE`
 - `### INTEGRATION_COMPLETE`
 - `### BUILDER_COMPLETE`
 - `### QA_COMPLETE`
@@ -125,17 +123,17 @@ Hotfix and Doublecheck runs must stay strictly within this repo and must not rea
 The Orchestrator (`agents/_orchestrate.md`) runs the full loop:
 
 1) Ensure an active task exists in `agents/tasks.md`; promote from `agents/tasksbacklog.md` if empty.
-2) If `**Gates:** CCC` is set, run CCC with: `Open agents/_ccc.md and follow instructions.`
-3) Spawn Builder with the exact prompt: `Open agents/_start.md and follow instructions.`
-4) If `**Gates:** INTEGRATION` is set, run Integration with: `Open agents/_integrate.md and follow instructions.`
-5) Spawn QA with the exact prompt: `Open agents/_check.md and follow instructions.`
-6) If QA signals `### QUICKFIX_NEEDED`, run Hotfix then Doublecheck.
-7) On `### QA_COMPLETE`, archive the task card and continue to the next one.
+2) Spawn Builder with the exact prompt: `Open agents/_start.md and follow instructions.`
+3) Run Integration based on the configured integration behavior or when `**Gates:** INTEGRATION` is set.
+4) Spawn QA with the exact prompt: `Open agents/_check.md and follow instructions.`
+5) If QA signals `### QUICKFIX_NEEDED`, run Hotfix then Doublecheck.
+6) On `### QA_COMPLETE`, archive the task card and continue to the next one.
 
 Models and runners are configured in `agents/model_config.md`.
+Integration behavior is configured during customization.
 
 Preset options:
-- Default: Codex for CCC/Integration/Builder/Hotfix, Claude for QA/Doublecheck.
+- Default: Codex for Integration/Builder/Hotfix, Claude for QA/Doublecheck.
 - All Codex: Codex for all cycles.
 - All Claude: Claude for all cycles.
 - Custom: per-cycle runner + model ids.
@@ -167,7 +165,7 @@ Stop and signal blockers when:
 
 ## 13) Files to know
 
-- Entry points: `agents/_ccc.md`, `agents/_integrate.md`, `agents/_start.md`, `agents/_check.md`, `agents/_hotfix.md`, `agents/_doublecheck.md`, `agents/_advisor.md`, `agents/_orchestrate.md`
+- Entry points: `agents/_integrate.md`, `agents/_start.md`, `agents/_check.md`, `agents/_hotfix.md`, `agents/_doublecheck.md`, `agents/_advisor.md`, `agents/_orchestrate.md`
 - Tasks: `agents/tasks.md`, `agents/tasksbacklog.md`, `agents/tasksarchive.md`
 - Prompt artifacts: `agents/prompts/tasks/`, `agents/prompts/run_prompt.md`
 - Signals/logs: `agents/status.md`, `agents/quickfix.md`, `agents/expectations.md`, `agents/historylog.md`

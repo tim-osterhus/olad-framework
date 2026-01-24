@@ -24,7 +24,7 @@ If you already have an `agents/` directory, merge carefully and keep one set of 
 
 After this step, the framework is tailored to your project.
 
-Note: during customization, the agent will also ask which **model preset** you want and update `agents/model_config.md`. Performance variants are available for higher-reasoning models/settings.
+Note: during customization, the agent will also ask which **model preset** you want and update `agents/model_config.md`. Performance variants are available for higher-reasoning models/settings. Integration behavior is configured during customization.
 
 ## 3) Create or Update a Task
 
@@ -35,7 +35,7 @@ Note: during customization, the agent will also ask which **model preset** you w
 
 1) Start an orchestration session at repo root.
 2) Say: `Open agents/_orchestrate.md and follow instructions.`
-3) The Orchestrator will run CCC → Builder → Integration → QA → (optional) Quickfix when gates are present, and archive completed tasks.
+3) The Orchestrator will run Builder → Integration → QA → (optional) Quickfix based on the configured integration behavior, and archive completed tasks.
 
 ## 5) Manual Workflow (No Orchestration)
 
@@ -47,9 +47,6 @@ Note: during customization, the agent will also ask which **model preset** you w
 
 Quickfix cycle:
 - Builder hotfix: `Open agents/_hotfix.md and follow instructions.`
-
-CCC gate (if `**Gates:** CCC` is set on the task):
-- `Open agents/_ccc.md and follow instructions.`
 
 Integration gate (if `**Gates:** INTEGRATION` is set on the task):
 - `Open agents/_integrate.md and follow instructions.`

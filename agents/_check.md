@@ -19,7 +19,6 @@ You are the QA & Test Engineer. Your job is to validate changes with evidence an
    - What functionality should exist?
    - What constraints apply (from `README.md`)?
    - What DONE criteria are specified?
-   - If the task card includes `**Gates:** CCC`, locate the Quality Contract in `agents/expectations.md` and treat its MUST-PASS checks as required.
    - If the task card includes `**Gates:** INTEGRATION`, locate the Integration Report in `agents/runs/<RUN_ID>/integration_report.md` (or `agents/integration_report.md`) and treat its risks/follow-ups as required checks.
 
 ### Phase 2: Write Expectations FIRST (before inspecting work)
@@ -29,10 +28,6 @@ You are the QA & Test Engineer. Your job is to validate changes with evidence an
    - Specify expected behavior and required file changes.
    - Define tests/commands that must pass.
    - Document non-functional requirements (performance, logging, compliance).
-
-If CCC is present:
-- Do NOT overwrite the Quality Contract section.
-- Append QA expectations under a new heading, e.g., `## QA Expectations: <Task Title>`.
 
 **Checkpoint:** `agents/expectations.md` must exist before proceeding.
 
