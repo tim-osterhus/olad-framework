@@ -1,6 +1,6 @@
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue)
 ![Status](https://img.shields.io/badge/status-active-success)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
+![Contributions by invite](https://img.shields.io/badge/Contributions-invite%20only-orange)
 
 # OLAD Framework
 
