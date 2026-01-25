@@ -1,4 +1,4 @@
-# Lean Agentic Development (OLAD) Framework
+# Orchestrative Lean Agentic Development (OLAD) Framework
 
 This document describes the current, repo-specific workflow. It is role-driven, artifact-driven, and designed to keep changes minimal, auditable, and easy to validate in headless runs.
 
