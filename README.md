@@ -6,6 +6,8 @@
 
 Orchestrative Lean Agentic Development (OLAD) is a lightweight, project-agnostic framework for running agentic development with clear roles, repeatable prompts, deterministic orchestration, and consistent logging.
 
+To get started ASAP, check out `quickstart.md`.
+
 ## What This Gives You
 
 - A standard way to run multi-agent work without chaos.
