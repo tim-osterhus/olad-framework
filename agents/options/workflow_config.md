@@ -1,0 +1,7 @@
+# Workflow config (flags only)
+
+## INITIALIZED=false
+## INTEGRATION_MODE=Manual
+## INTEGRATION_COUNT=0
+## INTEGRATION_TARGET=0
+## HEADLESS_PERMISSIONS=Normal

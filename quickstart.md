@@ -24,7 +24,8 @@ If you already have an `agents/` directory, merge carefully and keep one set of 
 
 After this step, the framework is tailored to your project.
 
-Note: during customization, the agent will also ask which **model preset** you want and update `agents/model_config.md`. Performance variants are available for higher-reasoning models/settings. Integration behavior is configured during customization.
+Note: during customization, the agent will also ask which **model preset** you want and update `agents/options/model_config.md`. It will also set headless sub-agent permissions (Normal/Elevated/Maximum) in `agents/options/workflow_config.md`. Orchestrator behavior is configured during customization via `agents/options/`.
+Optional: during customization, you can choose whether QA is allowed to request manual verification, or whether QA must replace manual checks with tracked smoketest artifacts (Quick/Thorough smoketests).
 
 ## 3) Create or Update a Task
 
@@ -35,7 +36,8 @@ Note: during customization, the agent will also ask which **model preset** you w
 
 1) Start an orchestration session at repo root.
 2) Say: `Open agents/_orchestrate.md and follow instructions.`
-3) The Orchestrator will run Builder → Integration → QA → (optional) Quickfix based on the configured integration behavior, and archive completed tasks.
+3) The Orchestrator will run Builder → QA → (optional) Quickfix, plus any optional steps installed during customization, and archive completed tasks.
+   - WSL headless templates live in `agents/options/orchestrate/orchestrate_options.md`.
 
 ## 5) Manual Workflow (No Orchestration)
 
@@ -43,16 +45,13 @@ Note: during customization, the agent will also ask which **model preset** you w
 
 1) Start a dedicated agentic session at repo root.
 2) Say: `Open agents/_start.md and follow instructions.`
-3) The Builder executes the task. If the PROMPT gate is set, the Builder first creates a prompt artifact and uses it as the plan.
+3) The Builder executes the task and always creates a prompt artifact as the plan.
 
 Quickfix cycle:
 - Builder hotfix: `Open agents/_hotfix.md and follow instructions.`
 
-Integration gate (if `**Gates:** INTEGRATION` is set on the task):
+Integration gate (only if Integration was enabled during customization or you are running Integration manually):
 - `Open agents/_integrate.md and follow instructions.`
-
-PROMPT gate (if `**Gates:** PROMPT` is set on the task):
-- `Open agents/prompts/create_prompt.md and follow instructions.`
 
 ### B) QA Agent
 
@@ -76,5 +75,5 @@ Doublecheck cycle:
 
 ## 6) Change Model Assignments (Optional)
 
-If you use a runner or orchestration tool, update model assignments in its config.
+If you use a runner or orchestration tool, update model assignments in `agents/options/model_config.md`.
 For manual runs, change the model in your agentic tool or CLI before starting a session.

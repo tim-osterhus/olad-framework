@@ -30,6 +30,10 @@ Baseline requirements (integrated):
 - Use imperative voice in `SKILL.md` (verb-first instructions).
 - Keep `SKILL.md` lean; put long details, scenarios, and edge cases exclusively in `EXAMPLES.md`.
 - Ensure `SKILL.md` frontmatter uses third-person, specific triggers ("This skill should be used when...").
+- Use progressive disclosure:
+  - Prefer `EXAMPLES.md` for long cases and failure modes.
+  - If additional reference material is needed, add a sibling file (e.g., `reference.md`, `advanced.md`) under the skill folder and link to it from `SKILL.md` (avoid deep chains).
+- Avoid duplication: do not copy the same guidance into multiple files; keep one canonical location and link to it.
 
 ## Workflow
 
@@ -41,7 +45,7 @@ You need:
 - What outputs it must produce (deliverables)
 - Guardrails that must not be violated
 - At least 2 example scenarios (one success, one failure/edge)
- - 1-3 concrete usage examples (realistic queries/requests)
+- 1-3 concrete usage examples (realistic queries/requests)
 
 If any are missing, ask a single batch of concise questions.
 

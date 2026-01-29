@@ -2,17 +2,29 @@
 
 You are onboarding this agentic framework to a new project repo. Your job is to generate a project spec sheet and fill in the project-specific files so the system becomes immediately usable.
 
+## Key design: `agents/options/`
+
+`agents/_customize.md` is the UX/menu layer.
+Detailed option packets live under `agents/options/`.
+
+Only open the option docs you need based on the user's choices.
+
 ## Output Targets
 
 Create or update these files:
-- `agents/spec.md` (new) — context-heavy spec sheet
-- `README.md` — project overview, guardrails, workflow (Project Context + Non-negotiables)
-- `agents/outline.md` — repo outline and stack
-- `agents/tasks.md` — initial task entry or placeholder
-- `agents/roadmap.md` — high-level roadmap template filled for this repo
-- `agents/expectations.md` — success criteria and verification notes
-- `agents/model_config.md` — model + runner assignments for all cycles
-- `agents/workflow_config.md` — integration mode + initialization state
+- `agents/spec.md` (new) - context-heavy spec sheet
+- `README.md` - project overview, guardrails, workflow (Project Context + Non-negotiables)
+- `agents/outline.md` - repo outline and stack
+- `agents/tasks.md` - initial task entry or placeholder
+- `agents/roadmap.md` - high-level roadmap template filled for this repo
+- `agents/expectations.md` - success criteria and verification notes
+- `agents/options/model_config.md` - model + runner assignments for all cycles
+- `agents/options/workflow_config.md` - workflow flags (flags only; keep this file tiny)
+
+Optional (only if enabled by a chosen option):
+- `agents/_orchestrate.md` - patched to install optional orchestrator behaviors
+- `agents/_troubleshoot.md` - installed if Troubleshoot-on-blocker is enabled
+- Task-authoring guidance may be patched (e.g., `agents/prompts/decompose.md`, `agents/skills/task-card-authoring-repo-exact/SKILL.md`).
 
 Keep all edits ASCII-only and minimal.
 
@@ -41,89 +53,96 @@ Keep questions concise and in a single message.
 
 ## Step 2.5: Model + Runner Preset (Required)
 
-Ask the user which model preset they want for the agentic cycles, then apply it.
+Ask the user which model preset they want for the agentic cycles, then apply it by editing **only** the `KEY=value` lines under "Active config" in:
+- `agents/options/model_config.md`
 
-### Presets
+Ask:
+- Which preset: Default / Default Performance / All Codex / All Claude / Custom?
+- If Custom: model ids for Integration, Builder, QA, Hotfix, Doublecheck.
 
-1) **Default (recommended)**
-   - Integration / Builder / Hotfix: `gpt-5.2-codex`
-   - QA / Doublecheck: `claude-sonnet-4-5`
-   - If chosen: **do not modify** `agents/model_config.md`.
-
-1.5) **Default Performance**
-   - Integration / Builder / Hotfix: `gpt-5.2-codex`
-   - QA / Doublecheck: `claude-opus-4-5`
-   - If chosen: update `agents/model_config.md` values accordingly.
-
-2) **All Codex**
-   - All cycles use `gpt-5.2-codex`.
-   - If chosen: update `agents/model_config.md` values accordingly.
-
-2.5) **All Codex Performance**
-   - Integration / Builder / Hotfix: `gpt-5.2-codex`
-   - QA / Doublecheck: `gpt-5.2`
-   - If chosen: update `agents/model_config.md` values accordingly.
-
-3) **All Claude**
-   - All cycles use `claude-sonnet-4-5`.
-   - If chosen: update `agents/model_config.md` values accordingly.
-
-3.5) **All Claude Performance**
-   - All cycles use `claude-opus-4-5`.
-   - If chosen: update `agents/model_config.md` values accordingly.
-
-4) **Custom**
-   - Ask what models they want for:
-     - Integration
-     - Builder
-     - QA
-     - Hotfix
-     - Doublecheck
-   - Then update `agents/model_config.md` values to match.
-
-### How to edit `agents/model_config.md` (mechanical rules)
-
-- Only change the `KEY=value` lines under **Active config**.
-- Set each `*_RUNNER` to `codex` or `claude`.
-- Set each `*_MODEL` to a model id (Codex) or a model id/alias (Claude).
-- Do not edit `agents/_orchestrate.md` for model changes.
-
-### Known-good model options (shortlist)
-
-Use this list when asking, and keep it short. The user's account/tooling may not support every option.
-
-- **Codex CLI**
-  - `gpt-5.2-codex` (default)
-  - `gpt-5.2`
-  - `gpt-5.1-codex-mini`
-
-- **Claude Code CLI**
-  - `claude-sonnet-4-5` (default)
-  - `claude-opus-4-5`
-  - `claude-haiku-4-5`
-
-If the user wants something else, ask them to provide the exact model id they already know works in their environment.
-
-### What to ask (single message)
-
-Ask exactly:
-- Which preset: Default / All Codex / All Claude / Custom?
-- If Custom: model id for Builder/Hotfix and model id for QA/Doublecheck.
-- Whether they want Claude Code runs to use `--dangerously-skip-permissions` (yes/no). If unknown, default to **yes** and note it in `agents/spec.md`.
+For preset blocks and known-good model ids, see:
+- `agents/options/model_config.md`
 
 ## Step 2.6: Integration Thoroughness (Required)
 
-Ask which integration mode they want and summarize each option in one line:
-- Manual: never auto-run integration; only run when explicitly requested.
-- Low: run only when tasks are tagged `INTEGRATION`.
-- Medium: run on `INTEGRATION` tasks and periodically every 3-6 tasks.
-- High: run integration every other task.
+Integration is an **orchestrator option**.
+- Manual mode is equivalent to opting out of orchestrated Integration.
+- `agents/_integrate.md` still exists for manual use.
 
-Then update `agents/workflow_config.md`:
-- Set `## INTEGRATION_MODE=<choice>`.
-- Set `## INITIALIZED=true`.
-- Reset `## INTEGRATION_COUNT=0` and set `## INTEGRATION_TARGET` based on mode (Medium: 4, High: 1, Manual/Low: 0).
-- Apply the mode-specific revamp steps described in `agents/workflow_config.md`.
+Ask which integration mode they want:
+- Manual: no orchestrated Integration cycles
+- Low: run Integration only when tasks are gated `INTEGRATION`
+- Medium: run on `INTEGRATION` tasks and periodically every 3-6 tasks
+- High: run Integration every other task
+
+Then:
+- Update flags in `agents/options/workflow_config.md` (flags only):
+  - Set `## INITIALIZED=true`
+  - Set `## INTEGRATION_MODE=<Manual|Low|Medium|High>`
+  - Reset `## INTEGRATION_COUNT=0`
+  - Set `## INTEGRATION_TARGET`:
+    - Manual: 0
+    - Low: 0
+    - Medium: 4
+    - High: 1
+- If the mode is Low/Medium/High, open `agents/options/integrate/integrate_option.md` and follow its instructions.
+- If the mode is Manual, do not add Integration instructions to `agents/_orchestrate.md`.
+
+## Step 2.7: Headless Sub-Agent Permissions (Required)
+
+This controls how permissive headless sub-agents are when run by the orchestrator templates.
+
+Ask the user to choose one:
+- Normal (recommended): default `--full-auto` for Codex; no extra Claude flags.
+  - Example: docs-only repos, CI-only tests, no local servers or Docker.
+- Elevated: add Codex `--sandbox danger-full-access`; Claude uses `--permission-mode acceptEdits`.
+  - Example: local dev servers, IPC pipes, or Docker socket access required.
+- Maximum: Codex `--dangerously-bypass-approvals-and-sandbox`; Claude `--dangerously-skip-permissions`.
+  - Example: fully trusted environment where headless runs must never prompt.
+
+Then:
+- Set `## HEADLESS_PERMISSIONS=<Normal|Elevated|Maximum>` in `agents/options/workflow_config.md`.
+- Open `agents/options/permission/perm_config.md` and follow its instructions.
+
+## Step 2.8: QA Manual Verification Policy (Optional)
+
+This controls whether QA is allowed to request human/manual verification.
+
+Ask the user to choose one:
+- Manual Allowed (default): QA may request manual verification (headless runs may stop).
+- Quick Smoketests: QA must NOT request manual verification; replace manual checks with smoketest artifacts under `agents/prompts/tests/`.
+- Thorough Smoketests: same as Quick, but QA prefers applying/creating stack-specific smoketest skills when needed.
+
+If Quick or Thorough:
+- Open `agents/options/no-manual/no_manual_option.md` and follow its instructions (install the chosen mode).
+
+If Manual Allowed:
+- Do not install anything; leave QA behavior unchanged.
+
+## Step 2.9: Troubleshoot-on-Blocker (Optional)
+
+This adds an optional Troubleshooter step when orchestration hits a blocker.
+It is expensive and intended for unattended/headless operation.
+
+Ask the user:
+- Do you want Troubleshoot-on-blocker enabled? (yes/no)
+
+If yes:
+- Open `agents/options/troubleshoot/troubleshoot_option.md` and follow its instructions.
+
+If no:
+- Do not install `agents/_troubleshoot.md`.
+- Do not add Troubleshooter behavior to `agents/_orchestrate.md`.
+
+## Step 2.10: Orchestrator Templates (Optional)
+
+Ask the user:
+- Will you run orchestration headlessly from WSL? (yes/no)
+
+If yes, templates live in:
+- `agents/options/orchestrate/orchestrate_options.md`
+
+No repo edits are required for this step.
 
 ## Step 3: Write the Spec Sheet
 
@@ -142,20 +161,18 @@ Use concrete details from the repo or user answers. Mark unknowns explicitly as 
 ## Step 4: Fill Project-Specific Files
 
 Update the following using the spec sheet:
-- `README.md`: update `Project Context` + `Non-negotiables` with the project summary, constraints, and guardrails.
+- `README.md`: update Project Context + Non-negotiables with the project summary, constraints, and guardrails.
 - `agents/outline.md`: include repo structure, stack, and verification commands.
 - `agents/tasks.md`: add a single starter task or placeholder that reflects current priorities.
 - `agents/roadmap.md`: add 2-4 realistic themes and near-term goals.
 - `agents/expectations.md`: list verification expectations, evidence types, and quality gates.
-- `agents/model_config.md`: apply the chosen preset or custom per-cycle models.
-- `agents/workflow_config.md`: apply the chosen integration mode and set `INITIALIZED=true`.
 
 Use the user's answers to drive the edits:
 - Product description, constraints, guardrails, review gates -> `README.md` Project Context + Non-negotiables.
 - Repo scan results (stack, commands) -> `agents/outline.md` and `agents/expectations.md`.
 - Current priorities from the user -> `agents/tasks.md` and `agents/roadmap.md`.
 
-Avoid changing files not listed above.
+Avoid changing files not listed above unless required by an enabled option.
 
 ## Step 5: Create Project-Specific Roles and Skills (Required)
 

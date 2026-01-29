@@ -7,10 +7,10 @@ Context sources you may read:
 - `agents/historylog.md`, `agents/quickfix.md`, `agents/expectations.md`
 - Any relevant files referenced by the task card
 
-Do **not** modify repo files, except you may prepend a short entry to `agents/historylog.md` once the prompt artifact is saved. Output should primarily be the prompt artifact text.
+Do **not** modify repo files, except you may save the prompt artifact in `agents/prompts/tasks/` and prepend a short entry to `agents/historylog.md` once the prompt artifact is saved. Output should primarily be the prompt artifact text.
 
 Workflow:
-1. Confirm the task is suitable for a prompt artifact (multi-step work, more than trivial edits). If not, respond “Prompt artifact not required” with rationale.
+1. Confirm the task context. If the task is trivial, keep the prompt concise, but still produce a prompt artifact.
 2. Gather requirements, constraints, prior attempts, acceptance criteria, blockers, and test expectations.
 3. Choose the next prompt number from `agents/prompts/tasks/` (zero‑padded). If none exist, start with `001`.
 4. Draft the prompt using the XML-style template below. Fill in as much concrete detail as possible from repo context. If a section is unknown, add `<todo>` notes describing what must be clarified.
@@ -45,5 +45,5 @@ Template:
 6. Prepend a short entry to the top of `agents/historylog.md` (newest first) referencing the new prompt file.
 7. Notify the Builder to load the numbered prompt via `agents/prompts/run_prompt.md`.
 
-Remember: this role only outputs the prompt text. Do not edit repo files or execute code. Mention any ambiguities explicitly so the executor can resolve them before implementing.
+Remember: this role primarily outputs the prompt text. Follow steps 5–7 to save the artifact and log the entry, and do not make any other repo edits or execute code. Mention any ambiguities explicitly so the executor can resolve them before implementing.
 ```

@@ -41,6 +41,23 @@ HOTFIX_MODEL=gpt-5.2-codex
 DOUBLECHECK_RUNNER=claude
 DOUBLECHECK_MODEL=sonnet
 
+### 1.5) Default Performance (Codex Integration/Builder/Hotfix, Claude QA/Doublecheck on Opus)
+
+INTEGRATION_RUNNER=codex
+INTEGRATION_MODEL=gpt-5.2-codex
+
+BUILDER_RUNNER=codex
+BUILDER_MODEL=gpt-5.2-codex
+
+QA_RUNNER=claude
+QA_MODEL=opus
+
+HOTFIX_RUNNER=codex
+HOTFIX_MODEL=gpt-5.2-codex
+
+DOUBLECHECK_RUNNER=claude
+DOUBLECHECK_MODEL=opus
+
 ### 2) All Codex
 
 INTEGRATION_RUNNER=codex
@@ -57,6 +74,23 @@ HOTFIX_MODEL=gpt-5.2-codex
 
 DOUBLECHECK_RUNNER=codex
 DOUBLECHECK_MODEL=gpt-5.2-codex
+
+### 2.5) All Codex Performance (Codex everywhere, higher-reasoning for QA/Doublecheck)
+
+INTEGRATION_RUNNER=codex
+INTEGRATION_MODEL=gpt-5.2-codex
+
+BUILDER_RUNNER=codex
+BUILDER_MODEL=gpt-5.2-codex
+
+QA_RUNNER=codex
+QA_MODEL=gpt-5.2
+
+HOTFIX_RUNNER=codex
+HOTFIX_MODEL=gpt-5.2-codex
+
+DOUBLECHECK_RUNNER=codex
+DOUBLECHECK_MODEL=gpt-5.2
 
 ### 3) All Claude
 
@@ -75,6 +109,23 @@ HOTFIX_MODEL=sonnet
 DOUBLECHECK_RUNNER=claude
 DOUBLECHECK_MODEL=sonnet
 
+### 3.5) All Claude Performance (Claude everywhere on Opus)
+
+INTEGRATION_RUNNER=claude
+INTEGRATION_MODEL=opus
+
+BUILDER_RUNNER=claude
+BUILDER_MODEL=opus
+
+QA_RUNNER=claude
+QA_MODEL=opus
+
+HOTFIX_RUNNER=claude
+HOTFIX_MODEL=opus
+
+DOUBLECHECK_RUNNER=claude
+DOUBLECHECK_MODEL=opus
+
 ### 4) Custom
 
 - Set each `*_RUNNER` to `codex` or `claude`.
@@ -84,7 +135,7 @@ DOUBLECHECK_MODEL=sonnet
 
 ## Known-good Codex model IDs
 
-These are listed as recommended/alternative models in OpenAI’s Codex Models docs:
+These are listed as recommended/alternative models in OpenAI's Codex Models docs:
 
 - gpt-5.2-codex
 - gpt-5.1-codex-max

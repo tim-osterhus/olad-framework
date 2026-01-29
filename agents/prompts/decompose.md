@@ -60,6 +60,15 @@ From the request, write:
 - Non-goals (what is explicitly out of scope)
 - Key risks (security/abuse/privacy/cost)
 
+### 3.5) Resolve ambiguity (goal vs technical)
+
+- If ambiguity is about **goals/intent/product direction**, ask the user in a single batch (see Step 4).
+- If ambiguity is **technical** (APIs, limits, standards, platform behavior), do a short web research pass:
+  - 2-4 targeted queries using primary sources.
+  - Summarize findings and cite sources.
+  - Proceed with explicit **ASSUMPTIONS** only if research cannot resolve it.
+- If the repo is offline/air-gapped, skip web research and mark **ASSUMPTIONS** explicitly.
+
 ### 4) Ask one batch of scoping questions (only if needed)
 
 Ask at most ~10-12 questions in ONE message. Prioritize:
@@ -95,7 +104,7 @@ Use clear bullets and concrete acceptance criteria. Flag anything speculative.
 
 ### 6) Generate ordered task cards
 
-Using the "Task Card Authoring (Repo-Exact)" skill, create 5-15 task cards and insert them near the top of `agents/tasksbacklog.md`, under the `# Tasks Backlog` header.
+Open `agents/skills/task-card-authoring-repo-exact/SKILL.md` and use its Task card template verbatim. Using that skill, create 5-15 task cards and insert them near the top of `agents/tasksbacklog.md`, under the `# Tasks Backlog` header.
 
 Rules:
 
@@ -117,9 +126,6 @@ For Acceptance quality, use these constraints:
 - Avoid subjective words (clean, nice, good UX, robust).
 - If a check is not testable, add an Open Question instead of guessing.
 
-Integration gating guidance:
-- Add `INTEGRATION` for cross-cutting tasks or feature clusters.
-
 ### 7) Create relevant skills if necessary
 
 After adding task cards, generate a list of 5-15 unique, relevant skills (one per task) that would materially help execute those tasks.
@@ -133,7 +139,7 @@ For each proposed skill that does not exist, invoke a sub-agent to create it usi
 - Guardrails that must not be violated
 - At least 2 example scenarios (one success, one failure/edge)
 
-Use the model settings from `agents/model_config.md` and default to `BUILDER_RUNNER` / `BUILDER_MODEL` for skill creation.
+Use the model settings from `agents/options/model_config.md` and default to `BUILDER_RUNNER` / `BUILDER_MODEL` for skill creation.
 
 Codex (if `BUILDER_RUNNER=codex`):
 `codex exec --model "<BUILDER_MODEL>" --full-auto --search -o <last.md> "Open agents/prompts/skill_issue.md and follow instructions. <skill request...>"`

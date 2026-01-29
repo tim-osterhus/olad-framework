@@ -85,8 +85,7 @@ Suggested vocabulary (pick what applies):
 Gates are the *only* automation triggers. They are explicit.
 
 Allowed gates:
-- `INTEGRATION` — run an integration sweep/report after implementing a feature cluster or cross-cutting change
-- `PROMPT` — require a numbered prompt artifact before Builder starts
+- None by default. Optional gates may be installed via `agents/options/` (e.g., Integration).
 
 Rules:
 - If a gate is present, the task card must name the expected artifact + location.
@@ -101,7 +100,7 @@ Rules:
 
 **Complexity:** <Simple|Moderate|Involved|Unknown>
 **Tags:** <TAG1 TAG2 TAG3>
-**Gates:** <NONE|INTEGRATION PROMPT>
+**Gates:** <NONE>
 
 ### Goal:
 - <One sentence objective>
@@ -123,9 +122,8 @@ Rules:
 - [ ] <yes/no check>
 - [ ] Run: `<command>` and confirm: `<expected result>`
 
-### Gate artifacts (only if Gates != NONE):
-- INTEGRATION: Integration Report at: <path>
-- PROMPT: Prompt artifact at: <agents/prompts/tasks/###-slug.md>
+### Prompt artifact (always):
+- Prompt artifact at: <agents/prompts/tasks/###-slug.md>
 
 ### Verification commands (copy/paste):
 - <command 1>
@@ -168,16 +166,12 @@ Run targeted searches:
    3) agents/_start.md or agents/_advisor.md (depending on task)
    4) agents/prompts/builder_cycle.md
 
-### 3) Assign Complexity + Tags + Gates
+### 3) Assign Complexity + Tags + Gates (if enabled)
 - Pick **Complexity** (metadata only): Simple / Moderate / Involved / Unknown.
 - Add **Tags** that describe what changes and where risk lives.
 - Decide **Gates** explicitly (do not infer from Complexity):
-  - Add `INTEGRATION` for cross-cutting changes or feature clusters.
-  - Add `PROMPT` when the task requires a numbered prompt artifact before Builder starts.
+  - Use `INTEGRATION` only if Integration was enabled during customization; otherwise set `**Gates:** NONE`.
 - If Gates != NONE, add the expected artifact locations in the task card.
-
-Integration gating guidance:
-- Add `INTEGRATION` for cross-cutting tasks or feature clusters.
 
 
 ### 4) Plan smallest safe change set

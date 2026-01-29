@@ -9,7 +9,7 @@ Inputs:
 Phase A — Expectations (before looking at diffs deeply):
 1. Activate the **QA & Test Engineer** role (see `agents/roles/qa-test-engineer.md`).
 2. Scan `agents/skills/skills_index.md` and select up to 3 relevant skills to apply.
-3. Read the relevant section of `agents/tasks.md`, builder plan, and any notes.
+3. Read the relevant section of `agents/tasks.md` only. Do not read builder notes, history, or diffs yet.
 4. If `**Gates:** INTEGRATION` is present, read the Integration Report (`agents/runs/<RUN_ID>/integration_report.md` or `agents/integration_report.md`) and fold its risks/notes into expectations.
 5. Write `agents/expectations.md` describing the optimal outcome:
    - Functional behavior, service flows, and UX impacts.
@@ -39,7 +39,7 @@ Phase C — Outcomes:
     - Link to `agents/expectations.md` and whether it was satisfied.
     - Pointer to `agents/quickfix.md` if created.
 14. **Orchestration signal (if supervised):** When completely finished, set `agents/status.md` on a new line by itself:
-   - Success: 
+   - Success:
      ```
      ### QA_COMPLETE
      ```

@@ -49,6 +49,9 @@ Rewrote task card with repo-exact format:
 - [ ] `curl -H "Authorization: Bearer valid-token" http://localhost:8001/query` → 200
 - [ ] `pytest tests/test_auth.py -v` → PASS
 
+**Prompt artifact**:
+- `agents/prompts/tasks/001-add-jwt-token-validation.md`
+
 **Out of scope** (defer to future tasks):
 - OAuth integration
 - User registration/login UI
@@ -124,6 +127,9 @@ Split into 2 separate task cards:
 - [ ] `pytest tests/test_hybrid.py -v` → PASS
 - [ ] Run precision@k report on 50-query test set, compare hybrid vs dense-only
 
+**Prompt artifact**:
+- `agents/prompts/tasks/002-enable-pg-trgm-lexical.md`
+
 **Out of scope**: Reranking (separate task)
 ```
 
@@ -144,6 +150,9 @@ Split into 2 separate task cards:
 - [ ] `curl -X POST http://localhost:8001/query -d '{"query":"testator","rerank_enabled":true}'` → reranked results
 - [ ] `pytest tests/test_reranker.py -v` → PASS
 - [ ] Run precision@k report, compare reranked vs not-reranked
+
+**Prompt artifact**:
+- `agents/prompts/tasks/003-add-reranker-integration.md`
 
 **Out of scope**: Hybrid retrieval (handled in separate task)
 ```
