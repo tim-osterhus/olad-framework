@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.3.0] - 2026-02-01
+
+### Added
+- PowerShell headless templates in `agents/options/orchestrate/orchestrate_options_powershell.md`
+- Shell templates selection (`SHELL_TEMPLATES`) in `agents/options/workflow_config.md`
+- OpenClaw as a first-class runner:
+  - `openclaw` runner support in headless templates
+  - Gateway config flags (`OPENCLAW_GATEWAY_URL`, `OPENCLAW_AGENT_ID`) in `agents/options/workflow_config.md`
+  - OpenClaw docs in `agents/openclaw/` (Bash + PowerShell variants)
+- "All OpenClaw" preset in `agents/options/model_config.md`
+
+### Changed
+- `_customize.md` now asks whether to use Bash or PowerShell templates and wires docs/entrypoints accordingly
+- `_orchestrate.md` now keeps shell-specific command snippets out of the entrypoint (moved into the selected templates file)
+- Troubleshoot option doc now points to the templates file instead of embedding a Bash-only invocation snippet
+- Skill examples updated to avoid Bash-only formatting (shell-agnostic `text` blocks where appropriate)
+
 ## [1.2.0] - 2026-01-28
 
 ### Added
