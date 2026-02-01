@@ -56,7 +56,7 @@ Choose ONE:
   - `export OPENCLAW_GATEWAY_TOKEN="<token>"`
 
 - Or read it locally (same machine) if configured:
-  - `openclaw config get gateway.auth.token --raw`
+  - `openclaw config get gateway.auth.token --json` (parse the `value` field)
 
 4) **Run a minimal `/v1/responses` healthcheck**
 

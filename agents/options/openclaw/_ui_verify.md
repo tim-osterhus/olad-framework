@@ -56,6 +56,21 @@ Write a short checklist of the exact UI behaviors you must verify (3-10 bullets)
 
 ### Step 2: Execute UI verification using OpenClaw capabilities
 
+Important (practical guidance):
+- Some OpenClaw installs expose a `browser.act` tool. If it is flaky/timeouts in your environment, do NOT rely on it for OLAD verification.
+- Prefer using `exec` to drive OpenClaw's CLI browser automation (more deterministic).
+- Prefer a managed browser profile (commonly named `openclaw`) over any "relay" / extension-attached profile.
+- If a relay/extension profile shows no attached tabs (for example "0 tabs"), it cannot reliably automate anything; switch to a managed profile.
+
+Example CLI-driven flow (via `exec`):
+
+```text
+openclaw browser --browser-profile openclaw snapshot --interactive
+openclaw browser --browser-profile openclaw click e1
+```
+
+Note: use the element handles emitted by `snapshot` (for example `e1`, `e2`, ...).
+
 Use the UI/browser tooling available to your OpenClaw session to:
 - Navigate to the relevant pages/flows
 - Reproduce the scenario

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1] - 2026-02-01
+
+### Fixed
+- OpenClaw token retrieval docs/templates no longer rely on `openclaw config get ... --raw`; they now prefer `--json` (parse `value`) with a robust fallback
+- OpenClaw UI verification guidance now explicitly prefers CLI-driven browser automation via `exec` when `browser.act` is unreliable and clarifies managed-profile + `snapshot` element handle usage
+- OpenClaw runner skill no longer suggests a `model: openclaw:<agentId>` convention; it standardizes on `x-openclaw-agent-id` header routing
+
 ## [1.4.0] - 2026-02-01
 
 ### Added

@@ -95,7 +95,7 @@ Inspect first:
 - Ensure the runner knows:
   - `OPENCLAW_GATEWAY_URL` (http base URL)
   - how to authenticate (bearer token or password)
-  - which agent id to target (either `model: openclaw:<agentId>` or header `x-openclaw-agent-id: <agentId>`)
+  - which agent id to target (use header `x-openclaw-agent-id: <agentId>`; do not assume a `model:` prefix convention is supported)
 
 ### 5) Validate with a minimal healthcheck
 - Run a minimal `POST /v1/responses` call.

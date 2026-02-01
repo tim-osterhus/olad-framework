@@ -102,10 +102,44 @@ function Get-OpenClawToken {
   }
 
   $cmd = Get-Command openclaw -ErrorAction SilentlyContinue
-  if ($cmd) { return (& openclaw config get gateway.auth.token --raw).Trim() }
+  if ($cmd) {
+    $out = (& openclaw config get gateway.auth.token --json 2>$null)
+    if (-not [string]::IsNullOrWhiteSpace($out)) {
+      try {
+        $j = $out | ConvertFrom-Json
+        if ($null -ne $j.value -and -not [string]::IsNullOrWhiteSpace([string]$j.value)) { return ([string]$j.value).Trim() }
+      } catch {}
+      return $out.Trim()
+    }
+    $out = (& openclaw config get gateway.auth.token 2>$null)
+    if (-not [string]::IsNullOrWhiteSpace($out)) {
+      try {
+        $j = $out | ConvertFrom-Json
+        if ($null -ne $j.value -and -not [string]::IsNullOrWhiteSpace([string]$j.value)) { return ([string]$j.value).Trim() }
+      } catch {}
+      return $out.Trim()
+    }
+  }
 
   $cmdExe = Get-Command openclaw.exe -ErrorAction SilentlyContinue
-  if ($cmdExe) { return (& openclaw.exe config get gateway.auth.token --raw).Trim() }
+  if ($cmdExe) {
+    $out = (& openclaw.exe config get gateway.auth.token --json 2>$null)
+    if (-not [string]::IsNullOrWhiteSpace($out)) {
+      try {
+        $j = $out | ConvertFrom-Json
+        if ($null -ne $j.value -and -not [string]::IsNullOrWhiteSpace([string]$j.value)) { return ([string]$j.value).Trim() }
+      } catch {}
+      return $out.Trim()
+    }
+    $out = (& openclaw.exe config get gateway.auth.token 2>$null)
+    if (-not [string]::IsNullOrWhiteSpace($out)) {
+      try {
+        $j = $out | ConvertFrom-Json
+        if ($null -ne $j.value -and -not [string]::IsNullOrWhiteSpace([string]$j.value)) { return ([string]$j.value).Trim() }
+      } catch {}
+      return $out.Trim()
+    }
+  }
 
   throw "OpenClaw token not available. Set OPENCLAW_GATEWAY_TOKEN or install openclaw/openclaw.exe."
 }

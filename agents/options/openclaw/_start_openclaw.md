@@ -11,9 +11,9 @@ This is an OpenClaw-enhanced wrapper around the normal Builder entrypoint. It ex
 
 2) Use OpenClaw capabilities when helpful:
    - If implementation requires interacting with a UI or reproducing a UI-only bug, use your available UI/browser tooling.
+   - If the OpenClaw `browser.act` tool is unreliable in your environment, prefer using `exec` to drive OpenClaw's CLI browser automation (example: `openclaw browser --browser-profile openclaw snapshot --interactive`).
    - Capture evidence when it materially reduces ambiguity (screenshots, URLs, console errors).
 
 3) Keep OLAD contracts intact:
    - Write required artifacts exactly as `agents/_start.md` requires (prompt artifacts, historylog entries, `agents/status.md` flags, etc.).
    - Do not invent new status flags.
-

@@ -68,7 +68,8 @@ The orchestrator templates will use either:
 1) An environment variable (current PowerShell session):
    - `$env:OPENCLAW_GATEWAY_TOKEN="..."`
 2) Or (preferred) auto-read the token if `openclaw` / `openclaw.exe` is on PATH:
-   - `openclaw config get gateway.auth.token --raw`
+   - `openclaw config get gateway.auth.token --json` (parse the `value` field)
+   - fallback: `openclaw config get gateway.auth.token` (some builds print the token directly)
 
 ## 4) Select OpenClaw per cycle (model_config)
 

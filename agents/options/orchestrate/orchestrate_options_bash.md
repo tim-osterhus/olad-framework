@@ -131,13 +131,87 @@ get_openclaw_token() {
   fi
 
   if command -v openclaw >/dev/null 2>&1; then
-    openclaw config get gateway.auth.token --raw
-    return $?
+    local out token
+    out="$(openclaw config get gateway.auth.token --json 2>/dev/null)" || out=""
+    if [ -n "$out" ]; then
+      token="$(python3 -c 'import json,sys
+try:
+  p=json.load(sys.stdin)
+except Exception:
+  raise SystemExit(1)
+v=p.get("value") if isinstance(p, dict) else None
+if isinstance(v, str) and v.strip():
+  sys.stdout.write(v.strip())
+  raise SystemExit(0)
+raise SystemExit(1)
+' 2>/dev/null <<<"$out")" || token=""
+      if [ -n "$token" ]; then
+        printf '%s' "$token"
+        return 0
+      fi
+    fi
+
+    # Fallback: some installs print the token directly (or emit JSON without --json).
+    out="$(openclaw config get gateway.auth.token 2>/dev/null)" || return $?
+    token="$(python3 -c 'import json,sys
+try:
+  p=json.load(sys.stdin)
+except Exception:
+  raise SystemExit(1)
+v=p.get("value") if isinstance(p, dict) else None
+if isinstance(v, str) and v.strip():
+  sys.stdout.write(v.strip())
+  raise SystemExit(0)
+raise SystemExit(1)
+' 2>/dev/null <<<"$out")" || token=""
+    if [ -n "$token" ]; then
+      printf '%s' "$token"
+      return 0
+    fi
+    printf '%s' "$(trim "$out")"
+    return 0
   fi
 
   if command -v openclaw.exe >/dev/null 2>&1; then
-    openclaw.exe config get gateway.auth.token --raw
-    return $?
+    local out token
+    out="$(openclaw.exe config get gateway.auth.token --json 2>/dev/null)" || out=""
+    if [ -n "$out" ]; then
+      token="$(python3 -c 'import json,sys
+try:
+  p=json.load(sys.stdin)
+except Exception:
+  raise SystemExit(1)
+v=p.get("value") if isinstance(p, dict) else None
+if isinstance(v, str) and v.strip():
+  sys.stdout.write(v.strip())
+  raise SystemExit(0)
+raise SystemExit(1)
+' 2>/dev/null <<<"$out")" || token=""
+      if [ -n "$token" ]; then
+        printf '%s' "$token"
+        return 0
+      fi
+    fi
+
+    # Fallback: some installs print the token directly (or emit JSON without --json).
+    out="$(openclaw.exe config get gateway.auth.token 2>/dev/null)" || return $?
+    token="$(python3 -c 'import json,sys
+try:
+  p=json.load(sys.stdin)
+except Exception:
+  raise SystemExit(1)
+v=p.get("value") if isinstance(p, dict) else None
+if isinstance(v, str) and v.strip():
+  sys.stdout.write(v.strip())
+  raise SystemExit(0)
+raise SystemExit(1)
+' 2>/dev/null <<<"$out")" || token=""
+    if [ -n "$token" ]; then
+      printf '%s' "$token"
+      return 0
+    fi
+    printf '%s' "$(trim "$out")"
+    return 0
   fi
 
   echo "OpenClaw token not available. Set OPENCLAW_GATEWAY_TOKEN or install openclaw/openclaw.exe." >&2
