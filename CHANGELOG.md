@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.4.0] - 2026-02-01
+
+### Added
+- OpenClaw Supervisor entrypoint: `agents/_supervisor.md` (session manager; no repo writes; auto-remediation ladder + auto-resume)
+- OpenClaw UI verification entrypoint: `agents/options/openclaw/_ui_verify.md`
+- OpenClaw-enhanced wrappers for Supervisor-driven sessions:
+  - Builder: `agents/options/openclaw/_start_openclaw.md`
+  - QA: `agents/options/openclaw/_check_openclaw.md`
+- OpenClaw mode flag (`OPENCLAW_MODE`) in `agents/options/workflow_config.md`
+- OpenClaw runner skill: `agents/skills/openclaw-olad-runner/` (Gateway setup + troubleshooting)
+- `_customize.md` can now install OpenClaw Supervisor mode behavior (including patching the Orchestrator blocker flow to stop with a Supervisor-facing summary instead of external escalation)
+
+### Changed
+- Moved the OpenClaw adapter pack to `agents/options/openclaw/` (was `agents/openclaw/`)
+- Updated docs/templates to reference the new OpenClaw paths
+- Revamp guide updated to reflect the new OpenClaw pack location and upgrade/migration expectations
+
+## [1.3.1] - 2026-02-01
+
+### Fixed
+- Logical fixes: OpenClaw QA message templates now reference the correct orchestration statuses (`### QA_COMPLETE`, `### QUICKFIX_NEEDED`, `### BLOCKED`) and explicitly require writing `agents/status.md`
+- Logical fixes: QA and Doublecheck entrypoints now explicitly instruct setting `agents/status.md` to `### BLOCKED` when stopping on a blocker
+- Logical fixes: clarified that OpenClaw `*_MODEL` values must match your Gateway's accepted model id(s) (the `openclaw` alias is not guaranteed)
+- Removed stale internal reference to an OpenClaw notes file that is not shipped in the framework repo
+- Minor doc link fixes for OpenClaw + PowerShell paths
+
 ## [1.3.0] - 2026-02-01
 
 ### Added
@@ -8,7 +34,7 @@
 - OpenClaw as a first-class runner:
   - `openclaw` runner support in headless templates
   - Gateway config flags (`OPENCLAW_GATEWAY_URL`, `OPENCLAW_AGENT_ID`) in `agents/options/workflow_config.md`
-  - OpenClaw docs in `agents/openclaw/` (Bash + PowerShell variants)
+  - OpenClaw docs (Bash + PowerShell variants)
 - "All OpenClaw" preset in `agents/options/model_config.md`
 
 ### Changed

@@ -94,6 +94,10 @@ The detailed procedure is in `agents/prompts/qa_cycle.md`. The above sequence en
 - `agents/expectations.md` must be written before inspecting implementation.
 - Test results should include the exact commands run and outcomes.
 - `agents/historylog.md` must include a QA entry (success or gaps), prepended at the top (newest first).
+- If you must stop due to a blocker, set `agents/status.md` to:
+  ```
+  ### BLOCKED
+  ```
 
 ## Safety Reminders
 
@@ -106,4 +110,4 @@ The detailed procedure is in `agents/prompts/qa_cycle.md`. The above sequence en
 - Tests require setup not documented.
 - You encounter blocking errors.
 
-Log the blocker and stop. Do not guess or skip validation.
+Log the blocker and stop. Do not guess or skip validation. Ensure `agents/status.md` is set to `### BLOCKED` so orchestration can detect it.

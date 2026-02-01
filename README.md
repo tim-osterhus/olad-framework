@@ -171,5 +171,7 @@ Every session prepends to the top of `agents/historylog.md` (newest first) with 
 - `quickstart.md` — step-by-step usage guide
 - `agents/_customize.md` — one-time onboarding prompt
 - `agents/_orchestrate.md` — orchestration entrypoint
+- `agents/_supervisor.md` — OpenClaw remote supervisor (optional)
 - `agents/options/` — optional feature packets, configs, and headless templates
+- `agents/options/openclaw/` — OpenClaw adapter pack (runner integration + message templates)
 - `OLAD_framework.md` — detailed orchestration model and contracts

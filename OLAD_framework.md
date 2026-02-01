@@ -174,12 +174,13 @@ Stop and signal blockers when:
 ## 13) Files to know
 
 - Entry points: `agents/_integrate.md`, `agents/_start.md`, `agents/_check.md`, `agents/_hotfix.md`, `agents/_doublecheck.md`, `agents/_advisor.md`, `agents/_orchestrate.md` (optional: `agents/_troubleshoot.md` when enabled)
+- OpenClaw Supervisor (optional): `agents/_supervisor.md`
 - Tasks: `agents/tasks.md`, `agents/tasksbacklog.md`, `agents/tasksarchive.md`
 - Prompt artifacts: `agents/prompts/tasks/`, `agents/prompts/run_prompt.md`
 - QA smoketest artifacts (optional): `agents/prompts/tests/` (enabled only if installed during customization)
 - Signals/logs: `agents/status.md`, `agents/quickfix.md`, `agents/expectations.md`, `agents/historylog.md`
 - Options/config: `agents/options/`, `agents/options/model_config.md`, `agents/options/workflow_config.md`, `agents/options/permission/perm_config.md`, `agents/options/orchestrate/orchestrate_options_bash.md`
-- OpenClaw runner integration (optional): `agents/openclaw/`
+- OpenClaw runner integration (optional): `agents/options/openclaw/`
 - Skills: `agents/skills/skills_index.md`, `agents/skills/**/SKILL.md`, `agents/skills/**/EXAMPLES.md`
 
 ---

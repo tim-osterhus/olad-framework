@@ -13,7 +13,7 @@ It is intentionally kept out of `agents/_orchestrate.md` to keep the Runner entr
   - Optional (OpenClaw runner): `curl` + `python3` and either:
     - `openclaw`/`openclaw.exe` available on PATH (to read the Gateway token), OR
     - `OPENCLAW_GATEWAY_TOKEN` exported in your shell
-  - OpenClaw runner requires the Gateway `/v1/responses` endpoint enabled (see `agents/openclaw/runner_integration_bash.md`)
+  - OpenClaw runner requires the Gateway `/v1/responses` endpoint enabled (see `agents/options/openclaw/runner_integration_bash.md`)
 
 ## Create a run folder + run a cycle (bash)
 
@@ -89,6 +89,7 @@ parse_workflow_config() {
         INTEGRATION_TARGET) INTEGRATION_TARGET="$value" ;;
         HEADLESS_PERMISSIONS) HEADLESS_PERMISSIONS="$value" ;;
         SHELL_TEMPLATES) SHELL_TEMPLATES="$value" ;;
+        OPENCLAW_MODE) OPENCLAW_MODE="$value" ;;
         OPENCLAW_GATEWAY_URL) OPENCLAW_GATEWAY_URL="$value" ;;
         OPENCLAW_AGENT_ID) OPENCLAW_AGENT_ID="$value" ;;
         *) echo "Unknown key in workflow_config: $key" >&2; return 1 ;;

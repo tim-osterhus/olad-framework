@@ -107,7 +107,7 @@ Note: when running QA or Doublecheck with Codex, enable `--search` so headless Q
 3) Ensure tool availability:
    - `codex --version`
    - If using Claude Code for QA: `claude -v`
-   - If using OpenClaw as a runner: confirm the Gateway is reachable (see `agents/openclaw/runner_integration_bash.md`)
+   - If using OpenClaw as a runner: confirm the Gateway is reachable (see `agents/options/openclaw/runner_integration_bash.md` or `agents/options/openclaw/runner_integration_powershell.md`)
    - For diagnostics PR: `gh --version` and `gh auth status`
 4) Confirm task sources:
    - `agents/tasks.md` exists (may be empty placeholder)

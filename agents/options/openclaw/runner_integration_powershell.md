@@ -1,4 +1,4 @@
-# OpenClaw Runner Integration (Bash/WSL)
+# OpenClaw Runner Integration (PowerShell)
 
 This repo can treat **OpenClaw** as a first-class runner for any OLAD cycle
 (Builder / QA / Hotfix / Doublecheck / Integration), the same way it can use
@@ -8,7 +8,7 @@ Codex CLI or Claude Code.
 
 The headless runner templates in:
 
-- `agents/options/orchestrate/orchestrate_options_bash.md`
+- `agents/options/orchestrate/orchestrate_options_powershell.md`
 
 support a runner value of `openclaw`. When selected, the templates call the
 OpenClaw **Gateway** OpenResponses-compatible endpoint:
@@ -18,14 +18,13 @@ OpenClaw **Gateway** OpenResponses-compatible endpoint:
 and write:
 
 - `<cycle>.stdout.log` (assistant text)
-- `<cycle>.stderr.log` (curl/python errors)
+- `<cycle>.stderr.log` (HTTP/PowerShell errors)
 - `<cycle>.openclaw.response.json` (raw JSON response for debugging)
 
 ## Prereqs
 
-- `curl`
-- `python3`
-- OpenClaw Gateway reachable from the shell running orchestration
+- PowerShell 5.1 or 7
+- OpenClaw Gateway reachable from the machine/shell running orchestration
 
 ## 1) Enable the OpenResponses endpoint
 
@@ -56,9 +55,8 @@ Edit `agents/options/workflow_config.md` (commented `## KEY=value` lines):
 
 Notes:
 
-- If orchestration runs in WSL and OpenClaw runs on the Windows host, you may
-  need to set `OPENCLAW_GATEWAY_URL` to a host-reachable address instead of
-  `127.0.0.1`.
+- If orchestration runs on Windows but OpenClaw runs elsewhere, you may need to
+  set `OPENCLAW_GATEWAY_URL` to a LAN-accessible address instead of `127.0.0.1`.
 - `OPENCLAW_AGENT_ID` selects which OpenClaw agent configuration/policy to use.
 
 ## 3) Provide the Gateway token (shell-side)
@@ -67,8 +65,8 @@ Do NOT commit tokens to this repo.
 
 The orchestrator templates will use either:
 
-1) An environment variable:
-   - `export OPENCLAW_GATEWAY_TOKEN="..."`
+1) An environment variable (current PowerShell session):
+   - `$env:OPENCLAW_GATEWAY_TOKEN="..."`
 2) Or (preferred) auto-read the token if `openclaw` / `openclaw.exe` is on PATH:
    - `openclaw config get gateway.auth.token --raw`
 
@@ -78,14 +76,14 @@ Edit `agents/options/model_config.md`:
 
 - Set any `*_RUNNER` to `openclaw`.
 - Set the corresponding `*_MODEL` to the string you want passed as `model` to
-  `/v1/responses` (often `openclaw`, unless your Gateway accepts provider model
-  ids directly).
+  `/v1/responses` (typically a Gateway/provider model id; some installs may also
+  support an alias like `openclaw`).
 
 Example (QA via OpenClaw):
 
 ```text
 QA_RUNNER=openclaw
-QA_MODEL=openclaw
+QA_MODEL=openai-codex/gpt-5.2
 ```
 
 ## Troubleshooting

@@ -131,19 +131,19 @@ DOUBLECHECK_MODEL=opus
 Use this if you want OpenClaw to run every cycle (Builder/QA/etc.).
 
 INTEGRATION_RUNNER=openclaw
-INTEGRATION_MODEL=openclaw
+INTEGRATION_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 
 BUILDER_RUNNER=openclaw
-BUILDER_MODEL=openclaw
+BUILDER_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 
 QA_RUNNER=openclaw
-QA_MODEL=openclaw
+QA_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 
 HOTFIX_RUNNER=openclaw
-HOTFIX_MODEL=openclaw
+HOTFIX_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 
 DOUBLECHECK_RUNNER=openclaw
-DOUBLECHECK_MODEL=openclaw
+DOUBLECHECK_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 
 ### 5) Custom
 
@@ -152,7 +152,7 @@ DOUBLECHECK_MODEL=openclaw
   - Codex: a model id (example: `gpt-5.2-codex`)
   - Claude: a model alias/id (example: `sonnet`)
   - OpenClaw: a model string passed to OpenClaw's OpenResponses endpoint (`/v1/responses`)
-    (often `openclaw`, or a provider model id if your Gateway supports it)
+    (typically a Gateway/provider model id; some installs may also support an alias like `openclaw`)
 
 ---
 
@@ -191,9 +191,9 @@ request.
 
 If you are unsure what to put here, start with:
 
-- openclaw
+- a model id your OpenClaw Gateway accepts (example: `openai-codex/gpt-5.2`)
 
-Then adjust based on what your OpenClaw Gateway accepts.
+If your Gateway supports an alias like `openclaw`, you can use that instead.
 
 ---
 
@@ -201,4 +201,4 @@ Then adjust based on what your OpenClaw Gateway accepts.
 
 - Codex: `codex -m <model> "say hi"` (or run a trivial `codex exec --model <model> ...`)
 - Claude: `claude --model <model-or-alias> -p "say hi"`
-- OpenClaw: `openclaw agent --message "say hi" --json` (or see `agents/openclaw/runner_integration_bash.md`)
+- OpenClaw: `openclaw agent --message "say hi" --json` (or see `agents/options/openclaw/runner_integration_bash.md`)

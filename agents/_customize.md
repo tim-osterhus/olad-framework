@@ -57,7 +57,7 @@ Ask the user which model preset they want for the agentic cycles, then apply it 
 - `agents/options/model_config.md`
 
 Ask:
-- Which preset: Default / Default Performance / All Codex / All Claude / Custom?
+- Which preset: Default / Default Performance / All Codex / All Claude / All OpenClaw / Custom?
 - If Custom: model ids for Integration, Builder, QA, Hotfix, Doublecheck.
 
 For preset blocks and known-good model ids, see:
@@ -146,16 +146,16 @@ Then:
 - Wire docs/entrypoints to the selected templates by making minimal, mechanical reference edits:
   - If Bash:
     - Use `agents/options/orchestrate/orchestrate_options_bash.md`
-    - Use `agents/openclaw/*_bash.md` docs (if using OpenClaw)
+    - Use `agents/options/openclaw/*_bash.md` docs (if using OpenClaw)
   - If PowerShell:
     - Use `agents/options/orchestrate/orchestrate_options_powershell.md`
-    - Use `agents/openclaw/*_powershell.md` docs (if using OpenClaw)
+    - Use `agents/options/openclaw/*_powershell.md` docs (if using OpenClaw)
 
 Wiring targets (update references to point at the selected shell variant):
 - `agents/_orchestrate.md` (headless templates pointer)
 - `quickstart.md` (headless templates pointer)
 - `OLAD_framework.md` (templates pointer + files-to-know list)
-- `agents/openclaw/README.md` and any OpenClaw links (`runner_integration_*`, `quickstart_*`, `message_templates_*`)
+- `agents/options/openclaw/README.md` and any OpenClaw links (`runner_integration_*`, `quickstart_*`, `message_templates_*`)
 - `agents/options/model_config.md` (OpenClaw sanity-check link)
 
 Do not list both shell variants in user-facing docs; reference only the selected one.
@@ -171,6 +171,37 @@ Ask the user:
 If yes, templates live in the shell-specific file referenced by `agents/_orchestrate.md`.
 
 No repo edits are required for this step.
+
+## Step 2.12: OpenClaw Supervisor Mode (Optional)
+
+This controls whether the OpenClaw Supervisor entrypoint is kept as a first-class entrypoint.
+
+Ask the user:
+- Do you want OpenClaw Supervisor mode enabled? (On/Off)
+
+Then:
+- Set `## OPENCLAW_MODE=<On|Off>` in `agents/options/workflow_config.md`.
+- If On:
+  - Ensure `agents/_supervisor.md` exists in `agents/` (if it was previously moved out, move it back).
+  - Patch `agents/_orchestrate.md` (minimal, mechanical):
+    - Preflight: remove any requirement for `gh` (GitHub CLI) and any "diagnostics PR" preflight checks.
+    - Blocker handler: replace the "Diagnostics PR + @codex" behavior with "Supervisor escalation":
+      - Keep the local diagnostics bundle creation (folder + snapshots).
+      - Remove all steps that:
+        - create a branch
+        - commit/push
+        - open a PR
+        - tag external services (for example `@codex`)
+      - End the Orchestrator's output with a single Supervisor-facing summary that includes:
+        - where it blocked (builder / QA / hotfix / doublecheck / integration)
+        - why it blocked
+        - diagnostics bundle path
+        - run folder path
+      - Stop.
+    - (The Supervisor will spawn UI verification / Troubleshooter sessions as needed.)
+- If Off:
+  - Move `agents/_supervisor.md` to `agents/options/openclaw/_supervisor.md` so it does not appear as a default entrypoint.
+  - Do not add Supervisor references to user-facing docs.
 
 ## Step 3: Write the Spec Sheet
 

@@ -14,7 +14,7 @@ It is intentionally kept out of `agents/_orchestrate.md` to keep the Runner entr
   - Optional (OpenClaw runner): either
     - `openclaw` / `openclaw.exe` on PATH (to read the Gateway token), OR
     - `OPENCLAW_GATEWAY_TOKEN` set in your environment
-- OpenClaw runner requires the Gateway `/v1/responses` endpoint enabled (see `agents/openclaw/runner_integration_powershell.md`)
+- OpenClaw runner requires the Gateway `/v1/responses` endpoint enabled (see `agents/options/openclaw/runner_integration_powershell.md`)
 
 ## Create a run folder + run a cycle (PowerShell)
 

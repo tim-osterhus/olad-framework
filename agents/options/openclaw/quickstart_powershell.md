@@ -5,7 +5,7 @@ This is a practical way to run OLAD cycles through OpenClaw (web UI, Telegram, o
 
 If you want OpenClaw to be a first-class runner (selected via `agents/options/model_config.md`
 and launched from the headless orchestrator templates), start with:
-- `agents/openclaw/runner_integration_powershell.md`
+- `agents/options/openclaw/runner_integration_powershell.md`
 
 ## Assumptions
 
@@ -56,4 +56,3 @@ At minimum:
 - Paste OpenClaw's final report into the relevant run log or PR body.
 - Ensure any files the workflow expects (for example prompt artifacts, expectations updates,
   historylog updates) are present in the repo.
-

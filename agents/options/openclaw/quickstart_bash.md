@@ -5,7 +5,7 @@ or CLI).
 
 If you want OpenClaw to be a first-class runner (selected via
 `agents/options/model_config.md` and launched from the headless orchestrator
-templates), start with `agents/openclaw/runner_integration_bash.md` instead.
+templates), start with `agents/options/openclaw/runner_integration_bash.md` instead.
 
 ## Assumptions
 

@@ -79,4 +79,8 @@ If you use a runner or orchestration tool, update model assignments in `agents/o
 For manual runs, change the model in your agentic tool or CLI before starting a session.
 
 If you want to use OpenClaw as a first-class runner, see:
-- `agents/openclaw/runner_integration_bash.md` (this repo defaults to Bash/WSL templates; you can switch during customization)
+- `agents/options/openclaw/runner_integration_bash.md` (this repo defaults to Bash/WSL templates; you can switch during customization)
+
+If you want OpenClaw remote control + UI verification (Telegram/web UI supervising OLAD runs), see:
+- `agents/_supervisor.md`
+- `agents/options/openclaw/README.md`
