@@ -41,7 +41,7 @@ Maximum:
      - `## HEADLESS_PERMISSIONS=<Normal|Elevated|Maximum>`
 
 2) Apply to the headless templates:
-   - Edit `agents/options/orchestrate/orchestrate_options.md` so that:
+   - Edit the headless templates file referenced in `agents/_orchestrate.md` so that:
      - Codex commands include the matching permission flags.
      - Claude commands include the matching permission flags.
 

@@ -36,7 +36,7 @@ Default LibreChat UI includes features designed for online use.
    - Commented out Agent Marketplace button
    - Commented out Web Search toggle
 3. Rebuilt container:
-   ```bash
+   ```text
    docker compose -f docker-compose.librechat.yml up -d --build
    ```
 4. Verified in UI: Composer shows only "Attach Files" and "File Search"
@@ -79,13 +79,13 @@ Custom feature developed on top of old upstream commit. Upstream changed signifi
 
 **Fix**:
 1. Fetched upstream in submodule:
-   ```bash
+   ```text
    cd librechat
    git fetch upstream
    git checkout main
    ```
 2. Created merge branch:
-   ```bash
+   ```text
    git checkout -b merge-v0.7.2-with-context-monitor
    git merge upstream/v0.7.2
    ```
@@ -95,7 +95,7 @@ Custom feature developed on top of old upstream commit. Upstream changed signifi
    - Conflict in `package.json` (dependency versions)
    - Took upstream versions, verified context monitor still works
 4. Rebuilt and tested:
-   ```bash
+   ```text
    cd ..
    docker compose -f docker-compose.librechat.yml up -d --build
    ```

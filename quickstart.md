@@ -37,7 +37,7 @@ Optional: during customization, you can choose whether QA is allowed to request 
 1) Start an orchestration session at repo root.
 2) Say: `Open agents/_orchestrate.md and follow instructions.`
 3) The Orchestrator will run Builder → QA → (optional) Quickfix, plus any optional steps installed during customization, and archive completed tasks.
-   - WSL headless templates live in `agents/options/orchestrate/orchestrate_options.md`.
+   - Headless templates live in `agents/options/orchestrate/orchestrate_options_bash.md` (this repo defaults to Bash; you can switch during customization).
 
 ## 5) Manual Workflow (No Orchestration)
 
@@ -77,3 +77,6 @@ Doublecheck cycle:
 
 If you use a runner or orchestration tool, update model assignments in `agents/options/model_config.md`.
 For manual runs, change the model in your agentic tool or CLI before starting a session.
+
+If you want to use OpenClaw as a first-class runner, see:
+- `agents/openclaw/runner_integration_bash.md` (this repo defaults to Bash/WSL templates; you can switch during customization)

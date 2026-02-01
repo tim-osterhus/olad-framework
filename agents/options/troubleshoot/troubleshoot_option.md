@@ -63,11 +63,6 @@ Make minimal, mechanical edits:
 
 ## Optional: Headless invocation template
 
-If you store run logs under `agents/runs/<RUN_ID>/`, invoke Troubleshooter like:
-
-```bash
-codex exec --model gpt-5.2-codex --full-auto -o "$RUN_DIR/troubleshoot.last.md" \
-  "Open agents/_troubleshoot.md and follow instructions. For context: \"<orchestrator blocker summary here>\""
-```
+See the Troubleshooter example in your headless templates file (the one referenced by `agents/_orchestrate.md`).
 
 If your runner supports an explicit "xhigh reasoning" flag/setting, enable it for this run.

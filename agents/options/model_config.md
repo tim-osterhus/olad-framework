@@ -126,10 +126,33 @@ HOTFIX_MODEL=opus
 DOUBLECHECK_RUNNER=claude
 DOUBLECHECK_MODEL=opus
 
-### 4) Custom
+### 4) All OpenClaw
 
-- Set each `*_RUNNER` to `codex` or `claude`.
-- Set each `*_MODEL` to a model id (Codex) or a model id/alias (Claude).
+Use this if you want OpenClaw to run every cycle (Builder/QA/etc.).
+
+INTEGRATION_RUNNER=openclaw
+INTEGRATION_MODEL=openclaw
+
+BUILDER_RUNNER=openclaw
+BUILDER_MODEL=openclaw
+
+QA_RUNNER=openclaw
+QA_MODEL=openclaw
+
+HOTFIX_RUNNER=openclaw
+HOTFIX_MODEL=openclaw
+
+DOUBLECHECK_RUNNER=openclaw
+DOUBLECHECK_MODEL=openclaw
+
+### 5) Custom
+
+- Set each `*_RUNNER` to `codex`, `claude`, or `openclaw`.
+- Set each `*_MODEL` to:
+  - Codex: a model id (example: `gpt-5.2-codex`)
+  - Claude: a model alias/id (example: `sonnet`)
+  - OpenClaw: a model string passed to OpenClaw's OpenResponses endpoint (`/v1/responses`)
+    (often `openclaw`, or a provider model id if your Gateway supports it)
 
 ---
 
@@ -160,9 +183,22 @@ Claude Code supports model **aliases** (e.g. `sonnet`, `opus`) and full model na
 
 If a full id stops working, prefer using `sonnet`/`opus` aliases unless you need a pinned version.
 
+## OpenClaw model strings
+
+OpenClaw is a runner that sits behind a local Gateway. For OpenClaw cycles, OLAD
+passes your `*_MODEL` string as the `model` field to the Gateway `/v1/responses`
+request.
+
+If you are unsure what to put here, start with:
+
+- openclaw
+
+Then adjust based on what your OpenClaw Gateway accepts.
+
 ---
 
 ## Sanity checks
 
 - Codex: `codex -m <model> "say hi"` (or run a trivial `codex exec --model <model> ...`)
 - Claude: `claude --model <model-or-alias> -p "say hi"`
+- OpenClaw: `openclaw agent --message "say hi" --json` (or see `agents/openclaw/runner_integration_bash.md`)

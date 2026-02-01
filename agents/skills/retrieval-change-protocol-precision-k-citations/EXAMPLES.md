@@ -74,7 +74,7 @@ MAX_CHUNK_SIZE=256 was too conservative. Statutes often 400-600 tokens.
 **Fix**:
 1. Changed `rag_api/config.py`: MAX_CHUNK_SIZE = 512
 2. Ran backfill on sample tenant collection (tenant_demo):
-   ```bash
+   ```text
    python scripts/backfill_embeddings.py --tenant demo --max-chunk 512
    ```
 3. Ran 5 test queries with citation spot-check:

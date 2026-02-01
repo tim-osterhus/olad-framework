@@ -134,13 +134,41 @@ If no:
 - Do not install `agents/_troubleshoot.md`.
 - Do not add Troubleshooter behavior to `agents/_orchestrate.md`.
 
-## Step 2.10: Orchestrator Templates (Optional)
+## Step 2.10: Shell Templates (Required)
 
 Ask the user:
-- Will you run orchestration headlessly from WSL? (yes/no)
+- Which shell should OLAD use for all copy/paste command templates?
+  - Bash/WSL (default)
+  - PowerShell (Windows PowerShell 5.1 / PowerShell 7)
 
-If yes, templates live in:
-- `agents/options/orchestrate/orchestrate_options.md`
+Then:
+- Set `## SHELL_TEMPLATES=<Bash|PowerShell>` in `agents/options/workflow_config.md`.
+- Wire docs/entrypoints to the selected templates by making minimal, mechanical reference edits:
+  - If Bash:
+    - Use `agents/options/orchestrate/orchestrate_options_bash.md`
+    - Use `agents/openclaw/*_bash.md` docs (if using OpenClaw)
+  - If PowerShell:
+    - Use `agents/options/orchestrate/orchestrate_options_powershell.md`
+    - Use `agents/openclaw/*_powershell.md` docs (if using OpenClaw)
+
+Wiring targets (update references to point at the selected shell variant):
+- `agents/_orchestrate.md` (headless templates pointer)
+- `quickstart.md` (headless templates pointer)
+- `OLAD_framework.md` (templates pointer + files-to-know list)
+- `agents/openclaw/README.md` and any OpenClaw links (`runner_integration_*`, `quickstart_*`, `message_templates_*`)
+- `agents/options/model_config.md` (OpenClaw sanity-check link)
+
+Do not list both shell variants in user-facing docs; reference only the selected one.
+
+If the user later switches shells, they can:
+- Update `## SHELL_TEMPLATES=...` and rerun this wiring step (or do the same mechanical reference swap by hand).
+
+## Step 2.11: Orchestrator Templates (Optional)
+
+Ask the user:
+- Will you run orchestration headlessly? (yes/no)
+
+If yes, templates live in the shell-specific file referenced by `agents/_orchestrate.md`.
 
 No repo edits are required for this step.
 

@@ -6,7 +6,7 @@
 - `agents/options/` option packets (integrate, troubleshoot, orchestrate, permission)
 - No-manual QA option packet (`agents/options/no-manual/`) with Quick/Thorough smoketest modes (opt-in)
 - Headless permissions selection (`HEADLESS_PERMISSIONS`) in `agents/options/workflow_config.md`
-- WSL headless templates in `agents/options/orchestrate/orchestrate_options.md`
+- Bash/WSL headless templates in `agents/options/orchestrate/orchestrate_options_bash.md`
 - Safe, block-scoped parsing for `agents/options/model_config.md` in WSL templates
 
 ### Changed

@@ -26,6 +26,8 @@ The framework defines a small set of agent entrypoints and artifacts:
 
 Builder runs create and consume prompt artifacts by default, and every outcome is recorded at the top of `agents/historylog.md` (newest first). Orchestration uses `agents/status.md` as the sole signaling file.
 
+Per-cycle runners (Codex CLI / Claude Code / OpenClaw) and model choices are configured in `agents/options/model_config.md`.
+
 Operational spec: see `OLAD_framework.md`.
 
 ## Why It’s Useful

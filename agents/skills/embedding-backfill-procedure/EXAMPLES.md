@@ -27,17 +27,12 @@ Embedding parameters changed but existing embeddings not updated.
 
 **Fix**:
 1. Backed up tenant collection:
-   ```bash
+   ```text
    pg_dump -t tenant_demo_chunks > backups/tenant_demo_before_backfill.sql
    ```
 2. Ran backfill script with recorded settings:
-   ```bash
-   python scripts/backfill_embeddings.py \
-     --tenant demo \
-     --max-chunk 512 \
-     --overlap 50 \
-     --model nomic-embed-text-v1.5 \
-     --batch-size 32
+   ```text
+   python scripts/backfill_embeddings.py --tenant demo --max-chunk 512 --overlap 50 --model nomic-embed-text-v1.5 --batch-size 32
    ```
 3. Monitored progress (script logs):
    - 1,234 documents processed
@@ -96,13 +91,8 @@ DB backup didn't include embeddings table (was excluded to reduce backup size). 
    -- Result: 45,678 (should be 0)
    ```
 2. Ran backfill on global corpus:
-   ```bash
-   python scripts/backfill_embeddings.py \
-     --corpus global_law \
-     --max-chunk 512 \
-     --model nomic-embed-text-v1.5 \
-     --batch-size 64 \
-     --resume-from-checkpoint  # In case of interruption
+   ```text
+   python scripts/backfill_embeddings.py --corpus global_law --max-chunk 512 --model nomic-embed-text-v1.5 --batch-size 64 --resume-from-checkpoint
    ```
 3. Monitored (long-running):
    - 45,678 chunks to embed

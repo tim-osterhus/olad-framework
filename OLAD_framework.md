@@ -136,13 +136,14 @@ The Orchestrator (`agents/_orchestrate.md`) runs the full loop:
 Optional cycles (e.g., Integration) are installed into `agents/_orchestrate.md` during customization based on selected options.
 
 Models and runners are configured in `agents/options/model_config.md`.
-Headless permissions are configured in `agents/options/workflow_config.md` and applied by the headless templates in `agents/options/orchestrate/orchestrate_options.md`.
+Headless permissions are configured in `agents/options/workflow_config.md` and applied by the headless templates in `agents/options/orchestrate/orchestrate_options_bash.md`.
 Orchestrator behavior is configured during customization via `agents/options/`.
 
 Preset options:
 - Default: Codex for Integration/Builder/Hotfix, Claude for QA/Doublecheck.
 - All Codex: Codex for all cycles.
 - All Claude: Claude for all cycles.
+- All OpenClaw: OpenClaw for all cycles.
 - Custom: per-cycle runner + model ids.
 Performance variants: each preset can be upgraded to higher-reasoning models/settings via `agents/options/model_config.md`.
 
@@ -177,7 +178,8 @@ Stop and signal blockers when:
 - Prompt artifacts: `agents/prompts/tasks/`, `agents/prompts/run_prompt.md`
 - QA smoketest artifacts (optional): `agents/prompts/tests/` (enabled only if installed during customization)
 - Signals/logs: `agents/status.md`, `agents/quickfix.md`, `agents/expectations.md`, `agents/historylog.md`
-- Options/config: `agents/options/`, `agents/options/model_config.md`, `agents/options/workflow_config.md`, `agents/options/permission/perm_config.md`, `agents/options/orchestrate/orchestrate_options.md`
+- Options/config: `agents/options/`, `agents/options/model_config.md`, `agents/options/workflow_config.md`, `agents/options/permission/perm_config.md`, `agents/options/orchestrate/orchestrate_options_bash.md`
+- OpenClaw runner integration (optional): `agents/openclaw/`
 - Skills: `agents/skills/skills_index.md`, `agents/skills/**/SKILL.md`, `agents/skills/**/EXAMPLES.md`
 
 ---

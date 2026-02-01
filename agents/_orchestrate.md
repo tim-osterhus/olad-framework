@@ -91,10 +91,10 @@ Optional keys may be present for optional cycles.
 
 ---
 
-## Headless runner templates (WSL)
+## Headless runner templates
 
 Copy/paste templates live in:
-- `agents/options/orchestrate/orchestrate_options.md`
+- `agents/options/orchestrate/orchestrate_options_bash.md`
 
 Note: when running QA or Doublecheck with Codex, enable `--search` so headless QA can look up best practices as needed (templates already do this).
 
@@ -107,6 +107,7 @@ Note: when running QA or Doublecheck with Codex, enable `--search` so headless Q
 3) Ensure tool availability:
    - `codex --version`
    - If using Claude Code for QA: `claude -v`
+   - If using OpenClaw as a runner: confirm the Gateway is reachable (see `agents/openclaw/runner_integration_bash.md`)
    - For diagnostics PR: `gh --version` and `gh auth status`
 4) Confirm task sources:
    - `agents/tasks.md` exists (may be empty placeholder)
@@ -276,15 +277,7 @@ Declare blocked immediately if:
 
 6) In the PR comments, tag Codex Cloud for analysis using **@codex** with a non-review task, e.g.:
 
-Example GitHub CLI commands (run from the diagnostics branch):
-
-```bash
-# Create the PR (interactive editor may open unless you pass --body/-b)
-gh pr create --title "Diagnostics: runner blocked $(date +%F\ %T)" --body "See agents/diagnostics/<DIAG_DIR> for logs and snapshots."
-
-# Comment on the PR from the same branch
-gh pr comment --body "@codex Diagnose why the local runner got blocked. Read agents/diagnostics/<DIAG_DIR> and propose the smallest fix to unblock the runner."
-```
+Example GitHub CLI commands live in the headless templates file referenced above.
 
 ```
 @codex Diagnose why the local runner got blocked. Read the logs in agents/diagnostics/YYYY-MM-DD_HHMMSS/ and propose the smallest fix (or exact next manual action) to unblock the runner. Do NOT run tests in CI; this project is local-first. If the fix is code changes, propose a patch or PR-ready diff.

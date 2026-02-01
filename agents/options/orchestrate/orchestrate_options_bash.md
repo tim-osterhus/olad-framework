@@ -1,4 +1,4 @@
-# Orchestrator Options (WSL/Bash Templates)
+# Orchestrator Options (Bash/WSL Templates)
 
 This document is a copy/paste scratchpad for running OLAD cycles headlessly from a WSL/Linux shell.
 
@@ -10,6 +10,10 @@ It is intentionally kept out of `agents/_orchestrate.md` to keep the Runner entr
 - You have the CLIs you plan to use installed:
   - `codex` (Codex CLI)
   - `claude` (Claude Code CLI), if used
+  - Optional (OpenClaw runner): `curl` + `python3` and either:
+    - `openclaw`/`openclaw.exe` available on PATH (to read the Gateway token), OR
+    - `OPENCLAW_GATEWAY_TOKEN` exported in your shell
+  - OpenClaw runner requires the Gateway `/v1/responses` endpoint enabled (see `agents/openclaw/runner_integration_bash.md`)
 
 ## Create a run folder + run a cycle (bash)
 
@@ -84,6 +88,9 @@ parse_workflow_config() {
         INTEGRATION_COUNT) INTEGRATION_COUNT="$value" ;;
         INTEGRATION_TARGET) INTEGRATION_TARGET="$value" ;;
         HEADLESS_PERMISSIONS) HEADLESS_PERMISSIONS="$value" ;;
+        SHELL_TEMPLATES) SHELL_TEMPLATES="$value" ;;
+        OPENCLAW_GATEWAY_URL) OPENCLAW_GATEWAY_URL="$value" ;;
+        OPENCLAW_AGENT_ID) OPENCLAW_AGENT_ID="$value" ;;
         *) echo "Unknown key in workflow_config: $key" >&2; return 1 ;;
       esac
     fi
@@ -116,6 +123,106 @@ set_permission_flags() {
   esac
 }
 
+get_openclaw_token() {
+  if [ -n "${OPENCLAW_GATEWAY_TOKEN:-}" ]; then
+    printf '%s' "$OPENCLAW_GATEWAY_TOKEN"
+    return 0
+  fi
+
+  if command -v openclaw >/dev/null 2>&1; then
+    openclaw config get gateway.auth.token --raw
+    return $?
+  fi
+
+  if command -v openclaw.exe >/dev/null 2>&1; then
+    openclaw.exe config get gateway.auth.token --raw
+    return $?
+  fi
+
+  echo "OpenClaw token not available. Set OPENCLAW_GATEWAY_TOKEN or install openclaw/openclaw.exe." >&2
+  return 1
+}
+
+openclaw_run() {
+  local model="$1"
+  local prompt="$2"
+  local stdout_path="$3"
+  local stderr_path="$4"
+  local last_path="$5"
+
+  local openclaw_url="${OPENCLAW_GATEWAY_URL:-http://127.0.0.1:18789}"
+  local openclaw_agent_id="${OPENCLAW_AGENT_ID:-main}"
+  local token
+  token="$(get_openclaw_token)" || return 1
+
+  local cycle="${stdout_path##*/}"
+  cycle="${cycle%.stdout.log}"
+  local user_key="olad:${RUN_ID}:${cycle}"
+
+  local body
+  body="$(python3 -c 'import json,sys; model=sys.argv[1]; user=sys.argv[2]; prompt=sys.stdin.read(); print(json.dumps({"model": model, "user": user, "input": prompt}))' \
+    "$model" "$user_key" <<<"$prompt")"
+
+  local response_path
+  response_path="$(dirname "$stdout_path")/${cycle}.openclaw.response.json"
+  if ! curl -sS "$openclaw_url/v1/responses" \
+    -H "Authorization: Bearer $token" \
+    -H "Content-Type: application/json" \
+    -H "x-openclaw-agent-id: $openclaw_agent_id" \
+    -d "$body" >"$response_path" 2>"$stderr_path"; then
+    return 1
+  fi
+
+  python3 - "$response_path" >"$stdout_path" 2>>"$stderr_path" <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, "r", encoding="utf-8") as f:
+  data = json.load(f)
+
+if isinstance(data, dict) and data.get("error"):
+  err = data["error"]
+  if isinstance(err, dict):
+    msg = err.get("message") or json.dumps(err)
+  else:
+    msg = str(err)
+  sys.stdout.write(msg)
+  sys.exit(2)
+
+text = ""
+if isinstance(data, dict):
+  text = data.get("output_text") or ""
+
+if not text and isinstance(data, dict):
+  out = data.get("output") or []
+  parts = []
+  for item in out:
+    if not isinstance(item, dict):
+      continue
+    if item.get("type") != "message":
+      continue
+    if item.get("role") != "assistant":
+      continue
+    for c in item.get("content", []) or []:
+      if not isinstance(c, dict):
+        continue
+      t = c.get("text")
+      if isinstance(t, str):
+        parts.append(t)
+  text = "".join(parts)
+
+sys.stdout.write(text)
+PY
+  exit_code=$?
+
+  if [ -n "$last_path" ]; then
+    cp -f "$stdout_path" "$last_path"
+  fi
+
+  return $exit_code
+}
+
 parse_model_config || exit 1
 parse_workflow_config || exit 1
 set_permission_flags || exit 1
@@ -132,6 +239,11 @@ run_cycle() {
   local CODEX_SEARCH_FLAGS=()
   if [ "$codex_search" = "true" ]; then
     CODEX_SEARCH_FLAGS=(--search)
+  fi
+
+  if [ "$runner" = "openclaw" ]; then
+    openclaw_run "$model" "$prompt" "$stdout_path" "$stderr_path" "$last_path"
+    return $?
   fi
 
   if [ "$runner" = "codex" ]; then
@@ -152,7 +264,7 @@ run_cycle() {
     return $exit_code
   fi
 
-  echo "Unknown runner: $runner (expected codex|claude). Check agents/options/model_config.md" >&2
+  echo "Unknown runner: $runner (expected codex|claude|openclaw). Check agents/options/model_config.md" >&2
   return 1
 }
 
@@ -197,6 +309,15 @@ If you have GNU `timeout`, wrap a call like:
 
 ```bash
 timeout 5400 codex exec --model gpt-5.2-codex --full-auto -o "$RUN_DIR/builder.last.md" "Open agents/_start.md and follow instructions."
+```
+
+## Diagnostics PR helpers (gh)
+
+Example commands (run from the diagnostics branch):
+
+```bash
+gh pr create --title "Diagnostics: runner blocked $(date +%F\ %T)" --body "See agents/diagnostics/<DIAG_DIR> for logs and snapshots."
+gh pr comment --body "@codex Diagnose why the local runner got blocked. Read agents/diagnostics/<DIAG_DIR> and propose the smallest fix to unblock the runner."
 ```
 
 ## Notes
