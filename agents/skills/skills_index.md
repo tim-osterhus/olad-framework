@@ -7,9 +7,6 @@ Use this registry to discover and apply relevant skills. Pick up to 3 per task.
 | [Task Card Authoring (Repo-Exact)](./task-card-authoring-repo-exact/SKILL.md) | Converting vague requests into a single task card | `agents/tasks.md`, `agents/tasksbacklog.md` | Updated `agents/tasks.md` with DONE checks |
 | [Small-Diff Discipline](./small-diff-discipline/SKILL.md) | Any code change; especially infra/librechat/rag_api | Scope, target files | Minimal diff plan + change set |
 | [Historylog Entry (High Signal)](./historylog-entry-high-signal/SKILL.md) | After any builder/QA run | Change summary, commands run | Prepend to `agents/historylog.md` |
-| [Retrieval Change Protocol (precision@k + citations)](./retrieval-change-protocol-precision-k-citations/SKILL.md) | Changes to HyDE/hybrid/reranking/chunking | Retrieval code paths, tests | Validation plan + results |
-| [Embedding/Backfill Procedure](./embedding-backfill-procedure/SKILL.md) | Embedding model change or backfill | `rag_api/`, db schema, backfill script | Backfill run + verification |
-| [LibreChat Customization Workflow (Submodule-safe)](./librechat-customization-workflow-submodule-safe/SKILL.md) | UI/config changes under `librechat/` | Submodule state, config files | Safe edits + rebuild steps |
 | [Compose Stack Change Protocol](./compose-stack-change-protocol/SKILL.md) | Docker compose or infra changes | `infra/compose/`, compose commands | Updated compose + validation |
 | [Codebase Safe Cleanup (Strict)](./codebase-safe-cleanup/SKILL.md) | Behavior-preserving cleanup/refactor with verification gates | Build/test commands, target areas | Cleanup plan + verified change batches |
 | [Codebase Audit + Documentation](./codebase-audit-doc/SKILL.md) | Security/correctness/maintainability audit and doc-only plan | Repo context, run commands | Audit report + doc-only patch plan |
