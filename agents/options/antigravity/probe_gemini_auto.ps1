@@ -173,6 +173,8 @@ if ($Model -ne "auto") {
 
 $token = Get-OpenClawToken
 
+$hadAnyModelId = $false
+
 foreach ($m in $order) {
   $midKey = ModelIdKeyFor $m
   $modelId = if ($midKey -and $cfg.ContainsKey($midKey)) { $cfg[$midKey] } else { "" }
@@ -180,6 +182,7 @@ foreach ($m in $order) {
     [Console]::Error.WriteLine("Skipping $m (missing model id; set $midKey in agents/options/workflow_config.md)")
     continue
   }
+  $hadAnyModelId = $true
 
   $exKey = ExhaustedKeyFor $m
   $exVal = if ($exKey -and $cfg.ContainsKey($exKey)) { $cfg[$exKey] } else { "" }
@@ -205,6 +208,11 @@ foreach ($m in $order) {
 
   [Console]::Error.WriteLine("Probe failed for $m ($modelId) with non-quota error: $($r.message)")
   exit 1
+}
+
+if (-not $hadAnyModelId) {
+  [Console]::Error.WriteLine("No Anti-Gravity model ids are configured. Set ANTIGRAVITY_G3_*_MODEL in agents/options/workflow_config.md.")
+  exit 3
 }
 
 exit 2

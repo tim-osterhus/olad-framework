@@ -117,8 +117,10 @@ Preferred (OpenClaw-native browser automation):
 
 If `UI_VERIFY_EXECUTOR=playwright`:
 - Run the deterministic executor script (if usable in this repo):
-  - Bash: `agents/options/ui-verify/run_playwright_ui_verify.sh`
-  - PowerShell: `agents/options/ui-verify/run_playwright_ui_verify.ps1`
+  - Bash:
+    - `agents/options/ui-verify/run_playwright_ui_verify.sh --out "<BUNDLE_DIR>" --coverage "<UI_VERIFY_COVERAGE>" --update-latest`
+  - PowerShell:
+    - `powershell -File agents/options/ui-verify/run_playwright_ui_verify.ps1 -OutDir "<BUNDLE_DIR>" -Coverage "<UI_VERIFY_COVERAGE>" -UpdateLatest`
 - If Playwright/tooling is missing, mark the run as `BLOCKED` with a precise missing-setup list (do not guess).
 
 If `UI_VERIFY_EXECUTOR=antigravity_agent`:
@@ -147,9 +149,12 @@ If `UI_VERIFY_ANALYZER=antigravity`:
      - try Flash/Pro-low/Pro-high (or your preference)
      - set `ANTIGRAVITY_G3_*_EXHAUSTED_AT=YYYY-MM-DDTHH:MM` on quota errors
      - return a selected model id on success
-2) If all three models are exhausted (probe exits 2):
+2) If the probe exits 2 (all configured models exhausted / skipped due to recent exhausted flags):
    - fall back to `openclaw` analyzer (or `none`)
-3) If you obtained a model id:
+3) If the probe exits 3 (misconfigured: no model ids configured):
+   - fall back to `openclaw` analyzer (or `none`)
+   - note in your report that Anti-Gravity is misconfigured and which keys are missing
+4) If you obtained a model id:
    - run the analyzer runner to generate a narrative report:
      - Bash: `agents/options/antigravity/run_ui_analyze.sh --model <MODEL_ID> --bundle <BUNDLE_DIR> --out <BUNDLE_DIR>/report.md`
      - PowerShell: `agents/options/antigravity/run_ui_analyze.ps1 -ModelId <MODEL_ID> -BundleDir <BUNDLE_DIR> -OutPath <BUNDLE_DIR>/report.md`

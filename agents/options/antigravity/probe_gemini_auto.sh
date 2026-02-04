@@ -14,6 +14,7 @@ Purpose:
 Output:
 - On success: prints the selected model id to stdout and exits 0.
 - If all models are exhausted: exits 2.
+- If no model ids are configured: exits 3.
 - On non-quota integration errors: exits 1.
 
 Assumptions (default implementation):
@@ -286,6 +287,7 @@ for m in $(pick_models); do
     echo "Skipping $m (missing model id; set ANTIGRAVITY_G3_*_MODEL in agents/options/workflow_config.md)" >&2
     continue
   fi
+  HAD_ANY_MODEL_ID="true"
 
   if [ -n "$ek" ] && should_skip_due_to_exhausted_flag "$ek"; then
     echo "Skipping $m due to recent exhausted flag ($ek)" >&2
@@ -319,6 +321,12 @@ for m in $(pick_models); do
   exit 1
 done
 
-# If we got here, nothing was usable (either all exhausted or missing config).
-exit 2
+# If we got here, nothing was usable.
+# Distinguish "misconfigured" from "quota exhausted" to make fallback behavior auditable.
+if [ "${HAD_ANY_MODEL_ID:-false}" != "true" ]; then
+  echo "No Anti-Gravity model ids are configured. Set ANTIGRAVITY_G3_*_MODEL in agents/options/workflow_config.md." >&2
+  exit 3
+fi
 
+# At least one model id existed, but none were usable (quota exhausted or recently exhausted).
+exit 2

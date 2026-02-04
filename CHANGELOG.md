@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.5.1] - 2026-02-04
+
+### Fixed
+- Supervisor sub-sessions now explicitly preflight the correct project repo root (not the OpenClaw workspace) before opening OLAD entrypoints (`agents/_supervisor.md`).
+- Playwright UI verify instructions now show correct invocations including required output-dir arguments (fixes a copy/paste footgun):
+  - `agents/options/openclaw/_ui_verify.md`
+  - `agents/options/ui-verify/ui_verify_option.md`
+- Anti-Gravity probe scripts now distinguish "all models exhausted" vs "misconfigured" (missing model ids):
+  - Exit 2: exhausted / skipped due to recent exhausted flags
+  - Exit 3: misconfigured (no `ANTIGRAVITY_G3_*_MODEL` configured)
+  - Scripts: `agents/options/antigravity/probe_gemini_auto.(sh|ps1)`
+  - Doc: `agents/options/antigravity/antigravity_option.md`
+
+### Changed
+- Default `OPENCLAW_MODE` in `agents/options/workflow_config.md` is now `Off` (it is a customization-time wiring flag; changing it alone does not rewrite entrypoints).
+
 ## [1.5.0] - 2026-02-04
 
 ### Added

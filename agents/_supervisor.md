@@ -52,33 +52,46 @@ Your job is to **spawn and monitor** OLAD sub-sessions that do the real work (Or
    - Spawn an Advisor session (for scoping/spec/tasks)
    - Monitor existing sessions only
 
+## CRITICAL: Sub-sessions must run inside the PROJECT REPO (not the OpenClaw workspace)
+
+OpenClaw sessions may start in an OpenClaw workspace directory that is NOT your project repo.
+
+Before a sub-session opens any OLAD entrypoint, it must:
+1) `cd` to the project repo root (the folder that contains `agents/`)
+2) Run:
+   - `pwd`
+   - `ls -la agents`
+3) Confirm that files like `agents/_orchestrate.md` exist before continuing.
+
+If the sub-session cannot locate the repo root, it must stop and ask for the absolute path.
+
 ## Spawn templates (copy/paste)
 
 ### Spawn Orchestrator
 
 Use this when you want the normal OLAD loop:
 
-`sessions_spawn({ task: "Open agents/_orchestrate.md and follow instructions.", label: "olad-orchestrator", thinking: "low", cleanup: "keep" })`
+`sessions_spawn({ task: "First: cd to the project repo root (the folder containing agents/). Run: pwd; ls -la agents. Then: Open agents/_orchestrate.md and follow instructions.", label: "olad-orchestrator", thinking: "low", cleanup: "keep" })`
 
 ### Spawn Advisor
 
 Use this for any "spec to tasks", decomposition, or general repo analysis:
 
-`sessions_spawn({ task: "Open agents/_advisor.md and follow instructions.", label: "olad-advisor", thinking: "low", cleanup: "keep" })`
+`sessions_spawn({ task: "First: cd to the project repo root (the folder containing agents/). Run: pwd; ls -la agents. Then: Open agents/_advisor.md and follow instructions.", label: "olad-advisor", thinking: "low", cleanup: "keep" })`
 
 ### Spawn Troubleshooter (on blocker)
 
 Preferred (if installed): `agents/_troubleshoot.md`
 
-`sessions_spawn({ task: "Open agents/_troubleshoot.md and follow instructions. For context: \"<PASTE BLOCKER SUMMARY>\"", label: "olad-troubleshooter", thinking: "high", cleanup: "keep" })`
+`sessions_spawn({ task: "First: cd to the project repo root (the folder containing agents/). Run: pwd; ls -la agents. Then: Open agents/_troubleshoot.md and follow instructions. For context: \"<PASTE BLOCKER SUMMARY>\"", label: "olad-troubleshooter", thinking: "high", cleanup: "keep" })`
 
 Fallback (if not installed):
 
-`sessions_spawn({ task: "Open agents/options/troubleshoot/_troubleshoot.md and follow instructions. For context: \"<PASTE BLOCKER SUMMARY>\"", label: "olad-troubleshooter", thinking: "high", cleanup: "keep" })`
+`sessions_spawn({ task: "First: cd to the project repo root (the folder containing agents/). Run: pwd; ls -la agents. Then: Open agents/options/troubleshoot/_troubleshoot.md and follow instructions. For context: \"<PASTE BLOCKER SUMMARY>\"", label: "olad-troubleshooter", thinking: "high", cleanup: "keep" })`
 
 ### Spawn UI Verifier (on manual/UI blocker)
 
-`sessions_spawn({ task: "Open agents/options/openclaw/_ui_verify.md and follow instructions. For context: \"<PASTE BLOCKER SUMMARY>\"", label: "olad-ui-verify", thinking: "medium", cleanup: "keep" })`
+`sessions_spawn({ task: "First: cd to the project repo root (the folder containing agents/). Run: pwd; ls -la agents. Then: Open agents/options/openclaw/_ui_verify.md and follow instructions. For context: \"<PASTE BLOCKER SUMMARY>\"", label: "olad-ui-verify", thinking: "medium", cleanup: "keep" })`
 
 ### Spawn OpenClaw-Enhanced Builder / QA (on-demand)
 
@@ -86,11 +99,11 @@ Use these when you want a Builder/QA session that can perform manual UI verifica
 
 Builder (OpenClaw wrapper):
 
-`sessions_spawn({ task: "Open agents/options/openclaw/_start_openclaw.md and follow instructions.", label: "olad-builder-openclaw", thinking: "low", cleanup: "keep" })`
+`sessions_spawn({ task: "First: cd to the project repo root (the folder containing agents/). Run: pwd; ls -la agents. Then: Open agents/options/openclaw/_start_openclaw.md and follow instructions.", label: "olad-builder-openclaw", thinking: "low", cleanup: "keep" })`
 
 QA (OpenClaw wrapper):
 
-`sessions_spawn({ task: "Open agents/options/openclaw/_check_openclaw.md and follow instructions.", label: "olad-qa-openclaw", thinking: "medium", cleanup: "keep" })`
+`sessions_spawn({ task: "First: cd to the project repo root (the folder containing agents/). Run: pwd; ls -la agents. Then: Open agents/options/openclaw/_check_openclaw.md and follow instructions.", label: "olad-qa-openclaw", thinking: "medium", cleanup: "keep" })`
 
 ## Monitoring loop
 

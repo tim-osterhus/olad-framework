@@ -75,13 +75,19 @@ Status rules:
 
 Minimum fields for result.json:
 - status: PASS|FAIL|BLOCKED
-- runner: "playwright"
-- bundle_path: "agents/diagnostics/ui_verify/<bundle_id>/"
+- executor: "playwright"
+- analyzer: antigravity|openclaw|none
+- coverage: smoke|standard|broad
+- started_at / ended_at: ISO 8601 timestamps
+- evidence_dir: path
+- checks: list (may be empty, but prefer per-check outcomes when possible)
+- errors: list (typed)
+- quota: object|null
+
+Optional (recommended) fields:
 - command: the executed command string
 - exit_code: integer
-- started_at / finished_at: ISO 8601 timestamps
 - summary: { total, passed, failed, skipped, retries }
-- failure_mode (only if FAIL/BLOCKED): assertion|auth|env|timeout|unknown
 - artifacts: { report_md, evidence_dir, trace_zips, screenshots, videos }
 
 Definition of DONE (objective checks):

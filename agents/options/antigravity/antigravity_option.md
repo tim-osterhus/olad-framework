@@ -56,7 +56,8 @@ from an OpenClaw UI verification session (via tool-based exec), or from a local 
   - performs a tiny probe call
   - on quota error: sets the model's exhausted flag and tries the next
   - on success: prints the chosen model id and exits 0
-  - if all fail: exits 2 (treat as "all quotas exhausted")
+  - if all configured models are exhausted (or skipped due to recent exhausted flags): exits 2
+  - if no model ids are configured: exits 3 (treat as "misconfigured"; fall back or disable analysis)
 
 - `probe_gemini_flash.(sh|ps1)`, `probe_gemini_pro_low.(sh|ps1)`, `probe_gemini_pro_high.(sh|ps1)`:
   - helper wrappers around the same probe function (useful for debugging)
@@ -86,4 +87,3 @@ During execution (not install), scripts/agents may update:
 During install/wiring:
 - `agents/options/workflow_config.md` (add the new keys)
 - `agents/_customize.md` (ask for UI verification + Anti-Gravity preferences)
-

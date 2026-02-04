@@ -95,6 +95,36 @@ Even if `UI_VERIFY_HOST=auto`:
 
 Mac-host UI verification is most appropriate for verifying a deployed environment (staging/prod URL) reachable from the Mac.
 
+## Playwright executor invocation (copy/paste)
+
+If `UI_VERIFY_EXECUTOR=playwright`, invoke the deterministic runner scaffold from repo root.
+
+Bash:
+```bash
+# OUT_DIR should be your UI verify bundle folder:
+# agents/diagnostics/ui_verify/<bundle_id>/
+agents/options/ui-verify/run_playwright_ui_verify.sh \
+  --out "agents/diagnostics/ui_verify/<bundle_id>" \
+  --coverage "<smoke|standard|broad>" \
+  --update-latest \
+  --cmd "npx playwright test"
+```
+
+PowerShell:
+```powershell
+# OutDir should be your UI verify bundle folder:
+# agents/diagnostics/ui_verify/<bundle_id>/
+powershell -File agents/options/ui-verify/run_playwright_ui_verify.ps1 `
+  -OutDir "agents/diagnostics/ui_verify/<bundle_id>" `
+  -Coverage "<smoke|standard|broad>" `
+  -UpdateLatest `
+  -Cmd "npx playwright test"
+```
+
+Notes:
+- The scripts do not install Playwright; missing deps should be classified as `BLOCKED`.
+- `--cmd`/`-Cmd` should be replaced with the repo's canonical Playwright command if it differs (pnpm/yarn, custom projects, etc.).
+
 ## Fallback ladder (required behavior)
 
 When `UI_VERIFY_ANALYZER=antigravity` (or executor uses Anti-Gravity) and quota guard is on:
@@ -124,4 +154,3 @@ If OpenClaw browser automation is blocked and troubleshooting cannot fix it:
   - updates `agents/ui_verification_result.json` and `agents/ui_verification_report.md`
   - does not stomp `agents/status.md` on PASS/FAIL (only sets BLOCKED when tooling/env is blocked)
 - `agents/_supervisor.md` explicitly allows writing ONLY `agents/status.md` (nothing else).
-

@@ -24,7 +24,7 @@ Use when (triggers):
 - You need impact counts, CWV metrics, or visual diff artifacts for a release.
 
 Do NOT use when (non-goals):
-- The task is a manual WCAG audit or screen-reader test (use accessibility-qa).
+- The task is a manual WCAG audit or screen-reader test (this skill is automation-only).
 - The task is a design handoff review or code compliance review (use frontend-review).
 - The task is a usability evaluation (use ui-heuristics-scorecard).
 
