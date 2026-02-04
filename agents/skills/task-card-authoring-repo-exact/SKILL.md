@@ -3,9 +3,16 @@ name: task-card-authoring-repo-exact
 description: >
   Writes a single, repo-accurate task card in `agents/tasks.md` (or queues one in `agents/tasksbacklog.md`) that is executable by the Builder/QA cycles without interpretation.
   Includes explicit metadata (Complexity/Tags/Gates) so the pipeline is deterministic and auditable.
+compatibility:
+  runners: ["codex-cli", "claude-code", "openclaw"]
+  tools: ["Read", "Grep", "Write"]
+  offline_ok: true
 ---
 
 # Task Card Authoring (Repo-Exact)
+
+## Purpose
+Turn ambiguous requests into one executable, repo-accurate task card with objective DONE checks and explicit file targets.
 
 ## Quick start
 Goal:
@@ -241,13 +248,13 @@ Common failures:
 
 **How to reference examples:**
 - Keep summaries SHORT (1-2 sentences max)
-- Include line number reference to EXAMPLES.md
+- Reference by stable Example ID (line numbers are brittle across editors/formatters)
 - Agents will load full examples only when symptoms match
 
 **Example summaries:**
 
-1. **Promote backlog item into active task** - Move ONE item from backlog, rewrite with explicit paths and commands. See EXAMPLES.md:7-68
-2. **Split vague multi-feature request** - Split "hybrid retrieval and reranking" into separate cards with precision@k reports. See EXAMPLES.md:71-164
+1. **Promote backlog item into active task** - Move ONE item from backlog, rewrite with explicit paths and commands. See EXAMPLES.md (EX-2025-12-28-01)
+2. **Split vague multi-feature request** - Split "hybrid retrieval and reranking" into separate cards with precision@k reports. See EXAMPLES.md (EX-2025-12-28-02)
 
 **Note:** Full examples with tags and trigger phrases are in `./EXAMPLES.md`.
 Agents search that file only when they encounter matching symptoms (context-efficient).

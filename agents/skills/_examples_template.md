@@ -9,17 +9,17 @@ This file stores detailed, real-world examples for the skill. Each example inclu
 
 1. **Agents load SKILL.md always** (small, procedural, low context cost)
 2. **Agents search EXAMPLES.md only when symptoms match** (grep trigger phrases)
-3. **SKILL.md references examples by line number** (e.g., "See EXAMPLES.md:42-67")
+3. **SKILL.md references examples by stable Example ID** (e.g., "See EXAMPLES.md (EX-2026-02-04-01)")
 
 ## Adding New Examples
 
 **CRITICAL: Always append new examples to the END of this file!**
 
-This ensures line number references in SKILL.md remain accurate. Never insert examples in the middle.
+Never insert examples in the middle and never change existing Example IDs. (Line numbers are brittle; IDs are stable.)
 
 ---
 
-## Example 1: [Short title of the issue]
+## EX-YYYY-MM-DD-01: [Short title of the issue]
 
 **Tags**: `retrieval`, `tests`, `regression`
 
@@ -33,10 +33,7 @@ This ensures line number references in SKILL.md remain accurate. Never insert ex
 **Problem**:
 Describe the issue concisely (2-3 sentences). Include the symptom the user/agent observed.
 
-**Impact**:
-What broke? Who's affected? How severe?
-
-**Root cause**:
+**Cause**:
 What was the actual underlying issue? Be specific (file, line, logic flaw).
 
 **Fix**:
@@ -59,7 +56,7 @@ What to add to SKILL.md to prevent this recurring:
 
 ---
 
-## Example 2: [Another issue]
+## EX-YYYY-MM-DD-02: [Another issue]
 
 **Tags**: `infra`, `compose`, `networking`
 
@@ -73,10 +70,7 @@ What to add to SKILL.md to prevent this recurring:
 **Problem**:
 ...
 
-**Impact**:
-...
-
-**Root cause**:
+**Cause**:
 ...
 
 **Fix**:

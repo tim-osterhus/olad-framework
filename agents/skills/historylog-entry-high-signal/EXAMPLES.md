@@ -2,9 +2,11 @@
 
 This file stores detailed, real-world examples for the historylog-entry-high-signal skill.
 
+Append new examples to the END of this file and never change existing Example IDs.
+
 ---
 
-## Example 1: UI-to-API integration fix
+## EX-2025-12-28-01: UI-to-API integration fix
 
 **Tags**: `historylog`, `integration`, `endpoints`
 
@@ -21,7 +23,7 @@ Historylog entry was too vague: "Fixed UI integration." No details about what wa
 **Impact**:
 Future developer couldn't reproduce verification or understand what changed. QA couldn't validate.
 
-**Root cause**:
+**Cause**:
 Agent didn't document exact config/endpoint changed or verification commands.
 
 **Fix**:
@@ -55,7 +57,7 @@ Updated SKILL.md to require:
 
 ---
 
-## Example 2: Chunking defaults change
+## EX-2025-12-28-02: Chunking defaults change
 
 **Tags**: `historylog`, `chunking`, `embedding`, `backfill`
 
@@ -73,7 +75,7 @@ Entry said "Changed chunking defaults" without old/new values or backfill requir
 **Impact**:
 QA didn't know backfill was needed. Production corpus still had old chunk size until manual discovery.
 
-**Root cause**:
+**Cause**:
 Entry didn't document:
 - Old vs new values
 - Backfill requirement
@@ -115,5 +117,5 @@ Updated SKILL.md to require:
 
 <!--
 Add new examples below this line.
-DO NOT insert examples above existing ones (breaks line number references in SKILL.md).
+DO NOT insert examples above existing ones (breaks Example ID stability).
 -->

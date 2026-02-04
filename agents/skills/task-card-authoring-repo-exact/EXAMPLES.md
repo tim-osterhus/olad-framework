@@ -2,9 +2,11 @@
 
 This file stores detailed, real-world examples for the task-card-authoring-repo-exact skill.
 
+Append new examples to the END of this file and never change existing Example IDs.
+
 ---
 
-## Example 1: Promote backlog item into active task
+## EX-2025-12-28-01: Promote backlog item into active task
 
 **Tags**: `backlog`, `task-promotion`, `scope-refinement`
 
@@ -25,7 +27,7 @@ Backlog item was vague: "Add user authentication." Developer didn't refine it be
 - Work spanned 8 files across RAG API and LibreChat
 - Merge blocked because scope was unclear
 
-**Root cause**:
+**Cause**:
 Task card lacked:
 - Explicit file paths (`rag_api/auth.py`, `librechat/middleware/`)
 - Concrete DONE checks with commands
@@ -71,7 +73,7 @@ Updated SKILL.md to require:
 
 ---
 
-## Example 2: Split vague multi-feature request
+## EX-2025-12-28-02: Split vague multi-feature request
 
 **Tags**: `task-splitting`, `retrieval`, `scope-definition`
 
@@ -103,7 +105,7 @@ Result: 18 files changed, 4-hour implementation, impossible to test atomically.
 - Merge blocked by complexity
 - Rollback would lose all progress
 
-**Root cause**:
+**Cause**:
 Task card didn't enforce "1-cycle deliverable" constraint. Multiple independent features bundled together.
 
 **Fix**:
@@ -174,5 +176,5 @@ Updated SKILL.md to require:
 
 <!--
 Add new examples below this line.
-DO NOT insert examples above existing ones (breaks line number references in SKILL.md).
+DO NOT insert examples above existing ones (breaks Example ID stability).
 -->

@@ -28,18 +28,9 @@ verification, remote control, spawning sub-sessions, etc.).
 
 ## UI/browser automation note (practical)
 
-- Some OpenClaw installs expose a `browser.act` tool. If it is flaky/timeouts in your environment, prefer driving the browser via `exec` + OpenClaw CLI commands.
-- Prefer a managed browser profile (commonly `openclaw`) over any "relay" / extension-attached profile.
-- If a relay/extension profile shows no attached tabs (for example "0 tabs"), it cannot reliably automate anything; switch to a managed profile.
-
-Example (via `exec`):
-
-```text
-openclaw browser --browser-profile openclaw snapshot --interactive
-openclaw browser --browser-profile openclaw click e1
-```
-
-Note: use the element handles emitted by `snapshot` (for example `e1`, `e2`, ...).
+- Prefer tool-based browser automation (for example `browser.act`) when available.
+- Always specify a browser profile explicitly (default profile is commonly `openclaw`).
+- If tool-based automation is blocked in your environment, fall back to CLI-driven automation via `exec` (slower/less effective, but sometimes more reliable).
 
 ## Next
 
@@ -55,7 +46,11 @@ Start with:
 
 OpenClaw-only entrypoints:
 - Supervisor: `agents/_supervisor.md` (auto-remediation ladder + auto-resume on success)
-- UI verification: `agents/options/openclaw/_ui_verify.md`
+- UI verification: `agents/options/openclaw/_ui_verify.md` (artifact contract + optional Anti-Gravity analyzer)
 - OpenClaw-enhanced wrappers (for Supervisor-driven sessions):
   - Builder: `agents/options/openclaw/_start_openclaw.md`
   - QA: `agents/options/openclaw/_check_openclaw.md`
+
+Related option packs (wired by `agents/_customize.md`):
+- UI verification flags + artifact contract: `agents/options/ui-verify/ui_verify_option.md`
+- Anti-Gravity quota-safe probe behavior: `agents/options/antigravity/antigravity_option.md`

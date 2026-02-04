@@ -5,12 +5,29 @@ description: >
   then produce a prioritized audit report and doc-only improvement plan. Use for repo reviews, security
   triage, onboarding/documentation passes, and "what should we clean up first" assessments where behavior
   must not change or violate guardrails.
+compatibility:
+  runners: ["codex-cli", "claude-code", "openclaw"]
+  tools: ["Read", "Grep", "Write"]
+  offline_ok: true
 ---
 # Codebase Audit + Documentation
+
+## Purpose
+Produce a risk-ranked audit report and doc-only patch plan backed by concrete evidence (paths, commands, reproduction) with minimal speculation.
 
 ## Quick start
 Goal:
 - Produce a **risk-ranked audit report** (security + correctness + maintainability) and a **doc-only patch plan** that improves clarity without changing behavior.
+
+Use when (triggers):
+- "audit this repo" / "security review"
+- "what should we clean up first"
+- "document this codebase" / "onboarding is hard"
+- You need evidence-backed findings without changing runtime behavior
+
+Do NOT use when (non-goals):
+- You are asked to refactor, rename, or change runtime behavior (hand off to a cleanup/refactor skill)
+- You need to implement fixes (this skill is doc-only)
 
 Non-negotiables:
 - Prefer **evidence** (exact file/line, reproduction commands) over speculation.
@@ -22,7 +39,7 @@ Non-negotiables:
 - If a finding needs code changes, document it as a follow-up task for the cleanup/refactor skill.
 - Don’t “boil the ocean”: aim for the top 5–20 issues that actually matter.
 
-## Inputs this skill expects
+## Inputs this Skill expects
 Required:
 - Repo path (or a snapshot) and the primary language(s)
 - How to run: build, tests, lint (or confirmation that none exist)
@@ -31,9 +48,29 @@ Optional but high-value:
 - Deployment context (internet-facing vs internal; single-tenant vs multi-tenant)
 - Auth boundaries, data sensitivity, and any compliance constraints
 
-## Workflow
+## Output contract
+Primary deliverable:
+- An audit report (markdown) with findings grouped by severity and backed by exact file/line pointers and reproduction/verification commands.
+
+Secondary deliverables (doc-only only):
+- A doc-only patch plan (and optionally doc-only edits) that improves clarity without changing runtime behavior.
+
+Definition of DONE (objective checks):
+- [ ] Findings are grouped by severity and backed by concrete evidence (paths, snippets, commands)
+- [ ] "How to run / verify" exists (or is explicitly marked as NOT AVAILABLE with why)
+- [ ] Any suggested code changes are explicitly labeled as follow-ups (not implemented here)
+
+## Procedure (copy into working response and tick off)
+Progress:
+- [ ] 1) Establish baseline context
+- [ ] 2) Create a threat-model-lite
+- [ ] 3) Security triage (confirmed findings only)
+- [ ] 4) Correctness + maintainability hazards
+- [ ] 5) Documentation coverage pass
+- [ ] 6) Deliverables
 
 ### 1) Establish baseline context (10–20 min)
+
 - Identify languages, frameworks, entrypoints, and build tooling.
 - Find and record the **one command** that best represents “the repo works” (tests, build, or minimal smoke check).
 - Note the runtime surfaces: HTTP endpoints, CLIs, cron jobs, queues, webhooks.

@@ -4,8 +4,15 @@ description: >
   Behavior-preserving code cleanup and compaction with strict verification gates.
   Only runs when the repo has a runnable build/test command set. Refactors safely, removes dead code,
   reduces duplication, and hardens scripts without introducing breakage or violating guardrails.
+compatibility:
+  runners: ["codex-cli", "claude-code", "openclaw"]
+  tools: ["Read", "Grep", "Bash", "Write"]
+  offline_ok: true
 ---
 # Codebase Safe Cleanup (Strict)
+
+## Purpose
+Make the codebase smaller, clearer, and safer without changing externally observable behavior, using strict verification gates.
 
 ## Quick start
 Goal:
@@ -20,7 +27,17 @@ Project constraints (must preserve):
 - Guardrails in `README.md` (data handling, safety, review, deployment limits).
 - Avoid touching legacy/archived paths unless explicitly requested (not part of runtime path).
 
-## What counts as “verification”
+Use when (triggers):
+- "clean up this repo" / "refactor for readability" BUT behavior must not change
+- The repo has (or can provide) runnable build/test/smoke commands
+- The change request is primarily compaction: dedupe, dead code removal, simplification, hygiene
+
+Do NOT use when (non-goals):
+- There is no runnable verification contract (tests/build/smoke) and none can be provided
+- The request requires behavior changes (API/schema changes, new features, rewrites)
+- The user wants style churn (mass renames/reformatting) instead of risk-reduced improvements
+
+## What counts as "verification"
 You must identify a minimal, repeatable command set that proves the repo is healthy.
 Examples (use repo-native equivalents):
 - Build: `make build`, `npm run build`, `go build ./...`, `cargo build`, `dotnet build`
@@ -49,7 +66,37 @@ Behavior-preserving:
 - Security “fixes” that change auth/permissions semantics without explicit sign-off + tests
 - Any change that weakens guardrails from `README.md`
 
-## Operating procedure (strict, repeatable)
+## Inputs this Skill expects
+Required:
+- Repo root (working tree) with read access to build/test/run instructions
+- A runnable verification contract (tests/build/smoke) OR explicit user-provided commands to mirror CI
+
+Optional:
+- Active task card (`agents/tasks.md`) and/or scope notes
+- `agents/expectations.md` (what QA will verify)
+- CI config / pipeline logs (to mirror authoritative checks)
+
+If required inputs are missing:
+- Do not guess. Stop and request the minimum missing info (exact commands or CI job to mirror).
+
+## Output contract
+Primary deliverable:
+- A focused, behavior-preserving cleanup diff with evidence that verification passed after each batch.
+
+Required artifacts in the response:
+1) **Verification Contract** (commands + baseline result)
+2) **Cleanup Plan** (<= 5 batches + risk)
+3) **Change log** (what changed, where, why)
+4) **Evidence** that verification passed after each batch (command output summaries)
+
+Definition of DONE (objective checks):
+- [ ] Baseline verification was run and passed before any refactor batch
+- [ ] Verification passed after every change batch (no stacked failures)
+- [ ] No externally observable behavior changes introduced (within the limits of the verification contract)
+- [ ] Cleanup plan executed in small batches (<= ~200 LOC per batch unless purely mechanical)
+- [ ] Any remaining risk/unknowns are documented with the exact follow-up needed
+
+## Procedure (strict, repeatable)
 ### 0) Establish the Verification Contract
 1. Locate how the repo is run/tested:
    - read `README`, `CONTRIBUTING`, `Makefile`, `package.json`, `pyproject.toml`, CI config, `docker-compose.yml`
@@ -110,3 +157,9 @@ Do **not** redesign security. Instead:
 - No runnable verification: stop, write bootstrapping plan, request commands.
 - Tests flaky/slow: shrink batches, add focused smoke tests (only with explicit permission).
 - Security issue found that requires semantics change: hand off to audit skill for spec + approval.
+
+## Example References (concise summaries only)
+- EX-2026-02-04-01: Small refactor allowed only after baseline + per-batch verification gates.
+- EX-2026-02-04-02: Refactor refused when no verification contract exists; produce a bootstrapping plan instead.
+- EX-2026-02-04-03: Dead code removal only with proof (routing/config/search + verification).
+- EX-2026-02-04-04: Security surface hardening without semantics changes, backed by tests/verification.

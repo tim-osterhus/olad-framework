@@ -178,6 +178,7 @@ Stop and signal blockers when:
 - Tasks: `agents/tasks.md`, `agents/tasksbacklog.md`, `agents/tasksarchive.md`
 - Prompt artifacts: `agents/prompts/tasks/`, `agents/prompts/run_prompt.md`
 - QA smoketest artifacts (optional): `agents/prompts/tests/` (enabled only if installed during customization)
+- UI verification (optional, OpenClaw): `agents/options/openclaw/_ui_verify.md`, `agents/ui_verification_spec.yaml`, `agents/options/ui-verify/`, `agents/options/antigravity/`
 - Signals/logs: `agents/status.md`, `agents/quickfix.md`, `agents/expectations.md`, `agents/historylog.md`
 - Options/config: `agents/options/`, `agents/options/model_config.md`, `agents/options/workflow_config.md`, `agents/options/permission/perm_config.md`, `agents/options/orchestrate/orchestrate_options_bash.md`
 - OpenClaw runner integration (optional): `agents/options/openclaw/`

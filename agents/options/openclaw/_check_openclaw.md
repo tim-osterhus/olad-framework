@@ -12,7 +12,8 @@ This is an OpenClaw-enhanced wrapper around the normal QA entrypoint. It exists 
 
 2) Do not stop just because verification is "manual"
    - If a verification step would normally require a human to click around, use your available UI/browser tooling to perform it yourself.
-   - If the OpenClaw `browser.act` tool is unreliable in your environment, prefer using `exec` to drive OpenClaw's CLI browser automation (example: `openclaw browser --browser-profile openclaw snapshot --interactive`).
+   - Prefer tool-based browser automation (for example `browser.act`) when available, and always set an explicit browser profile (default is commonly `openclaw`).
+   - If tool-based automation is blocked, fall back to CLI-driven automation via `exec` (slower/less effective).
    - Capture evidence (screenshots, URLs, console logs) and include it in your QA notes.
 
 3) Keep OLAD contracts intact

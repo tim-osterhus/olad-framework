@@ -203,6 +203,35 @@ Then:
   - Move `agents/_supervisor.md` to `agents/options/openclaw/_supervisor.md` so it does not appear as a default entrypoint.
   - Do not add Supervisor references to user-facing docs.
 
+## Step 2.13: UI Verification (OpenClaw / Anti-Gravity) (Optional)
+
+This enables structured UI verification artifacts and (optionally) Anti-Gravity/Gemini-based analysis during OpenClaw runs.
+
+Ask the user which UI verification preset they want:
+- Off (default): no automated UI verification wiring (manual only).
+- OpenClaw UI Verify: deterministic UI verification via OpenClaw browser tooling + a short report.
+- Anti-Gravity Analyzer: OpenClaw UI verification + quota-safe Gemini/Anti-Gravity analysis.
+
+Then update flags in `agents/options/workflow_config.md` (flags only):
+- Always set:
+  - `## UI_VERIFY_MODE=<manual|deterministic|hybrid>`
+  - `## UI_VERIFY_EXECUTOR=<playwright|openclaw_browser|antigravity_agent>`
+  - `## UI_VERIFY_ANALYZER=<antigravity|openclaw|none>`
+  - `## UI_VERIFY_COVERAGE=<smoke|standard|broad>`
+  - `## UI_VERIFY_QUOTA_GUARD=<on|off>`
+  - `## UI_VERIFY_BROWSER_PROFILE=<profile>` (default `openclaw`)
+- If Anti-Gravity Analyzer is selected:
+  - Set `## ANTIGRAVITY_MODEL_PREF=<auto|flash|pro_low|pro_high>`
+  - Ensure the model id keys exist (fill them only if the user knows the correct ids for their install):
+    - `## ANTIGRAVITY_G3_FLASH_MODEL=...`
+    - `## ANTIGRAVITY_G3_PRO_LOW_MODEL=...`
+    - `## ANTIGRAVITY_G3_PRO_HIGH_MODEL=...`
+  - Leave the `ANTIGRAVITY_G3_*_EXHAUSTED_AT=` flags blank (they are set automatically on quota errors).
+
+For full details and wiring rules, open only as needed:
+- `agents/options/ui-verify/ui_verify_option.md`
+- `agents/options/antigravity/antigravity_option.md`
+
 ## Step 3: Write the Spec Sheet
 
 Create `agents/spec.md` with this structure:

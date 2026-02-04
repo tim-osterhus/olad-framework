@@ -6,12 +6,13 @@ Your job is to **spawn and monitor** OLAD sub-sessions that do the real work (Or
 
 ## Hard constraints
 
-1) **NO repo writes. Ever.**
-   - Do not edit/create/move files in the repo.
-   - Do not run `git commit`, `git push`, or any command that changes the working tree.
+1) **Repo writes are forbidden, except `agents/status.md`**
+   - You may write **ONLY** `agents/status.md` (to clear or set orchestration state).
+   - Do not edit/create/move any other repo file.
+   - Do not run `git commit`, `git push`, or any command that changes the working tree beyond `agents/status.md`.
    - Read-only commands are OK (example: `git status`, `cat agents/status.md`).
 
-2) **All repo writes happen in sub-sessions only**
+2) **All other repo writes happen in sub-sessions only**
    - Orchestrator: `agents/_orchestrate.md`
    - Advisor: `agents/_advisor.md`
    - Troubleshooter (optional install): `agents/_troubleshoot.md` or the option packet entrypoint
@@ -125,8 +126,12 @@ Never add extra instructions beyond the exact string above.
 
 ### What counts as a determinatively successful remediation step
 
-- UI verification step: the UI Verifier ends with `UI_VERIFY: PASS` and `agents/status.md` is `### IDLE`.
-- Troubleshooting step: the Troubleshooter ends with `### TROUBLESHOOT_COMPLETE` (written to `agents/status.md`) and has a report path.
+- UI verification step:
+  - the UI Verifier ends with `UI_VERIFY: PASS` and provides a bundle/report path, AND
+  - you overwrite `agents/status.md` with `### IDLE` to clear the stale block.
+- Troubleshooting step:
+  - the Troubleshooter ends with `### TROUBLESHOOT_COMPLETE` and has a report path, AND
+  - you overwrite `agents/status.md` with `### IDLE` to clear the stale block.
 
 If a remediation step does not meet the above, treat it as not successful and proceed to the next step (do not re-run Orchestrator yet).
 
@@ -144,9 +149,9 @@ You must attempt the following steps in order, stopping early only if:
 2) Spawn UI Verifier using the Orchestrator's blocker summary as context.
 3) When UI Verifier ends:
    - Record its final `UI_VERIFY: ...` outcome and report path.
-   - Re-check `agents/status.md`.
-4) If PASS + status is `### IDLE`, re-run Orchestrator. If Orchestrator blocks again, continue to Step 2.
-5) If it is not PASS + `### IDLE`, continue to Step 2 (do not re-run Orchestrator yet).
+   - If it is `UI_VERIFY: PASS`, overwrite `agents/status.md` with `### IDLE`.
+4) If PASS, re-run Orchestrator. If Orchestrator blocks again, continue to Step 2.
+5) If it is not PASS, continue to Step 2 (do not re-run Orchestrator yet).
 
 #### Step 2) Troubleshooting
 
@@ -156,7 +161,7 @@ You must attempt the following steps in order, stopping early only if:
 2) When Troubleshooter ends:
    - Record whether it wrote `### TROUBLESHOOT_COMPLETE` to `agents/status.md`
    - Record its troubleshoot report path
-3) If `### TROUBLESHOOT_COMPLETE`, re-run Orchestrator. If Orchestrator blocks again, continue to Step 3.
+3) If `### TROUBLESHOOT_COMPLETE`, overwrite `agents/status.md` with `### IDLE`, then re-run Orchestrator. If Orchestrator blocks again, continue to Step 3.
 4) If it is not `### TROUBLESHOOT_COMPLETE`, continue to Step 3 (do not re-run Orchestrator yet).
 
 #### Step 3) Manual UI verification (second pass, with Troubleshooter context)
@@ -167,9 +172,8 @@ You must attempt the following steps in order, stopping early only if:
    - a brief summary of what changed (if known)
 2) When UI Verifier ends:
    - Record its final `UI_VERIFY: ...` outcome and report path.
-   - Re-check `agents/status.md`.
-3) If PASS + status is `### IDLE`, re-run Orchestrator one last time.
-4) If it is not PASS + `### IDLE`, you have exhausted the remediation ladder. Halt (see below).
+3) If PASS, overwrite `agents/status.md` with `### IDLE`, then re-run Orchestrator one last time.
+4) If it is not PASS, you have exhausted the remediation ladder. Halt (see below).
 
 ### Halt condition (required)
 
@@ -185,4 +189,6 @@ Your final update must include:
 - UI Verify #1: outcome + report path
 - Troubleshooter: outcome (`### TROUBLESHOOT_COMPLETE` vs `### BLOCKED`) + report path
 - UI Verify #2: outcome + report path
-- Your recommended next action options (1-3 bullets) and what you need from the user
+- Your recommended next action options (1-3 bullets), including:
+  - "Switch to smoketest-based UI verification (Quick/Thorough)?" (if all UI automation is blocked)
+  - "Proceed with manual verification" (if the user is present)

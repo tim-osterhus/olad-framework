@@ -2,9 +2,11 @@
 
 This file stores detailed, real-world examples for the small-diff-discipline skill.
 
+Append new examples to the END of this file and never change existing Example IDs.
+
 ---
 
-## Example 1: Failing test without changing behavior
+## EX-2025-12-28-01: Failing test without changing behavior
 
 **Tags**: `tests`, `debugging`, `minimal-change`
 
@@ -22,7 +24,7 @@ The `/query` endpoint test failed after a minor refactor, but the endpoint behav
 **Impact**:
 Test failure blocked merge. Risk of scope creep if test refactor introduces new bugs.
 
-**Root cause**:
+**Cause**:
 Test assertion expected old response format. Only the assertion needed updating, but developer initially planned to "clean up" 5 other test files.
 
 **Fix**:
@@ -45,7 +47,7 @@ Added to SKILL.md procedure step 3:
 
 ---
 
-## Example 2: Retrieval quality improvement scope creep
+## EX-2025-12-28-02: Retrieval quality improvement scope creep
 
 **Tags**: `retrieval`, `feature-flag`, `rollback`, `precision`
 
@@ -67,7 +69,7 @@ Task: "Improve retrieval quality." Developer started implementing: new chunking 
 - Merge conflicts with 3 other branches
 - QA couldn't validate effectively
 
-**Root cause**:
+**Cause**:
 Vague task card ("improve quality") + no constraint on scope. Developer interpreted as "fix everything possible."
 
 **Fix**:
@@ -101,5 +103,5 @@ Updated this skill (small-diff-discipline):
 
 <!--
 Add new examples below this line.
-DO NOT insert examples above existing ones (breaks line number references in SKILL.md).
+DO NOT insert examples above existing ones (breaks Example ID stability).
 -->

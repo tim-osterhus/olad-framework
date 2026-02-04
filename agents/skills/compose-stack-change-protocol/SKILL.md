@@ -4,9 +4,16 @@ description: >
   Modifies Docker Compose definitions for a multi-service stack while preserving service names,
   volumes, production defaults, and reproducible bring-up. Use when changing infrastructure
   manifests that impact runtime behavior.
+compatibility:
+  runners: ["codex-cli", "claude-code", "openclaw"]
+  tools: ["Read", "Grep", "Bash", "Write"]
+  offline_ok: true
 ---
 
 # Compose Stack Change Protocol
+
+## Purpose
+Make compose changes safely and reproducibly by enforcing a minimal-diff protocol and required bring-up verification.
 
 ## Quick start
 Goal:
@@ -138,12 +145,12 @@ Use this when changes touch infra, retrieval logic, licensing, or security:
 
 **How to reference examples:**
 - Keep summaries SHORT (1-2 sentences max)
-- Include line number reference to EXAMPLES.md
+- Reference by stable Example ID (line numbers are brittle across editors/formatters)
 - Agents will load full examples only when symptoms match
 
 **Example summaries:**
 
-1. **Port change** - Change only published port mapping, verify at new port. See EXAMPLES.md:7-40
-2. **Optional helper service** - Add new compose file without altering base stack. See EXAMPLES.md:41-90
+1. **Port change** - Change only published port mapping, verify at new port. See EXAMPLES.md (EX-2026-02-04-01)
+2. **Optional helper service** - Add new compose file without altering base stack. See EXAMPLES.md (EX-2026-02-04-02)
 
 **Note:** Full examples with tags and trigger phrases are in `./EXAMPLES.md`.

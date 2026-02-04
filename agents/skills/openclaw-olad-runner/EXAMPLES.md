@@ -2,11 +2,11 @@
 
 This file stores detailed, real-world examples for the **openclaw-olad-runner** skill.
 
-**CRITICAL:** Append new examples to the END of this file (to keep line references stable).
+**CRITICAL:** Append new examples to the END of this file and never change existing Example IDs.
 
 ---
 
-## Example 1: Run QA via OpenClaw Gateway (Bash/WSL)
+## EX-2026-01-31-01: Run QA via OpenClaw Gateway (Bash/WSL)
 
 **Tags**: `runner`, `gateway`, `openresponses`, `wsl`, `bash`, `olad`, `qa`
 
@@ -24,7 +24,7 @@ You want to run OLAD’s QA cycle using OpenClaw as the runner so you can keep O
 - Without this working, OLAD cannot run headlessly via OpenClaw.
 - You lose OpenClaw-only capabilities (exec, browser/UI verification, Telegram remote control) during the cycle.
 
-**Root cause**:
+**Cause**:
 Not a single bug — it’s missing wiring:
 - `/v1/responses` endpoint is disabled by default.
 - OLAD runner config isn’t pointing at the correct Gateway URL/agent.
@@ -139,7 +139,7 @@ Validate:
 
 ---
 
-## Example 2: 404 from /v1/responses (endpoint disabled or config mismatch)
+## EX-2026-01-31-02: 404 from /v1/responses (endpoint disabled or config mismatch)
 
 **Tags**: `gateway`, `openresponses`, `troubleshooting`, `config`, `service`, `profiles`
 
@@ -158,7 +158,7 @@ The orchestrator (or a manual curl test) hits the Gateway but gets `404 Not Foun
 - OLAD cannot use OpenClaw as a headless runner.
 - Debugging is confusing because the Gateway is “up,” but the endpoint does not exist.
 
-**Root cause**:
+**Cause**:
 One of these:
 1) The OpenResponses endpoint is disabled by default (`gateway.http.endpoints.responses.enabled=false`).
 2) You enabled it, but the Gateway service is running a different profile/config than the one you edited.
@@ -201,7 +201,7 @@ If you use named profiles:
 
 ---
 
-## Example 3: WSL can’t reach the Windows-hosted Gateway (connection refused)
+## EX-2026-01-31-03: WSL can’t reach the Windows-hosted Gateway (connection refused)
 
 **Tags**: `wsl`, `windows`, `networking`, `gateway`, `connection-refused`, `runner`
 
@@ -218,7 +218,7 @@ OLAD orchestration runs in WSL (Bash), but OpenClaw Gateway is running on the Wi
 **Impact**:
 The OpenClaw runner appears “broken” even though the Gateway is healthy from Windows.
 
-**Root cause**:
+**Cause**:
 `127.0.0.1` is “this network namespace.” In WSL, that can refer to WSL itself, not the Windows host. Depending on how OpenClaw is bound and how WSL port-forwarding is configured, loopback may not traverse from WSL → Windows.
 
 **Fix**:
@@ -259,7 +259,7 @@ If you cannot change Gateway bind settings (policy/security constraints), mark B
 
 ---
 
-## Example 4: Stream output (SSE) and keep a stable session for follow-ups
+## EX-2026-01-31-04: Stream output (SSE) and keep a stable session for follow-ups
 
 **Tags**: `streaming`, `sse`, `openresponses`, `session`, `runner`, `debugging`
 
@@ -277,7 +277,7 @@ You want intermediate output events (token deltas / item events) and you want to
 - Without streaming you only get the final payload, making debugging slow.
 - Without stable session routing, each call behaves like a fresh chat (context resets).
 
-**Root cause**:
+**Cause**:
 - The OpenResponses endpoint is stateless per request by default.
 - Streaming only happens when `stream: true` is set.
 
@@ -332,7 +332,7 @@ JSON
 
 ---
 
-## Example 5: Attach a file (diff/spec) to /v1/responses without leaking secrets
+## EX-2026-01-31-05: Attach a file (diff/spec) to /v1/responses without leaking secrets
 
 **Tags**: `input_file`, `attachments`, `openresponses`, `security`, `runner`
 
@@ -350,7 +350,7 @@ You want the OpenClaw runner to receive a local file (task card, diff, or spec) 
 - Copy/paste increases mistakes and loses provenance.
 - If you paste secrets, they may end up in logs.
 
-**Root cause**:
+**Cause**:
 The OpenResponses request needs an `input` array with an `input_file` item whose `source` is base64 (or a URL if allowed).
 
 **Fix**:

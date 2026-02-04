@@ -84,3 +84,5 @@ If you want to use OpenClaw as a first-class runner, see:
 If you want OpenClaw remote control + UI verification (Telegram/web UI supervising OLAD runs), see:
 - `agents/_supervisor.md`
 - `agents/options/openclaw/README.md`
+ - `agents/options/ui-verify/ui_verify_option.md` (UI verify flags + artifacts)
+ - `agents/options/antigravity/antigravity_option.md` (quota-safe Gemini/Anti-Gravity probing)

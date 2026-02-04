@@ -35,7 +35,7 @@ IMPORTANT: orchestration reads `agents/status.md` (not chat output). Ensure you 
 - ### BLOCKED
 
 If any "manual verification" is requested, use your available UI/browser tooling if present; otherwise replace it with a reproducible smoketest (commands + checklist).
-If the OpenClaw `browser.act` tool is unreliable in your environment, prefer using `exec` + OpenClaw CLI browser automation (example: `openclaw browser --browser-profile openclaw snapshot --interactive`).
+Prefer tool-based browser automation (for example `browser.act`) when available, and always set an explicit browser profile (default is commonly `openclaw`). If tool-based automation is blocked, fall back to CLI-driven automation via `exec` (slower/less effective).
 ```
 
 Advisor (spec to tasks):

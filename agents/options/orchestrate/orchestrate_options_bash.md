@@ -60,7 +60,7 @@ parse_model_config() {
         HOTFIX_MODEL) HOTFIX_MODEL="$value" ;;
         DOUBLECHECK_RUNNER) DOUBLECHECK_RUNNER="$value" ;;
         DOUBLECHECK_MODEL) DOUBLECHECK_MODEL="$value" ;;
-        *) echo "Unknown key in model_config: $key" >&2; return 1 ;;
+        *) echo "Warning: Unknown key in model_config (ignored): $key" >&2 ;;
       esac
     fi
   done < "agents/options/model_config.md"
@@ -92,7 +92,22 @@ parse_workflow_config() {
         OPENCLAW_MODE) OPENCLAW_MODE="$value" ;;
         OPENCLAW_GATEWAY_URL) OPENCLAW_GATEWAY_URL="$value" ;;
         OPENCLAW_AGENT_ID) OPENCLAW_AGENT_ID="$value" ;;
-        *) echo "Unknown key in workflow_config: $key" >&2; return 1 ;;
+        UI_VERIFY_MODE) UI_VERIFY_MODE="$value" ;;
+        UI_VERIFY_EXECUTOR) UI_VERIFY_EXECUTOR="$value" ;;
+        UI_VERIFY_ANALYZER) UI_VERIFY_ANALYZER="$value" ;;
+        UI_VERIFY_HOST) UI_VERIFY_HOST="$value" ;;
+        UI_VERIFY_COVERAGE) UI_VERIFY_COVERAGE="$value" ;;
+        UI_VERIFY_QUOTA_GUARD) UI_VERIFY_QUOTA_GUARD="$value" ;;
+        UI_VERIFY_BROWSER_PROFILE) UI_VERIFY_BROWSER_PROFILE="$value" ;;
+        ANTIGRAVITY_MODEL_PREF) ANTIGRAVITY_MODEL_PREF="$value" ;;
+        ANTIGRAVITY_PROBE_MODE) ANTIGRAVITY_PROBE_MODE="$value" ;;
+        ANTIGRAVITY_G3_FLASH_MODEL) ANTIGRAVITY_G3_FLASH_MODEL="$value" ;;
+        ANTIGRAVITY_G3_PRO_LOW_MODEL) ANTIGRAVITY_G3_PRO_LOW_MODEL="$value" ;;
+        ANTIGRAVITY_G3_PRO_HIGH_MODEL) ANTIGRAVITY_G3_PRO_HIGH_MODEL="$value" ;;
+        ANTIGRAVITY_G3_FLASH_EXHAUSTED_AT) ANTIGRAVITY_G3_FLASH_EXHAUSTED_AT="$value" ;;
+        ANTIGRAVITY_G3_PRO_LOW_EXHAUSTED_AT) ANTIGRAVITY_G3_PRO_LOW_EXHAUSTED_AT="$value" ;;
+        ANTIGRAVITY_G3_PRO_HIGH_EXHAUSTED_AT) ANTIGRAVITY_G3_PRO_HIGH_EXHAUSTED_AT="$value" ;;
+        *) echo "Warning: Unknown key in workflow_config (ignored): $key" >&2 ;;
       esac
     fi
   done < "agents/options/workflow_config.md"

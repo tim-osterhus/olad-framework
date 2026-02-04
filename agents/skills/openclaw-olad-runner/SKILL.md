@@ -4,9 +4,16 @@ description: >
   Run OLAD entrypoint cycles through an OpenClaw Gateway (OpenResponses-compatible /v1/responses) or by driving OpenClaw chat (Web UI/Telegram). This skill should be used when OLAD is configured with *_RUNNER=openclaw, when troubleshooting /v1/responses (401/404/connection errors), or when you need OpenClaw-only capabilities (exec, browser/UI verification, sub-agent sessions) during an OLAD cycle.
 version: "0.1.0"
 tags: ["runner", "openclaw", "gateway", "olad", "orchestrate"]
+compatibility:
+  runners: ["codex-cli", "claude-code", "openclaw"]
+  tools: ["Read", "Grep", "Bash", "Write"]
+  offline_ok: true
 ---
 
 # Run OLAD via OpenClaw Gateway
+
+## Purpose
+Make OLAD cycles runnable through an OpenClaw Gateway with deterministic logs and repeatable troubleshooting for common Gateway failures.
 
 ## Quick start
 Goal:
@@ -120,8 +127,8 @@ Inspect first:
 - Full walkthroughs + failure modes: `./EXAMPLES.md`
 
 ## Example References (concise summaries only)
-1. **Run QA via OpenClaw (WSL/Bash) end-to-end** — enable `/v1/responses`, set OLAD runner vars, run cycle, and capture logs. See EXAMPLES.md:9-139
-2. **Fix 404 on /v1/responses (endpoint disabled or wrong profile)** — enable endpoint + restart Gateway, confirm config mismatch. See EXAMPLES.md:142-200
-3. **Fix Windows↔WSL connection issues** — resolve host/port routing and avoid loopback traps. See EXAMPLES.md:204-258
-4. **Stream SSE output and reuse session context** — use `stream: true` and a stable `user` key for multi-turn runs. See EXAMPLES.md:262-332
-5. **Attach local files safely** — pass diffs/specs as `input_file` without leaking secrets. See EXAMPLES.md:335-403
+1. **Run QA via OpenClaw (WSL/Bash) end-to-end** — enable `/v1/responses`, set OLAD runner vars, run cycle, and capture logs. See EXAMPLES.md (EX-2026-01-31-01)
+2. **Fix 404 on /v1/responses (endpoint disabled or wrong profile)** — enable endpoint + restart Gateway, confirm config mismatch. See EXAMPLES.md (EX-2026-01-31-02)
+3. **Fix Windows↔WSL connection issues** — resolve host/port routing and avoid loopback traps. See EXAMPLES.md (EX-2026-01-31-03)
+4. **Stream SSE output and reuse session context** — use `stream: true` and a stable `user` key for multi-turn runs. See EXAMPLES.md (EX-2026-01-31-04)
+5. **Attach local files safely** — pass diffs/specs as `input_file` without leaking secrets. See EXAMPLES.md (EX-2026-01-31-05)

@@ -1,10 +1,10 @@
 # Examples (Codebase Audit + Documentation)
 
-Append new examples to the end.
+Append new examples to the END of this file and never change existing Example IDs.
 
 ---
 
-## Example 1: Security + dependency audit with reproducible findings
+## EX-2025-12-28-01: Security + dependency audit with reproducible findings
 
 **Tags**: `security`, `dependencies`, `reporting`
 
@@ -15,35 +15,35 @@ Append new examples to the end.
 
 **Date**: 2025-12-28
 
-**Scenario**:
-User hands over a repo and wants a practical security audit (not a theoretical essay).
+**Problem**:
+User hands over a repo and wants a practical security audit (not a theoretical essay), but without behavior changes.
 
-**Inputs to request / discover**:
-- How to run tests + linters (or confirm none exist)
-- Runtime context (local-only tool, internet-facing API, internal service)
-- Any secrets policy (are .env files expected?)
+**Cause**:
+- Findings get reported as "possible" without concrete file/line evidence.
+- The audit omits reproduction commands, so nobody can confirm the risk.
+- The audit recommends architecture redesigns instead of scoped mitigations.
 
-**Expected outputs**:
-- A short "How to reproduce" section (commands + expected output)
-- Findings grouped by severity with exact file/line pointers
-- A dependency risk summary (direct deps + known vulnerable versions if detected)
-- A doc-only patch list (where docstrings/comments are missing or misleading)
-
-**Common pitfalls**:
-- Reporting "possible" issues without evidence
-- Suggesting fixes that require architecture changes without stating scope/risk
+**Fix**:
+Produce an audit report that includes:
+- "How to run / verify" commands (tests/build/smoke), or explicitly mark as NOT AVAILABLE with why.
+- Findings grouped by severity, each with:
+  - exact file/line pointers
+  - a short evidence excerpt
+  - a scoped fix sketch (doc-only here; code changes are follow-ups)
+  - verification steps
+- Dependency risk section:
+  - list direct dependencies and any tool output available (e.g., `npm audit`, `pip-audit`, `govulncheck`, `cargo audit`)
 
 **Prevention**:
-- Only mark as a finding when you can point to concrete code/config
-- Separate "confirmed findings" vs "suspicious patterns to investigate"
+- Only mark as a finding when you can point to concrete code/config.
+- Separate "confirmed findings" vs "suspicious patterns to investigate".
 
 **References**:
-- SKILL.md: "Audit report format"
-- SKILL.md: "Security triage rules"
+- `agents/skills/codebase-audit-doc/SKILL.md` (audit report format + severity rules)
 
 ---
 
-## Example 2: Documentation coverage pass without changing behavior
+## EX-2025-12-28-02: Documentation coverage pass without changing behavior
 
 **Tags**: `documentation`, `api`, `safety`
 
@@ -54,28 +54,30 @@ User hands over a repo and wants a practical security audit (not a theoretical e
 
 **Date**: 2025-12-28
 
-**Scenario**:
-Repo works, but is hard to understand. User wants better docs without refactoring.
+**Problem**:
+Repo works, but is hard to understand. The request is "better docs" without refactoring.
 
-**Expected outputs**:
-- A prioritized list of modules/files to document first (entrypoints and public APIs)
-- Consistent docstring style and minimal "why" comments at tricky spots
-- A short "Developer quickstart" snippet if one is missing or incorrect
+**Cause**:
+- Entry points and public APIs are undocumented or misleading.
+- Docs don't state run/test commands, env vars, or operational constraints.
 
-**Guardrails**:
-- Only doc-only changes (docstrings/comments/types that do not affect runtime)
-- No moving code, no renaming exports, no changing logic
+**Fix**:
+Deliver doc-only improvements:
+- Identify and prioritize the top modules to document first (entrypoints + public APIs).
+- Add consistent docstrings and minimal "why" comments at tricky invariants.
+- Add/update a short developer quickstart snippet if missing/incorrect.
+- Re-run the repo's verification command(s) after doc edits (or at least import/compile).
 
-**Verification**:
-- Run the repo's test command (or at least import/compile step) after doc edits
-- Ensure formatting/linting still passes (or note what exists)
+**Prevention**:
+- Keep doc changes scoped (avoid reformatting the entire repo).
+- Record the exact verification command(s) run in the report.
 
 **References**:
-- SKILL.md: "Doc coverage checklist"
+- `agents/skills/codebase-audit-doc/SKILL.md` (doc coverage checklist)
 
 ---
 
-## Example 3: Complexity hotspot map for a mixed-language monorepo
+## EX-2025-12-28-03: Complexity hotspot map for a mixed-language monorepo
 
 **Tags**: `analysis`, `complexity`, `prioritization`
 
@@ -86,24 +88,29 @@ Repo works, but is hard to understand. User wants better docs without refactorin
 
 **Date**: 2025-12-28
 
-**Scenario**:
-Monorepo with multiple services. User wants the fastest path to risk reduction.
+**Problem**:
+Monorepo with multiple services. The user wants the fastest path to risk reduction.
 
-**Expected outputs**:
-- A "hotspot table" (top files by churn if git history exists; otherwise by size + centrality)
-- A shortlist of candidate refactors (but do NOT perform them in this skill)
-- A callout list of dangerous areas (auth, payments, deserialization, file IO, shell-outs)
+**Cause**:
+- Work is prioritized by vibes instead of evidence (churn, centrality, risk boundaries).
+- Large refactors are suggested without a clear "why this first" map.
 
-**Notes**:
-- If git history is present: use it to identify high-churn + bug-prone areas.
-- If not: fall back to static heuristics (LOC, nesting depth, number of dependencies).
+**Fix**:
+Create a hotspot map (no refactors in this skill):
+- Top files by churn if git history exists; otherwise by LOC + centrality + dependency fan-in.
+- Call out hotspots near security boundaries (auth, payments, deserialization, file IO, shell-outs).
+- Propose follow-up tasks (hand off to cleanup/refactor skill) with clear scope + verification gates.
+
+**Prevention**:
+- Keep the hotspot list short (top 5-15).
+- Separate "confirmed hazards" vs "candidates to refactor."
 
 **References**:
-- SKILL.md: "Hotspot identification"
+- `agents/skills/codebase-audit-doc/SKILL.md` (hotspot identification guidance)
 
 ---
 
-## Example 4: Hardening documentation for deployment + configuration
+## EX-2025-12-28-04: Hardening documentation for deployment + configuration
 
 **Tags**: `configuration`, `ops`, `security`
 
@@ -114,17 +121,24 @@ Monorepo with multiple services. User wants the fastest path to risk reduction.
 
 **Date**: 2025-12-28
 
-**Scenario**:
+**Problem**:
 Incidents are caused by unclear config (CORS, auth keys, debug flags, ports).
 
-**Expected outputs**:
-- A single source of truth for required configuration (docs near the config schema)
-- Explicit defaults + safe recommended values
-- A "misconfig traps" section (what breaks / what becomes unsafe)
+**Cause**:
+- Required env vars and defaults are undocumented (or scattered).
+- "Safe defaults" are unclear, so operators guess.
 
-**Guardrails**:
-- Do not change runtime defaults unless explicitly asked (that belongs in the cleanup/refactor skill)
-- If a default is unsafe, document it as unsafe and propose a follow-up task
+**Fix**:
+Doc-only hardening:
+- Create a single source of truth for required configuration (near the config schema).
+- Document defaults + safe recommended values.
+- Add a "misconfig traps" section: what breaks and what becomes unsafe.
+- If a default is unsafe, document it as unsafe and open a follow-up task (do not change behavior here).
+
+**Prevention**:
+- Keep docs tied to the actual config schema (avoid drift).
+- Require every env var doc entry to include: purpose, default, safe value, and how to verify.
 
 **References**:
-- SKILL.md: "Config audit checklist"
+- `agents/skills/codebase-audit-doc/SKILL.md` (config audit checklist)
+

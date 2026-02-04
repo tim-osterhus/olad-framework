@@ -50,6 +50,7 @@ These are framework-owned and may be upgraded:
 - Prompt templates: `agents/prompts/*.md` (excluding `agents/prompts/tests/`)
 - Roles and skills: `agents/roles/`, `agents/skills/`
 - Options packets: `agents/options/**`
+- UI verification spec template: `agents/ui_verification_spec.yaml`
 - Framework docs: `OLAD_framework.md`, `quickstart.md`, `CHANGELOG.md`
 - Adapter packs: `agents/options/openclaw/**` (if present)
 
@@ -63,6 +64,9 @@ Note on path migrations:
   add new presets/notes below or above without changing existing KEY=value lines.
 - `agents/options/workflow_config.md`: preserve existing `## KEY=value` lines;
   if new keys are required, add them as **commented defaults** only.
+- `agents/ui_verification_spec.yaml`: preserve user-set values; if new keys are
+  introduced by the framework, add them as commented/defaulted fields without
+  changing existing values.
 
 ## Procedure (minimal, safe)
 1) **Inventory current state**
@@ -90,6 +94,9 @@ Note on path migrations:
 8) **Sanity check**
    - Confirm none of the “Files to preserve” were modified.
    - Spot-check that entrypoints still point to valid files.
+   - If skills were upgraded (or you have custom skills), run:
+     - `python3 agents/skills/lint_skills.py`
+     - Fix any failures before proceeding (Example IDs are now the stable reference; avoid EXAMPLES.md line numbers).
 
 ## If conflicts appear
 - Do not overwrite user edits silently.

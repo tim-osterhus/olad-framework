@@ -11,6 +11,7 @@ Skills are optional and auto-discovered by the Builder/QA prompts via
 3) Copy `_examples_template.md` → `<skill-name>/EXAMPLES.md`
 4) Fill out `SKILL.md` (keep it short and procedural)
 5) Add entry to `agents/skills/skills_index.md`
+6) Run the linter: `python3 agents/skills/lint_skills.py`
 
 ## Skill Structure (Context-Efficient Design)
 
@@ -18,7 +19,7 @@ Skills are optional and auto-discovered by the Builder/QA prompts via
 - **Purpose**: Procedural checklist, triggers, DONE criteria
 - **Size**: ~1 page max (~500 lines)
 - **Content**: What to do, when to use it, how to validate
-- **Examples**: Brief 1-2 sentence summaries with line references to EXAMPLES.md
+- **Examples**: Brief 1-2 sentence summaries with stable Example IDs (no line numbers)
 
 ### EXAMPLES.md (Loaded Only When Symptoms Match)
 - **Purpose**: Detailed real-world fixes with searchable metadata
@@ -40,7 +41,7 @@ Skills are optional and auto-discovered by the Builder/QA prompts via
 3. **Append your new example** using this structure:
 
 ```markdown
-## Example N: [Short title]
+## EX-YYYY-MM-DD-NN: [Short title]
 
 **Tags**: `retrieval`, `tests`, `regression`
 
@@ -54,7 +55,7 @@ Skills are optional and auto-discovered by the Builder/QA prompts via
 
 **Impact**: Who was affected...
 
-**Root cause**: The actual bug...
+**Cause**: The actual bug...
 
 **Fix**: Exact steps taken...
 
@@ -63,19 +64,17 @@ Skills are optional and auto-discovered by the Builder/QA prompts via
 **References**: Files, commands, commits...
 ```
 
-4. **Note the line numbers** where your example starts and ends (e.g., lines 142-178)
-5. **Open the skill's SKILL.md file**
-6. **Scroll to "Example References" section**
-7. **Add a concise summary** with the line reference:
+4. **Open the skill's SKILL.md file**
+5. **Scroll to "Example References" section**
+6. **Add a concise summary** that references the Example ID:
 
 ```markdown
-3. **Citations missing after reranker** - Reranker was dropping citation metadata. See EXAMPLES.md:142-178
+3. **Citations missing after reranker** - Reranker was dropping citation metadata. See EXAMPLES.md (EX-2025-12-28-03)
 ```
 
-**⚠️ WARNING: NEVER insert examples in the middle of EXAMPLES.md!**
+**WARNING: NEVER insert examples in the middle of EXAMPLES.md and never change existing Example IDs!**
 
-Inserting examples breaks all existing line number references in SKILL.md.
-Always append to the END to keep references accurate.
+Always append to the END to keep IDs stable.
 
 ## Guidelines
 
@@ -100,3 +99,14 @@ Always append to the END to keep references accurate.
 ```
 
 This keeps context usage minimal while maintaining institutional knowledge.
+
+## Skill Linter (recommended guardrail)
+
+Run:
+- `python3 agents/skills/lint_skills.py`
+
+This checks:
+- Skill folder structure (`SKILL.md` + `EXAMPLES.md`)
+- Index coverage (`agents/skills/skills_index.md`)
+- Required SKILL.md sections (Purpose/Triggers/Inputs/Outputs/Procedure/DONE/Non-goals)
+- Example ID + Trigger phrases + Cause/Fix/Prevention presence in `EXAMPLES.md`

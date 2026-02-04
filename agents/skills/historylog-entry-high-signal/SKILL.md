@@ -2,9 +2,16 @@
 name: historylog-entry-high-signal
 description: >
   Adds a concise, forensic `agents/historylog.md` entry that captures what changed, why it changed, how it was verified, and what is risky or next.
+compatibility:
+  runners: ["codex-cli", "claude-code", "openclaw"]
+  tools: ["Read", "Write"]
+  offline_ok: true
 ---
 
 # Historylog Entry (High Signal)
+
+## Purpose
+Make changes auditable and reproducible by forcing every run to leave a concise, copy/paste-verifiable historylog entry.
 
 ## Quick start
 Goal:
@@ -144,13 +151,13 @@ Common failures:
 
 **How to reference examples:**
 - Keep summaries SHORT (1-2 sentences max)
-- Include line number reference to EXAMPLES.md
+- Reference by stable Example ID (line numbers are brittle across editors/formatters)
 - Agents will load full examples only when symptoms match
 
 **Example summaries:**
 
-1. **LibreChat RAG API integration** - Document exact config/endpoint changed with verification commands. See EXAMPLES.md:7-56
-2. **Chunking defaults change** - Include old/new values, backfill requirement, corpus impact. See EXAMPLES.md:59-114
+1. **LibreChat RAG API integration** - Document exact config/endpoint changed with verification commands. See EXAMPLES.md (EX-2025-12-28-01)
+2. **Chunking defaults change** - Include old/new values, backfill requirement, corpus impact. See EXAMPLES.md (EX-2025-12-28-02)
 
 **Note:** Full examples with tags and trigger phrases are in `./EXAMPLES.md`.
 Agents search that file only when they encounter matching symptoms (context-efficient).

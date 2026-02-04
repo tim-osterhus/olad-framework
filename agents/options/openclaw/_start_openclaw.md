@@ -11,7 +11,8 @@ This is an OpenClaw-enhanced wrapper around the normal Builder entrypoint. It ex
 
 2) Use OpenClaw capabilities when helpful:
    - If implementation requires interacting with a UI or reproducing a UI-only bug, use your available UI/browser tooling.
-   - If the OpenClaw `browser.act` tool is unreliable in your environment, prefer using `exec` to drive OpenClaw's CLI browser automation (example: `openclaw browser --browser-profile openclaw snapshot --interactive`).
+   - Prefer tool-based browser automation (for example `browser.act`) when available, and always set an explicit browser profile (default is commonly `openclaw`).
+   - If tool-based automation is blocked, fall back to CLI-driven automation via `exec` (slower/less effective).
    - Capture evidence when it materially reduces ambiguity (screenshots, URLs, console errors).
 
 3) Keep OLAD contracts intact:

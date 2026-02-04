@@ -9,6 +9,11 @@ NOTES (keep as-is unless you have a reason):
 name: <kebab-case-skill-name>               # REQUIRED. <=64 chars. lowercase letters/numbers/hyphens only.
 description: >                              # REQUIRED. <=1024 chars. Third-person. What it does + when to use it.
   <One sentence: what this skill does. One sentence: when to use it, with concrete triggers/keywords.>
+# Compatibility metadata (recommended; used by OLAD skill tooling):
+compatibility:
+  runners: ["codex-cli", "claude-code", "openclaw"]  # Edit as needed.
+  tools: ["Read", "Grep", "Bash", "Write"]           # Edit as needed.
+  offline_ok: true                                  # True if no internet/web browsing is required.
 # Optional metadata (keep only what fits your environment):
 # version: "0.1.0"
 # owner: "<team-or-handle>"
@@ -19,6 +24,9 @@ description: >                              # REQUIRED. <=1024 chars. Third-pers
 ---
 
 # <Human-readable Skill Title>
+
+## Purpose
+<1–2 sentences max. What this skill exists to do (not a full re-explanation of the task).>
 
 ## Quick start
 Goal:
@@ -155,14 +163,14 @@ Common failures:
 
 **How to reference examples:**
 - Keep summaries SHORT (1-2 sentences max)
-- Include line number reference to EXAMPLES.md
+- Reference by stable Example ID (line numbers are brittle across editors/formatters)
 - Agents will load full examples only when symptoms match
 
 **Example summaries:**
 
-1. **[Short title]** - Brief description of the issue/fix. See EXAMPLES.md:15-42
-2. **[Another issue]** - One-liner summary. See EXAMPLES.md:44-68
-3. **[Edge case]** - Quick note. See EXAMPLES.md:70-95
+1. **[Short title]** - Brief description of the issue/fix. See EXAMPLES.md (EX-YYYY-MM-DD-01)
+2. **[Another issue]** - One-liner summary. See EXAMPLES.md (EX-YYYY-MM-DD-02)
+3. **[Edge case]** - Quick note. See EXAMPLES.md (EX-YYYY-MM-DD-03)
 
 **Note:** Full examples with tags and trigger phrases are in `./EXAMPLES.md`.
 Agents search that file only when they encounter matching symptoms (context-efficient).

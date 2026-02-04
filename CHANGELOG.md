@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.5.0] - 2026-02-04
+
+### Added
+- UI verification option pack: `agents/options/ui-verify/` (workflow flags + artifact contract + YAML spec template)
+- Anti-Gravity option pack: `agents/options/antigravity/` (Gemini 3 probe-call scripts + quota exhaustion timestamp flags + analyzer runner)
+- UI verification spec template: `agents/ui_verification_spec.yaml`
+- Skill linter: `agents/skills/lint_skills.py` (guards against skill drift and brittle example references)
+- New UI skills:
+  - `agents/skills/playwright-ui-verification/`
+  - `agents/skills/openclaw-antigravity-ui-verify/`
+  - `agents/skills/ui-quality-gates/`
+  - `agents/skills/frontend-review/`
+  - `agents/skills/ui-heuristics-scorecard/`
+
+### Changed
+- Supervisor is now allowed to write ONLY `agents/status.md` (all other repo writes remain sub-session-only)
+- Bash headless templates now ignore unknown config keys (warn/ignore) to reduce breakage as new flags are added
+- OpenClaw UI verification guidance now prefers tool-based browser automation with an explicit browser profile; CLI automation is a fallback
+- `_customize.md` now includes an optional UI verification (OpenClaw/Anti-Gravity) configuration step
+- Skills now include `compatibility` metadata in YAML frontmatter (supported runners/tools + offline_ok)
+- Skill examples are now referenced by stable Example IDs (EX-YYYY-MM-DD-NN), not EXAMPLES.md line numbers
+
 ## [1.4.1] - 2026-02-01
 
 ### Fixed

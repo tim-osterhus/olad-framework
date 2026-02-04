@@ -2,9 +2,16 @@
 name: small-diff-discipline
 description: >
   Enforces minimal, reviewable changes by constraining scope, file touches, and commit-like diff size to reduce breakage in a production offline, multi-service stack.
+compatibility:
+  runners: ["codex-cli", "claude-code", "openclaw"]
+  tools: ["Read", "Grep", "Bash", "Write"]
+  offline_ok: true
 ---
 
 # Small-Diff Discipline
+
+## Purpose
+Reduce regressions and merge pain by forcing the smallest possible change set that still meets the task's DONE checks.
 
 ## Quick start
 Goal:
@@ -146,13 +153,13 @@ Common failures:
 
 **How to reference examples:**
 - Keep summaries SHORT (1-2 sentences max)
-- Include line number reference to EXAMPLES.md
+- Reference by stable Example ID (line numbers are brittle across editors/formatters)
 - Agents will load full examples only when symptoms match
 
 **Example summaries:**
 
-1. **Failing test without changing behavior** - Fixed `/query` test by touching only the failing function and test. See EXAMPLES.md:7-45
-2. **Retrieval quality improvement scope creep** - Added toggle + minimal scoring adjustment with precision@k report. See EXAMPLES.md:47-99
+1. **Failing test without changing behavior** - Fixed `/query` test by touching only the failing function and test. See EXAMPLES.md (EX-2025-12-28-01)
+2. **Retrieval quality improvement scope creep** - Added toggle + minimal scoring adjustment with precision@k report. See EXAMPLES.md (EX-2025-12-28-02)
 
 **Note:** Full examples with tags and trigger phrases are in `./EXAMPLES.md`.
 Agents search that file only when they encounter matching symptoms (context-efficient).
