@@ -22,7 +22,7 @@ The framework defines a small set of agent entrypoints and artifacts:
 - **Builder**: implements tasks and small fixes quickly and safely.
 - **QA**: verifies changes and records evidence.
 - **Advisor**: handles freeform tasks like scoping work, explaining code, or drafting backlog task cards.
-- **Orchestrator**: runs Builder → QA → (optional) Quickfix headlessly. Optional orchestration features (e.g., Integration cycles, Troubleshooter, no-manual QA smoketests) are enabled during customization.
+- **Orchestrator**: runs Builder → QA → (optional) Quickfix headlessly. Optional orchestration features (e.g., Integration cycles, Troubleshooter, manual UI verification queue, no-manual QA smoketests) are enabled during customization.
 
 Builder runs create and consume prompt artifacts by default, and every outcome is recorded at the top of `agents/historylog.md` (newest first). Orchestration uses `agents/status.md` as the sole signaling file.
 
@@ -138,9 +138,13 @@ Doublecheck QA uses `agents/_doublecheck.md` to validate quickfixes.
 
 - **Integration Steward:** `agents/_integrate.md` runs an integration sweep and writes an Integration Report. Orchestrated Integration runs only if enabled during customization, and tasks may use `**Gates:** INTEGRATION` only when Integration is installed.
 
-### 5.6) No-Manual QA (Optional)
+### 5.6) QA Manual Verification Policy (Optional)
 
-If enabled during customization, QA must not request human/manual verification and instead replaces manual checks with tracked smoketest artifacts under `agents/prompts/tests/`.
+During customization, you can choose how QA handles manual verification:
+
+- Manual Allowed (default): QA may request manual verification and may stop if blocked.
+- Manual Queue (Non-blocking UI checks): if a manual UI check is needed, QA appends it to `agents/manualtasks.md` and continues.
+- No-Manual QA (Smoketests): QA must not request human/manual verification and instead replaces manual checks with tracked smoketest artifacts under `agents/prompts/tests/`.
 
 ### 6) Roles and Specialization
 

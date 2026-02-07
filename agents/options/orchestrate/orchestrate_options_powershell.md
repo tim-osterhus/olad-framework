@@ -321,7 +321,7 @@ Troubleshooter (only if installed and enabled by `agents/_orchestrate.md`):
 $context = "<blocker summary>"
 Invoke-OladCycle `
   -Runner "codex" `
-  -Model  "gpt-5.2-codex" `
+  -Model  "gpt-5.3-codex" `
   -Prompt "Open agents/_troubleshoot.md and follow instructions. For context: `"$context`"" `
   -StdoutPath "$runDir\\troubleshoot.stdout.log" `
   -StderrPath "$runDir\\troubleshoot.stderr.log" `

@@ -90,6 +90,11 @@ Builder runs must stay strictly within this repo and must not read/write outside
 
 The QA cycle is defined in `agents/_check.md` and `agents/prompts/qa_cycle.md`.
 
+If the optional "manual queue" feature is enabled during customization, manual UI verification must be non-blocking:
+- QA appends checklist items to `agents/manualtasks.md`
+- QA continues validating headlessly
+- QA must NOT set `### BLOCKED` solely because a manual UI check is needed
+
 If the optional "no-manual QA" feature is enabled during customization, the QA cycle must replace manual verification steps with tracked smoketest artifacts under `agents/prompts/tests/`.
 
 1) **Read requirements only**
@@ -177,6 +182,7 @@ Stop and signal blockers when:
 - OpenClaw Supervisor (optional): `agents/_supervisor.md`
 - Tasks: `agents/tasks.md`, `agents/tasksbacklog.md`, `agents/tasksarchive.md`
 - Prompt artifacts: `agents/prompts/tasks/`, `agents/prompts/run_prompt.md`
+- Manual UI verification queue (optional): `agents/manualtasks.md` (enabled only if installed during customization)
 - QA smoketest artifacts (optional): `agents/prompts/tests/` (enabled only if installed during customization)
 - UI verification (optional, OpenClaw): `agents/options/openclaw/_ui_verify.md`, `agents/ui_verification_spec.yaml`, `agents/options/ui-verify/`, `agents/options/antigravity/`
 - Signals/logs: `agents/status.md`, `agents/quickfix.md`, `agents/expectations.md`, `agents/historylog.md`

@@ -106,12 +106,19 @@ Then:
 
 ## Step 2.8: QA Manual Verification Policy (Optional)
 
-This controls whether QA is allowed to request human/manual verification.
+This controls whether QA is allowed to request human/manual verification (and whether manual UI checks should block the workflow).
 
 Ask the user to choose one:
 - Manual Allowed (default): QA may request manual verification (headless runs may stop).
+- Manual Queue (Non-blocking): QA must NOT block on manual UI verification. If a manual UI check is required, append a checklist item to `agents/manualtasks.md` and proceed with the rest of QA.
 - Quick Smoketests: QA must NOT request manual verification; replace manual checks with smoketest artifacts under `agents/prompts/tests/`.
 - Thorough Smoketests: same as Quick, but QA prefers applying/creating stack-specific smoketest skills when needed.
+
+Then:
+- Set `## QA_MANUAL_POLICY=<ManualAllowed|ManualQueue|QuickSmoketests|ThoroughSmoketests>` in `agents/options/workflow_config.md`.
+
+If Manual Queue:
+- Open `agents/options/manual-queue/manual_queue_option.md` and follow its instructions (install/wire the non-blocking manual UI verification queue).
 
 If Quick or Thorough:
 - Open `agents/options/no-manual/no_manual_option.md` and follow its instructions (install the chosen mode).

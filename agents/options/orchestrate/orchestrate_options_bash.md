@@ -89,6 +89,7 @@ parse_workflow_config() {
         INTEGRATION_TARGET) INTEGRATION_TARGET="$value" ;;
         HEADLESS_PERMISSIONS) HEADLESS_PERMISSIONS="$value" ;;
         SHELL_TEMPLATES) SHELL_TEMPLATES="$value" ;;
+        QA_MANUAL_POLICY) QA_MANUAL_POLICY="$value" ;;
         OPENCLAW_MODE) OPENCLAW_MODE="$value" ;;
         OPENCLAW_GATEWAY_URL) OPENCLAW_GATEWAY_URL="$value" ;;
         OPENCLAW_AGENT_ID) OPENCLAW_AGENT_ID="$value" ;;
@@ -389,7 +390,7 @@ run_cycle "$DOUBLECHECK_RUNNER" "$DOUBLECHECK_MODEL" "Open agents/_doublecheck.m
 Troubleshooter (only if installed and enabled by `agents/_orchestrate.md`):
 
 ```bash
-run_cycle "codex" "gpt-5.2-codex" "Open agents/_troubleshoot.md and follow instructions. For context: \"<blocker summary>\"" \
+run_cycle "codex" "gpt-5.3-codex" "Open agents/_troubleshoot.md and follow instructions. For context: \"<blocker summary>\"" \
   "$RUN_DIR/troubleshoot.stdout.log" "$RUN_DIR/troubleshoot.stderr.log" "$RUN_DIR/troubleshoot.last.md"
 ```
 
@@ -398,7 +399,7 @@ run_cycle "codex" "gpt-5.2-codex" "Open agents/_troubleshoot.md and follow instr
 If you have GNU `timeout`, wrap a call like:
 
 ```bash
-timeout 5400 codex exec --model gpt-5.2-codex --full-auto -o "$RUN_DIR/builder.last.md" "Open agents/_start.md and follow instructions."
+timeout 5400 codex exec --model gpt-5.3-codex --full-auto -o "$RUN_DIR/builder.last.md" "Open agents/_start.md and follow instructions."
 ```
 
 ## Diagnostics PR helpers (gh)

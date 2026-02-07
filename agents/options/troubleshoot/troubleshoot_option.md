@@ -4,7 +4,7 @@ This option is intended to be used by `agents/_customize.md`.
 
 Goal: when the Orchestrator/Runner hits a blocker, it can optionally spawn a dedicated Troubleshooter run to diagnose and apply the smallest fix that unblocks orchestration before requiring manual intervention.
 
-This is expensive. It is intended to run on `gpt-5.2-codex` with **xhigh reasoning**.
+This is expensive. It is intended to run on `gpt-5.3-codex` with **xhigh reasoning**.
 
 ## When this option is OFF (default)
 

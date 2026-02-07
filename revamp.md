@@ -39,6 +39,7 @@ These are repo-specific and must remain untouched:
 - `agents/expectations.md`
 - `agents/roadmap.md`
 - `agents/quickfix.md`
+- `agents/manualtasks.md` (if present)
 - Any `agents/runs/`, `agents/diagnostics/`, `agents/prompts/tests/`, or `agents/specs/` content
 
 If any of the above are missing, **do not create them** during a revamp.

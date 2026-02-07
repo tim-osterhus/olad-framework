@@ -6,16 +6,16 @@ This file is the **only** place you should change model choices for OLAD cycles.
 ## Active config (edit these KEY=value lines)
 
 INTEGRATION_RUNNER=codex
-INTEGRATION_MODEL=gpt-5.2-codex
+INTEGRATION_MODEL=gpt-5.3-codex
 
 BUILDER_RUNNER=codex
-BUILDER_MODEL=gpt-5.2-codex
+BUILDER_MODEL=gpt-5.3-codex
 
 QA_RUNNER=claude
 QA_MODEL=sonnet
 
 HOTFIX_RUNNER=codex
-HOTFIX_MODEL=gpt-5.2-codex
+HOTFIX_MODEL=gpt-5.3-codex
 
 DOUBLECHECK_RUNNER=claude
 DOUBLECHECK_MODEL=sonnet
@@ -27,16 +27,16 @@ DOUBLECHECK_MODEL=sonnet
 ### 1) Default (Codex Integration/Builder/Hotfix, Claude QA/Doublecheck)
 
 INTEGRATION_RUNNER=codex
-INTEGRATION_MODEL=gpt-5.2-codex
+INTEGRATION_MODEL=gpt-5.3-codex
 
 BUILDER_RUNNER=codex
-BUILDER_MODEL=gpt-5.2-codex
+BUILDER_MODEL=gpt-5.3-codex
 
 QA_RUNNER=claude
 QA_MODEL=sonnet
 
 HOTFIX_RUNNER=codex
-HOTFIX_MODEL=gpt-5.2-codex
+HOTFIX_MODEL=gpt-5.3-codex
 
 DOUBLECHECK_RUNNER=claude
 DOUBLECHECK_MODEL=sonnet
@@ -44,16 +44,16 @@ DOUBLECHECK_MODEL=sonnet
 ### 1.5) Default Performance (Codex Integration/Builder/Hotfix, Claude QA/Doublecheck on Opus)
 
 INTEGRATION_RUNNER=codex
-INTEGRATION_MODEL=gpt-5.2-codex
+INTEGRATION_MODEL=gpt-5.3-codex
 
 BUILDER_RUNNER=codex
-BUILDER_MODEL=gpt-5.2-codex
+BUILDER_MODEL=gpt-5.3-codex
 
 QA_RUNNER=claude
 QA_MODEL=opus
 
 HOTFIX_RUNNER=codex
-HOTFIX_MODEL=gpt-5.2-codex
+HOTFIX_MODEL=gpt-5.3-codex
 
 DOUBLECHECK_RUNNER=claude
 DOUBLECHECK_MODEL=opus
@@ -61,33 +61,33 @@ DOUBLECHECK_MODEL=opus
 ### 2) All Codex
 
 INTEGRATION_RUNNER=codex
-INTEGRATION_MODEL=gpt-5.2-codex
+INTEGRATION_MODEL=gpt-5.3-codex
 
 BUILDER_RUNNER=codex
-BUILDER_MODEL=gpt-5.2-codex
+BUILDER_MODEL=gpt-5.3-codex
 
 QA_RUNNER=codex
-QA_MODEL=gpt-5.2-codex
+QA_MODEL=gpt-5.3-codex
 
 HOTFIX_RUNNER=codex
-HOTFIX_MODEL=gpt-5.2-codex
+HOTFIX_MODEL=gpt-5.3-codex
 
 DOUBLECHECK_RUNNER=codex
-DOUBLECHECK_MODEL=gpt-5.2-codex
+DOUBLECHECK_MODEL=gpt-5.3-codex
 
 ### 2.5) All Codex Performance (Codex everywhere, higher-reasoning for QA/Doublecheck)
 
 INTEGRATION_RUNNER=codex
-INTEGRATION_MODEL=gpt-5.2-codex
+INTEGRATION_MODEL=gpt-5.3-codex
 
 BUILDER_RUNNER=codex
-BUILDER_MODEL=gpt-5.2-codex
+BUILDER_MODEL=gpt-5.3-codex
 
 QA_RUNNER=codex
 QA_MODEL=gpt-5.2
 
 HOTFIX_RUNNER=codex
-HOTFIX_MODEL=gpt-5.2-codex
+HOTFIX_MODEL=gpt-5.3-codex
 
 DOUBLECHECK_RUNNER=codex
 DOUBLECHECK_MODEL=gpt-5.2
@@ -149,7 +149,7 @@ DOUBLECHECK_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 
 - Set each `*_RUNNER` to `codex`, `claude`, or `openclaw`.
 - Set each `*_MODEL` to:
-  - Codex: a model id (example: `gpt-5.2-codex`)
+  - Codex: a model id (example: `gpt-5.3-codex`)
   - Claude: a model alias/id (example: `sonnet`)
   - OpenClaw: a model string passed to OpenClaw's OpenResponses endpoint (`/v1/responses`)
     (typically a Gateway/provider model id; some installs may also support an alias like `openclaw`)
@@ -160,7 +160,7 @@ DOUBLECHECK_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 
 These are listed as recommended/alternative models in OpenAI's Codex Models docs:
 
-- gpt-5.2-codex
+- gpt-5.3-codex
 - gpt-5.1-codex-max
 - gpt-5.1-codex-mini
 - gpt-5.2

@@ -5,6 +5,8 @@ Use this registry to discover and apply relevant skills. Pick up to 3 per task.
 | Skill | When to use (triggers) | Inputs | Outputs |
 | --- | --- | --- | --- |
 | [Task Card Authoring (Repo-Exact)](./task-card-authoring-repo-exact/SKILL.md) | Converting vague requests into a single task card | `agents/tasks.md`, `agents/tasksbacklog.md` | Updated `agents/tasks.md` with DONE checks |
+| [Advisor Plan Pushback](./advisor-plan-pushback/SKILL.md) | Plan critique, pushback, identifying brittle assumptions and lowest-risk sequence | Plan/spec (`agents/tasks.md` or message), `README.md`, `agents/outline.md` | 1-3 hard objections + risk scan + safer sequence |
+| [Advisor Architecture Sanity Check](./advisor-architecture-sanity-check/SKILL.md) | Architecture/design sanity-check (reliability/operability/security) | System description, `README.md`, `agents/outline.md` | Risks + missing decisions + simplest viable architecture |
 | [Small-Diff Discipline](./small-diff-discipline/SKILL.md) | Any code change; especially infra/librechat/rag_api | Scope, target files | Minimal diff plan + change set |
 | [Historylog Entry (High Signal)](./historylog-entry-high-signal/SKILL.md) | After any builder/QA run | Change summary, commands run | Prepend to `agents/historylog.md` |
 | [Compose Stack Change Protocol](./compose-stack-change-protocol/SKILL.md) | Docker compose or infra changes | `infra/compose/`, compose commands | Updated compose + validation |

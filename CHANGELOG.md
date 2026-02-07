@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.6.0] - 2026-02-06
+
+### Added
+- Manual UI verification queue option packet: `agents/options/manual-queue/`
+  - Enables non-blocking QA behavior where manual UI checks are appended to `agents/manualtasks.md` instead of stopping orchestration.
+- New Advisor skills (opinionated planning/architecture pushback):
+  - `agents/skills/advisor-plan-pushback/`
+  - `agents/skills/advisor-architecture-sanity-check/`
+
+### Changed
+- Default Codex model references updated from `gpt-5.2-codex` to `gpt-5.3-codex` in:
+  - `agents/options/model_config.md` (presets + examples)
+  - `agents/options/orchestrate/orchestrate_options_*.md` (Troubleshooter templates)
+  - `agents/options/troubleshoot/` docs
+- QA manual verification policy is now recorded as `## QA_MANUAL_POLICY=...` in `agents/options/workflow_config.md` (wiring is still performed by `_customize.md` + option packets).
+- Advisor entrypoint now explicitly applies skills for plan critique/architecture sanity-check requests (`agents/_advisor.md`).
+- Docs updated to reflect the new Manual Queue option and `agents/manualtasks.md` artifact: `README.md`, `quickstart.md`, `OLAD_framework.md`, `revamp.md`.
+
 ## [1.5.1] - 2026-02-04
 
 ### Fixed

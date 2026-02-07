@@ -25,7 +25,10 @@ If you already have an `agents/` directory, merge carefully and keep one set of 
 After this step, the framework is tailored to your project.
 
 Note: during customization, the agent will also ask which **model preset** you want and update `agents/options/model_config.md`. It will also set headless sub-agent permissions (Normal/Elevated/Maximum) in `agents/options/workflow_config.md`. Orchestrator behavior is configured during customization via `agents/options/`.
-Optional: during customization, you can choose whether QA is allowed to request manual verification, or whether QA must replace manual checks with tracked smoketest artifacts (Quick/Thorough smoketests).
+Optional: during customization, you can choose the QA manual verification policy:
+- Manual Allowed: QA may request manual verification (headless runs may stop).
+- Manual Queue (Non-blocking): manual UI checks are appended to `agents/manualtasks.md` and do not block orchestration.
+- Quick/Thorough smoketests: QA replaces manual checks with tracked smoketest artifacts (and optionally smoketest skills).
 
 ## 3) Create or Update a Task
 
