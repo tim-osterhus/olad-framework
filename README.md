@@ -14,6 +14,7 @@ To get started ASAP, check out `quickstart.md`.
 - A stable structure for task prompts, QA, and history logging.
 - A deterministic orchestration loop with clear status signaling.
 - A repeatable onboarding flow that makes a repo “agent-ready.”
+- An optional local, long-running orchestrator loop (`agents/orchestrate_loop.sh`) that can drain the backlog in the foreground (tmux-friendly), auto-demote hard blockers to `agents/tasksbackburner.md`, and optionally run in daemon mode (wake on backlog edits with debounce + poll fallback).
 
 ## How It Works (High Level)
 
@@ -100,6 +101,8 @@ Key behavior:
 
 Use `agents/_orchestrate.md` for the exact runbook and guardrails.
 
+If you need a long-running local runner that can keep going for hours/days outside a chat session, use `agents/orchestrate_loop.sh` (see `OLAD_framework.md` for requirements, daemon-mode settings, hard-blocker demotion behavior, and Troubleshoot/no-troubleshoot notes).
+
 ### 3) Prompt Artifacts (Prompt Engineering Cycle)
 
 Prompt artifacts are the default plan carrier for each task. They can be executed without re-planning.
@@ -144,7 +147,8 @@ During customization, you can choose how QA handles manual verification:
 
 - Manual Allowed (default): QA may request manual verification and may stop if blocked.
 - Manual Queue (Non-blocking UI checks): if a manual UI check is needed, QA appends it to `agents/manualtasks.md` and continues.
-- No-Manual QA (Smoketests): QA must not request human/manual verification and instead replaces manual checks with tracked smoketest artifacts under `agents/prompts/tests/`.
+- Quick Smoketests: QA must not request human/manual verification and instead replaces manual checks with tracked smoketest artifacts under `agents/prompts/tests/` (no new skills are authored during QA).
+- Thorough Smoketests: same as Quick, but QA prefers applying or authoring stack-specific smoketest skills when needed.
 
 ### 6) Roles and Specialization
 
@@ -175,6 +179,7 @@ Every session prepends to the top of `agents/historylog.md` (newest first) with 
 - `quickstart.md` — step-by-step usage guide
 - `agents/_customize.md` — one-time onboarding prompt
 - `agents/_orchestrate.md` — orchestration entrypoint
+- `agents/orchestrate_loop.sh` — local foreground runner (tmux-friendly; supports optional daemon wake-on-edit mode; auto-demotes hard blockers to `agents/tasksbackburner.md`; see `OLAD_framework.md` for requirements)
 - `agents/_supervisor.md` — OpenClaw remote supervisor (optional)
 - `agents/options/` — optional feature packets, configs, and headless templates
 - `agents/options/openclaw/` — OpenClaw adapter pack (runner integration + message templates)

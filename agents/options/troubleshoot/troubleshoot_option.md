@@ -11,11 +11,21 @@ This is expensive. It is intended to run on `gpt-5.3-codex` with **xhigh reasoni
 - `agents/_orchestrate.md` must not mention Troubleshooting.
 - Do not install `agents/_troubleshoot.md`.
 
+If you use the local foreground runner (`agents/orchestrate_loop.sh`), do **not** use the Troubleshooter-enabled variant unless you also install `agents/_troubleshoot.md`.
+Instead, use the no-troubleshooter variant at:
+- `agents/options/troubleshoot/orchestrate_loop_no_ts.sh`
+In this mode, hard blockers are auto-demoted to `agents/tasksbackburner.md`.
+
 ## When this option is ON
 
 You must:
 1) Install the Troubleshooter entrypoint into `agents/`
 2) Patch `agents/_orchestrate.md` to invoke it on blockers (single attempt per blocker)
+
+If you use the local foreground runner:
+- Use `agents/orchestrate_loop.sh` (it will attempt a single Troubleshooter run per blocker).
+- The no-troubleshooter variant (`agents/options/troubleshoot/orchestrate_loop_no_ts.sh`) remains available if you prefer to disable auto-remediation even with this option installed.
+In either variant, hard blockers are auto-demoted to `agents/tasksbackburner.md` so the loop can continue.
 
 ## Files this option may touch
 

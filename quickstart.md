@@ -42,6 +42,29 @@ Optional: during customization, you can choose the QA manual verification policy
 3) The Orchestrator will run Builder → QA → (optional) Quickfix, plus any optional steps installed during customization, and archive completed tasks.
    - Headless templates live in `agents/options/orchestrate/orchestrate_options_bash.md` (this repo defaults to Bash; you can switch during customization).
 
+## 4.5) Optional: Local Orchestrate Loop (Foreground)
+
+If you want a local, foreground runner that can keep going for hours/days (for example inside `tmux`) without relying on a single chat session, run:
+
+```bash
+tmux new -s olad
+bash agents/orchestrate_loop.sh
+```
+
+Daemon mode (stay alive when backlog is empty, then resume on backlog edits):
+
+```bash
+tmux new -s olad
+DAEMON_MODE=true IDLE_MODE=auto IDLE_DEBOUNCE_SECS=120 bash agents/orchestrate_loop.sh
+```
+
+Behavior notes:
+- On hard blockers, the loop auto-demotes the active card to `agents/tasksbackburner.md` and continues.
+- In daemon mode, the loop waits when the backlog is empty, then wakes on backlog changes (watch mode if available, poll fallback in `IDLE_MODE=auto`).
+- If Troubleshoot-on-blocker is disabled, use `agents/options/troubleshoot/orchestrate_loop_no_ts.sh` instead.
+
+For detailed tool requirements/dependencies (Linux/WSL vs macOS), daemon-mode environment variables, and full Troubleshoot/no-troubleshoot guidance, see `OLAD_framework.md`.
+
 ## 5) Manual Workflow (No Orchestration)
 
 ### A) Builder / Quickfix Agent

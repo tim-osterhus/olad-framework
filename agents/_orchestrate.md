@@ -19,6 +19,9 @@ Open agents/_doublecheck.md and follow instructions.
 
 Optional sub-agent prompts may be installed by `agents/_customize.md`. Do not invent new prompts.
 
+### 3) *Never* end your run prematurely
+NEVER end the Orchestrator run while any spawned stage is still running. If a stage is running, you must keep polling (via terminal commands) until it reaches a terminal flag, then immediately continue to the next stage. Use 60 second polling increments until you hit 10 minutes, then use 5 minute polling increments thereafter.
+
 ---
 
 ## Repo assumptions

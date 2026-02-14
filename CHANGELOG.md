@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.0] - 2026-02-13
+
+### Added
+- Local foreground orchestrator loop: `agents/orchestrate_loop.sh` (deterministic backlog-draining runner; tmux-friendly).
+- No-troubleshooter variant of the local loop: `agents/options/troubleshoot/orchestrate_loop_no_ts.sh` (use when Troubleshoot-on-blocker is not installed).
+- Hard-blocker auto-demotion to `agents/tasksbackburner.md` in both loop variants.
+- Daemon idle mode for both loop variants: stay alive when backlog is empty, wake on backlog edits, and apply configurable debounce.
+
+### Changed
+- Local loop naming updated from `agents/tasksbacklog2.md` to `agents/tasksbackburner.md`.
+- Idle waiting behavior now supports `IDLE_MODE=auto|watch|poll` with watcher-first auto fallback and strict watcher checks in `watch` mode.
+- Docs updated to describe local loop daemon settings, hard-blocker demotion behavior, and dependencies (Linux/WSL vs macOS): `README.md`, `quickstart.md`, `OLAD_framework.md`.
+- Troubleshoot option docs updated with guidance on which loop variant to use: `agents/options/troubleshoot/troubleshoot_option.md`.
+
 ## [1.6.0] - 2026-02-06
 
 ### Added

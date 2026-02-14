@@ -12,6 +12,7 @@ This document describes the current, repo-specific workflow. It is role-driven, 
 - **Integration entry:** `agents/_integrate.md` for integration sweeps and reports (manual use always allowed; orchestration only if enabled).
 - **Advisor entry:** `agents/_advisor.md` for freeform advisory or scoping work.
 - **Orchestrator entry:** `agents/_orchestrate.md` for headless orchestration across tasks.
+- **Local orchestrator loop (optional):** `agents/orchestrate_loop.sh` for long-running, foreground backlog draining outside a chat session (tmux-friendly).
 
 Optional (manual) utilities:
 
@@ -95,7 +96,7 @@ If the optional "manual queue" feature is enabled during customization, manual U
 - QA continues validating headlessly
 - QA must NOT set `### BLOCKED` solely because a manual UI check is needed
 
-If the optional "no-manual QA" feature is enabled during customization, the QA cycle must replace manual verification steps with tracked smoketest artifacts under `agents/prompts/tests/`.
+If the optional "no-manual QA" feature is enabled during customization, the QA cycle must replace manual verification steps with tracked smoketest artifacts under `agents/prompts/tests/` (Quick or Thorough mode; see `agents/options/no-manual/no_manual_option.md`).
 
 1) **Read requirements only**
    - Read `agents/outline.md` and `agents/tasks.md`.
@@ -152,6 +153,55 @@ Preset options:
 - Custom: per-cycle runner + model ids.
 Performance variants: each preset can be upgraded to higher-reasoning models/settings via `agents/options/model_config.md`.
 
+### Optional: Local Foreground Orchestrate Loop (`agents/orchestrate_loop.sh`)
+
+For long-running work where a chat-based orchestrator might get interrupted (session limits, lost context, etc.), OLAD also ships a deterministic local runner:
+
+- Script: `agents/orchestrate_loop.sh`
+- Purpose: drain `agents/tasksbacklog.md` by promoting the next `##` card into `agents/tasks.md`, then run Builder → (optional) Integration → QA → (optional) Hotfix/Doublecheck until the backlog is empty.
+- Optional daemon behavior: when backlog is empty, stay alive and wait for backlog edits before resuming.
+- Outputs:
+  - Run logs: `agents/runs/<RUN_ID>/` (`*.stdout.log`, `*.stderr.log`, `*.last.md`, `runner_notes.md`)
+  - Diagnostics bundle on blocker: `agents/diagnostics/<TIMESTAMP>/` (snapshot of run folder + key artifacts)
+  - Hard-blocker demotion queue: `agents/tasksbackburner.md` (auto-demoted cards with blocker metadata)
+  - Temporary state: `agents/.tmp/current_run.txt`
+
+Troubleshoot-on-blocker compatibility:
+- If Troubleshoot-on-blocker is enabled (i.e. `agents/_troubleshoot.md` is installed), `agents/orchestrate_loop.sh` attempts **one** Troubleshooter run per blocker. If the blocker remains, the card is auto-demoted to `agents/tasksbackburner.md` and the loop continues.
+- If Troubleshoot-on-blocker is disabled, use the no-troubleshooter variant instead: `agents/options/troubleshoot/orchestrate_loop_no_ts.sh` (it skips Troubleshooter and auto-demotes hard blockers directly to `agents/tasksbackburner.md`).
+
+Daemon and idle settings:
+- `DAEMON_MODE` (default `false`): if `true`, do not exit when backlog is empty.
+- `IDLE_MODE` (default `auto`): `auto|watch|poll`.
+- `IDLE_POLL_SECS` (default `3600`): poll interval for `poll` mode and `auto` fallback.
+- `IDLE_DEBOUNCE_SECS` (default `120`): quiet period after backlog change before resuming.
+- `IDLE_MODE=watch` is strict and requires `inotifywait` or `fswatch`.
+- `IDLE_MODE=auto` prefers `inotifywait`/`fswatch` when present and falls back to polling when absent.
+
+Example daemon run:
+
+```bash
+DAEMON_MODE=true IDLE_MODE=auto IDLE_DEBOUNCE_SECS=120 bash agents/orchestrate_loop.sh
+```
+
+#### Tool requirements (Linux/WSL)
+
+- `bash`
+- `python3`
+- `rg`
+- `timeout`
+- For `IDLE_MODE=watch`: `inotifywait` (usually from `inotify-tools`) or `fswatch`
+- Runner binaries (per `agents/options/model_config.md`): `codex` and/or `claude` and/or `curl` (OpenClaw)
+- OpenClaw runner only: `OPENCLAW_GATEWAY_TOKEN` or `openclaw`/`openclaw.exe` (for token lookup)
+- Optional: `gh` (GitHub issue notification on blockers; only used if installed and authenticated)
+- Optional: `tmux` (recommended for long-running foreground runs)
+
+#### Tool requirements (macOS)
+
+- Everything in the Linux/WSL list above, plus:
+- Provide a `timeout` command on PATH (macOS doesn’t ship GNU `timeout`; Homebrew `coreutils` provides `gtimeout`).
+- For `IDLE_MODE=watch`: install `fswatch` (or provide `inotifywait` if available).
+
 ## 10) Logs and reporting (continuity layer)
 
 - **Status:** `agents/status.md` is the authoritative orchestration signal.
@@ -179,8 +229,9 @@ Stop and signal blockers when:
 ## 13) Files to know
 
 - Entry points: `agents/_integrate.md`, `agents/_start.md`, `agents/_check.md`, `agents/_hotfix.md`, `agents/_doublecheck.md`, `agents/_advisor.md`, `agents/_orchestrate.md` (optional: `agents/_troubleshoot.md` when enabled)
+- Local runner: `agents/orchestrate_loop.sh` (optional; long-running foreground loop)
 - OpenClaw Supervisor (optional): `agents/_supervisor.md`
-- Tasks: `agents/tasks.md`, `agents/tasksbacklog.md`, `agents/tasksarchive.md`
+- Tasks: `agents/tasks.md`, `agents/tasksbacklog.md`, `agents/tasksarchive.md`, `agents/tasksbackburner.md`
 - Prompt artifacts: `agents/prompts/tasks/`, `agents/prompts/run_prompt.md`
 - Manual UI verification queue (optional): `agents/manualtasks.md` (enabled only if installed during customization)
 - QA smoketest artifacts (optional): `agents/prompts/tests/` (enabled only if installed during customization)
