@@ -15,6 +15,7 @@ Open agents/_start.md and follow instructions.
 Open agents/_check.md and follow instructions.
 Open agents/_hotfix.md and follow instructions.
 Open agents/_doublecheck.md and follow instructions.
+Open agents/_update.md and follow instructions.
 ```
 
 Optional sub-agent prompts may be installed by `agents/_customize.md`. Do not invent new prompts.
@@ -59,6 +60,7 @@ The downstream prompt files are expected to write one of these flags to `agents/
 - `### QA_COMPLETE`
 - `### QUICKFIX_NEEDED`
 - `### BLOCKED`
+- `### UPDATE_COMPLETE`
 
 Rules:
 - You should treat the **latest** matching flag as authoritative.
@@ -235,6 +237,11 @@ When you reach `### QA_COMPLETE` (either from the normal QA cycle or from double
 Then loop back to **0)**.
 
 Stop cleanly when `agents/tasksbacklog.md` has no remaining task cards.
+
+Optional final maintenance cycle (if installed/enabled):
+- When backlog is empty, run:
+  - `Open agents/_update.md and follow instructions.`
+- Wait for `### UPDATE_COMPLETE` (or `### BLOCKED`).
 
 ---
 

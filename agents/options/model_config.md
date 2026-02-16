@@ -11,54 +11,79 @@ INTEGRATION_MODEL=gpt-5.3-codex
 BUILDER_RUNNER=codex
 BUILDER_MODEL=gpt-5.3-codex
 
-QA_RUNNER=claude
-QA_MODEL=sonnet
+QA_RUNNER=codex
+QA_MODEL=gpt-5.3-codex
 
 HOTFIX_RUNNER=codex
 HOTFIX_MODEL=gpt-5.3-codex
 
-DOUBLECHECK_RUNNER=claude
-DOUBLECHECK_MODEL=sonnet
+DOUBLECHECK_RUNNER=codex
+DOUBLECHECK_MODEL=gpt-5.3-codex
+
+# Update-on-empty cycle keys (used when RUN_UPDATE_ON_EMPTY=On in workflow config).
+# Default is standard codex (non-Spark) at medium reasoning effort (effort is set by loop).
+UPDATE_RUNNER=codex
+UPDATE_MODEL=gpt-5.3-codex
+
+# Research-loop stage keys (used by agents/research_loop.sh).
+# Runners must be one of: codex|claude|openclaw.
+#
+# Model values may be a single model id or a codex fallback chain using `|`.
+# Effort values may also use `|` to match chain position.
+# Example: ARTICULATE_MODEL=a|b and ARTICULATE_EFFORT=high|low
+
+ARTICULATE_RUNNER=codex
+ARTICULATE_MODEL=gpt-5.3-codex-spark|gpt-5.3-codex
+ARTICULATE_EFFORT=high|low
+
+ANALYZE_RUNNER=codex
+ANALYZE_MODEL=gpt-5.3-codex
+ANALYZE_EFFORT=high
+
+CLARIFY_RUNNER=codex
+CLARIFY_MODEL=gpt-5.2
+CLARIFY_EFFORT=xhigh
+
+TASKMASTER_RUNNER=codex
+TASKMASTER_MODEL=gpt-5.3-codex
+TASKMASTER_EFFORT=xhigh
+
+TASKAUDIT_RUNNER=codex
+TASKAUDIT_MODEL=gpt-5.3-codex
+TASKAUDIT_EFFORT=medium
+
+# Optional complexity-routing keys (used only when workflow flag
+# `COMPLEXITY_ROUTING=On` is set in agents/options/workflow_config.md).
+# Defaults stay on standard codex. Spark-first routing is opt-in via customization.
+
+SMALL_BUILDER_MODEL_CHAIN=gpt-5.3-codex
+SMALL_HOTFIX_MODEL_CHAIN=gpt-5.3-codex
+
+MODERATE_BUILDER_MODEL_CHAIN=gpt-5.3-codex
+MODERATE_HOTFIX_MODEL_CHAIN=gpt-5.3-codex
+
+LARGE_BUILDER_MODEL_CHAIN=gpt-5.2
+LARGE_HOTFIX_MODEL_CHAIN=gpt-5.2
+
+QA_SMALL_MODEL=gpt-5.3-codex
+QA_SMALL_EFFORT=medium
+QA_MODERATE_MODEL=gpt-5.3-codex
+QA_MODERATE_EFFORT=high
+QA_LARGE_MODEL=gpt-5.2
+QA_LARGE_EFFORT=xhigh
+
+DOUBLECHECK_SMALL_MODEL=gpt-5.3-codex
+DOUBLECHECK_SMALL_EFFORT=medium
+DOUBLECHECK_MODERATE_MODEL=gpt-5.3-codex
+DOUBLECHECK_MODERATE_EFFORT=high
+DOUBLECHECK_LARGE_MODEL=gpt-5.2
+DOUBLECHECK_LARGE_EFFORT=xhigh
 
 ---
 
 ## Presets (copy/paste over the Active config section)
 
-### 1) Default (Codex Integration/Builder/Hotfix, Claude QA/Doublecheck)
-
-INTEGRATION_RUNNER=codex
-INTEGRATION_MODEL=gpt-5.3-codex
-
-BUILDER_RUNNER=codex
-BUILDER_MODEL=gpt-5.3-codex
-
-QA_RUNNER=claude
-QA_MODEL=sonnet
-
-HOTFIX_RUNNER=codex
-HOTFIX_MODEL=gpt-5.3-codex
-
-DOUBLECHECK_RUNNER=claude
-DOUBLECHECK_MODEL=sonnet
-
-### 1.5) Default Performance (Codex Integration/Builder/Hotfix, Claude QA/Doublecheck on Opus)
-
-INTEGRATION_RUNNER=codex
-INTEGRATION_MODEL=gpt-5.3-codex
-
-BUILDER_RUNNER=codex
-BUILDER_MODEL=gpt-5.3-codex
-
-QA_RUNNER=claude
-QA_MODEL=opus
-
-HOTFIX_RUNNER=codex
-HOTFIX_MODEL=gpt-5.3-codex
-
-DOUBLECHECK_RUNNER=claude
-DOUBLECHECK_MODEL=opus
-
-### 2) All Codex
+### 1) Default (OpenAI models for all cycles)
 
 INTEGRATION_RUNNER=codex
 INTEGRATION_MODEL=gpt-5.3-codex
@@ -75,7 +100,81 @@ HOTFIX_MODEL=gpt-5.3-codex
 DOUBLECHECK_RUNNER=codex
 DOUBLECHECK_MODEL=gpt-5.3-codex
 
-### 2.5) All Codex Performance (Codex everywhere, higher-reasoning for QA/Doublecheck)
+UPDATE_RUNNER=codex
+UPDATE_MODEL=gpt-5.3-codex
+
+ARTICULATE_RUNNER=codex
+ARTICULATE_MODEL=gpt-5.3-codex-spark|gpt-5.3-codex
+ARTICULATE_EFFORT=high|low
+
+ANALYZE_RUNNER=codex
+ANALYZE_MODEL=gpt-5.3-codex
+ANALYZE_EFFORT=high
+
+CLARIFY_RUNNER=codex
+CLARIFY_MODEL=gpt-5.2
+CLARIFY_EFFORT=xhigh
+
+TASKMASTER_RUNNER=codex
+TASKMASTER_MODEL=gpt-5.3-codex
+TASKMASTER_EFFORT=xhigh
+
+TASKAUDIT_RUNNER=codex
+TASKAUDIT_MODEL=gpt-5.3-codex
+TASKAUDIT_EFFORT=medium
+
+### 1.5) Hybrid (Codex Integration/Builder/Hotfix, Claude QA/Doublecheck)
+
+INTEGRATION_RUNNER=codex
+INTEGRATION_MODEL=gpt-5.3-codex
+
+BUILDER_RUNNER=codex
+BUILDER_MODEL=gpt-5.3-codex
+
+QA_RUNNER=claude
+QA_MODEL=sonnet
+
+HOTFIX_RUNNER=codex
+HOTFIX_MODEL=gpt-5.3-codex
+
+DOUBLECHECK_RUNNER=claude
+DOUBLECHECK_MODEL=sonnet
+
+### 2) Hybrid Performance (Codex Integration/Builder/Hotfix, Claude QA/Doublecheck on Opus)
+
+INTEGRATION_RUNNER=codex
+INTEGRATION_MODEL=gpt-5.3-codex
+
+BUILDER_RUNNER=codex
+BUILDER_MODEL=gpt-5.3-codex
+
+QA_RUNNER=claude
+QA_MODEL=opus
+
+HOTFIX_RUNNER=codex
+HOTFIX_MODEL=gpt-5.3-codex
+
+DOUBLECHECK_RUNNER=claude
+DOUBLECHECK_MODEL=opus
+
+### 3) All Codex
+
+INTEGRATION_RUNNER=codex
+INTEGRATION_MODEL=gpt-5.3-codex
+
+BUILDER_RUNNER=codex
+BUILDER_MODEL=gpt-5.3-codex
+
+QA_RUNNER=codex
+QA_MODEL=gpt-5.3-codex
+
+HOTFIX_RUNNER=codex
+HOTFIX_MODEL=gpt-5.3-codex
+
+DOUBLECHECK_RUNNER=codex
+DOUBLECHECK_MODEL=gpt-5.3-codex
+
+### 3.5) All Codex Performance (Codex everywhere, higher-reasoning for QA/Doublecheck)
 
 INTEGRATION_RUNNER=codex
 INTEGRATION_MODEL=gpt-5.3-codex
@@ -92,7 +191,7 @@ HOTFIX_MODEL=gpt-5.3-codex
 DOUBLECHECK_RUNNER=codex
 DOUBLECHECK_MODEL=gpt-5.2
 
-### 3) All Claude
+### 4) All Claude
 
 INTEGRATION_RUNNER=claude
 INTEGRATION_MODEL=sonnet
@@ -109,7 +208,7 @@ HOTFIX_MODEL=sonnet
 DOUBLECHECK_RUNNER=claude
 DOUBLECHECK_MODEL=sonnet
 
-### 3.5) All Claude Performance (Claude everywhere on Opus)
+### 4.5) All Claude Performance (Claude everywhere on Opus)
 
 INTEGRATION_RUNNER=claude
 INTEGRATION_MODEL=opus
@@ -126,7 +225,7 @@ HOTFIX_MODEL=opus
 DOUBLECHECK_RUNNER=claude
 DOUBLECHECK_MODEL=opus
 
-### 4) All OpenClaw
+### 5) All OpenClaw
 
 Use this if you want OpenClaw to run every cycle (Builder/QA/etc.).
 
@@ -145,7 +244,7 @@ HOTFIX_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 DOUBLECHECK_RUNNER=openclaw
 DOUBLECHECK_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 
-### 5) Custom
+### 6) Custom
 
 - Set each `*_RUNNER` to `codex`, `claude`, or `openclaw`.
 - Set each `*_MODEL` to:
@@ -153,6 +252,15 @@ DOUBLECHECK_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
   - Claude: a model alias/id (example: `sonnet`)
   - OpenClaw: a model string passed to OpenClaw's OpenResponses endpoint (`/v1/responses`)
     (typically a Gateway/provider model id; some installs may also support an alias like `openclaw`)
+- Optional update-on-empty keys:
+  - `UPDATE_RUNNER`, `UPDATE_MODEL`
+- Optional (complexity routing mode):
+  - Set `SMALL_*_MODEL_CHAIN`, `MODERATE_*_MODEL_CHAIN`, `LARGE_*_MODEL_CHAIN`
+  - Set `QA_*_MODEL`, `QA_*_EFFORT`, `DOUBLECHECK_*_MODEL`, `DOUBLECHECK_*_EFFORT`
+- Optional (research loop stages):
+  - Set `ARTICULATE_*`, `ANALYZE_*`, `CLARIFY_*`, `TASKMASTER_*`, `TASKAUDIT_*`
+  - `*_MODEL` can be a fallback chain with `|`
+  - `*_EFFORT` can be a parallel chain with `|`
 
 ---
 
@@ -161,6 +269,7 @@ DOUBLECHECK_MODEL=<OPENCLAW_GATEWAY_MODEL_ID>
 These are listed as recommended/alternative models in OpenAI's Codex Models docs:
 
 - gpt-5.3-codex
+- gpt-5.3-codex-spark
 - gpt-5.1-codex-max
 - gpt-5.1-codex-mini
 - gpt-5.2

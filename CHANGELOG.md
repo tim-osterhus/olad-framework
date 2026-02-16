@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.8.0] - 2026-02-16
+
+### Added
+- Optional continuous research loop runner: `agents/research_loop.sh` (idea pipeline -> pending tasks -> backlog merge).
+- Research entrypoints:
+  - `agents/_articulate.md`
+  - `agents/_analyze.md`
+  - `agents/_clarify.md`
+  - `agents/_taskmaster.md`
+  - `agents/_taskaudit.md`
+- Research signaling/status artifact: `agents/research_status.md` (separate from orchestration status).
+- Pending task staging artifact: `agents/taskspending.md`.
+- Ideas pipeline folder skeleton:
+  - `agents/ideas/{raw,articulated,staging,specs,finished,later,nonviable,ambiguous,archived}/`
+- Stable spec path scaffold: `agents/specs/stable/`.
+- Research stage model keys in `agents/options/model_config.md`:
+  - `ARTICULATE_*`, `ANALYZE_*`, `CLARIFY_*`, `TASKMASTER_*`, `TASKAUDIT_*`
+- Optional backlog-empty documentation updater entrypoint: `agents/_update.md`.
+- Optional update-on-empty option packet: `agents/options/update/update_option.md`.
+- New workflow flag in `agents/options/workflow_config.md`:
+  - `RUN_UPDATE_ON_EMPTY` (default `On`)
+- New model config keys in `agents/options/model_config.md`:
+  - `UPDATE_RUNNER`
+  - `UPDATE_MODEL`
+
+### Changed
+- Research stage defaults now support per-stage runner/model/effort and articulate model fallback chains (`model_a|model_b` with parallel effort chain).
+- Local orchestration loop (`agents/orchestrate_loop.sh`) now supports a final maintenance cycle when backlog is empty:
+  - Runs `agents/_update.md` once per empty-backlog event when `RUN_UPDATE_ON_EMPTY=On`.
+  - Expects `### UPDATE_COMPLETE` status marker (with `### BLOCKED` on failure).
+- Complexity-routing defaults are now non-Spark for small tasks (`gpt-5.3-codex`), with Spark-first chains remaining an explicit opt-in via `agents/options/spark-routing/spark_routing_option.md`.
+- Decomposition prompt guidance now says to insert cards at best-judgment locations based on prerequisites in `agents/tasksbacklog.md` (not blindly near top).
+- Specs docs now clarify stable, long-lived spec paths under `agents/specs/stable/`.
+- Framework docs updated to include research loop contracts, files, status isolation, and update-on-empty cycle wiring:
+  - `README.md`
+  - `OLAD_framework.md`
+  - `agents/_orchestrate.md`
+  - `agents/_customize.md`
+
 ## [1.7.0] - 2026-02-13
 
 ### Added

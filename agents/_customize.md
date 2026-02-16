@@ -51,14 +51,20 @@ If any of the below are unknown, ask the user directly:
 
 Keep questions concise and in a single message.
 
-## Step 2.5: Model + Runner Preset (Required)
+## Step 2.5: Model + Runner Baseline (Required)
 
-Ask the user which model preset they want for the agentic cycles, then apply it by editing **only** the `KEY=value` lines under "Active config" in:
-- `agents/options/model_config.md`
+Default baseline is OpenAI models for all cycles (the "Default" active config in `agents/options/model_config.md`).
 
-Ask:
-- Which preset: Default / Default Performance / All Codex / All Claude / All OpenClaw / Custom?
-- If Custom: model ids for Integration, Builder, QA, Hotfix, Doublecheck.
+Ask the user:
+- Keep the default model config as-is? (yes/no)
+
+If yes:
+- Leave `agents/options/model_config.md` Active config unchanged.
+
+If no:
+- Ask which preset they want: Hybrid / Hybrid Performance / All Codex / All Claude / All OpenClaw / Custom.
+- If Custom: ask model ids for Integration, Builder, QA, Hotfix, Doublecheck, and Update.
+- Then edit **only** the `KEY=value` lines under "Active config" in `agents/options/model_config.md`.
 
 For preset blocks and known-good model ids, see:
 - `agents/options/model_config.md`
@@ -140,6 +146,32 @@ If yes:
 If no:
 - Do not install `agents/_troubleshoot.md`.
 - Do not add Troubleshooter behavior to `agents/_orchestrate.md`.
+
+## Step 2.9b: Spark-Routing Mode (Optional)
+
+This adds optional complexity-aware routing for the local foreground orchestrator loop
+(`agents/orchestrate_loop.sh`), with optional Spark-first small-task chains plus cooldown fallback.
+
+Ask the user:
+- Enable Spark-routing mode? (yes/no)
+- If yes, what Spark cooldown window in minutes? (default `360`)
+
+Then:
+- Set `## COMPLEXITY_ROUTING=<On|Off>` in `agents/options/workflow_config.md`.
+- Set `## SPARK_COOLDOWN_MINUTES=<N>` in `agents/options/workflow_config.md`.
+- If enabling this mode, open `agents/options/spark-routing/spark_routing_option.md` and follow it.
+
+## Step 2.9c: Update-on-Empty Mode (Optional)
+
+This controls whether the local foreground orchestrator loop runs a final documentation
+update cycle when it finds no remaining task cards in `agents/tasksbacklog.md`.
+
+Ask the user:
+- Enable update-on-empty mode? (yes/no)
+
+Then:
+- Set `## RUN_UPDATE_ON_EMPTY=<On|Off>` in `agents/options/workflow_config.md`.
+- If enabling this mode, open `agents/options/update/update_option.md` and follow it.
 
 ## Step 2.10: Shell Templates (Required)
 

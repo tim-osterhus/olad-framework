@@ -2,7 +2,7 @@
 name: task-card-authoring-repo-exact
 description: >
   Writes a single, repo-accurate task card in `agents/tasks.md` (or queues one in `agents/tasksbacklog.md`) that is executable by the Builder/QA cycles without interpretation.
-  Includes explicit metadata (Complexity/Tags/Gates) so the pipeline is deterministic and auditable.
+  Includes explicit metadata (Complexity/Assigned skills/Tags/Gates) so the pipeline is deterministic and auditable.
 compatibility:
   runners: ["codex-cli", "claude-code", "openclaw"]
   tools: ["Read", "Grep", "Write"]
@@ -33,7 +33,7 @@ Do NOT use when (non-goals):
 - Be minimal: smallest diffs; no drive-by refactors unless required.
 - Be explicit: state assumptions and verify them where possible.
 - Be deterministic: prefer exact commands/checklists over vague guidance.
-- Complexity is metadata only. Gates are executable. Never rely on Complexity to trigger behavior.
+- Treat Gates as executable requirements; treat Complexity as metadata unless a configured orchestration option explicitly routes by complexity.
 - Keep SKILL.md short: if you exceed ~500 lines, split details into linked files.
 
 ## Inputs this Skill expects
@@ -58,7 +58,7 @@ Secondary deliverables (only if needed):
 - Optional: add a 1–3 line note at the top of `agents/historylog.md` (newest first) explaining why the task exists
 
 Definition of DONE (objective checks):
-- [ ] Task card includes required metadata: Complexity / Tags / Gates
+- [ ] Task card includes required metadata: Complexity / Assigned skills / Tags / Gates
 - [ ] Card has explicit file paths + numbered steps (no interpretation)
 - [ ] DONE checks are objective and runnable (commands included)
 - [ ] If Gates != NONE, required gate artifacts are named + located
@@ -66,19 +66,31 @@ Definition of DONE (objective checks):
 
 ---
 
-## Task card metadata: Complexity / Tags / Gates
+## Task card metadata: Complexity / Assigned skills / Tags / Gates
 
 These fields live at the top of every task card.
 
 ### Complexity (metadata only)
 Allowed values:
-- `Simple` — isolated change, low regression risk
-- `Moderate` — localized feature work, limited coupling
-- `Involved` — cross-cutting/shared interfaces (auth/routing/schema/build/etc.)
-- `Unknown` — unclear success criteria / missing info
+- `TRIVIAL` — isolated and narrow enough for a short single-cycle edit
+- `BASIC` — small localized change with low coupling
+- `MODERATE` — localized feature work with some coupling/risk
+- `INVOLVED` — cross-cutting/shared interfaces (auth/routing/schema/build/etc.)
+- `HEAVY` — high-risk or broad-surface change that may need stronger models
 
 Rules:
-- Complexity is *informational only*. It must not be used as an implicit trigger.
+- Complexity is metadata, but orchestration options may route models by this field.
+- Prefer `MODERATE` when uncertain.
+- Legacy values (`Simple`, `Unknown`) should be normalized to `BASIC` and `MODERATE`.
+
+### Assigned skills (small-task optimization)
+Use this metadata to constrain context on small tasks.
+
+Rules:
+- Required when `Complexity` is `TRIVIAL` or `BASIC`.
+- Exactly 2 skill identifiers (folder names) from `agents/skills/`.
+- For `MODERATE`/`INVOLVED`/`HEAVY`, this field is optional.
+- Do not leave this blank for `TRIVIAL`/`BASIC`.
 
 ### Tags (search + policy)
 Space-separated tokens. Keep them consistent and short.
@@ -105,7 +117,8 @@ Rules:
 ```md
 ## <DATE> — <Short imperative title>
 
-**Complexity:** <Simple|Moderate|Involved|Unknown>
+**Complexity:** <TRIVIAL|BASIC|MODERATE|INVOLVED|HEAVY>
+**Assigned skills:** <skill-a, skill-b>
 **Tags:** <TAG1 TAG2 TAG3>
 **Gates:** <NONE>
 
@@ -174,7 +187,8 @@ Run targeted searches:
    4) agents/prompts/builder_cycle.md
 
 ### 3) Assign Complexity + Tags + Gates (if enabled)
-- Pick **Complexity** (metadata only): Simple / Moderate / Involved / Unknown.
+- Pick **Complexity**: TRIVIAL / BASIC / MODERATE / INVOLVED / HEAVY.
+- If TRIVIAL or BASIC, set **Assigned skills** to exactly two relevant skill ids.
 - Add **Tags** that describe what changes and where risk lives.
 - Decide **Gates** explicitly (do not infer from Complexity):
   - Use `INTEGRATION` only if Integration was enabled during customization; otherwise set `**Gates:** NONE`.

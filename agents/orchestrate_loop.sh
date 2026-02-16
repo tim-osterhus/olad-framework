@@ -9,7 +9,8 @@ set -euo pipefail
 # IMPORTANT:
 # - This is a *local* orchestration tool. It intentionally does not rely on a single
 #   chat "turn" staying alive for hours/days.
-# - It uses the exact allowed prompt strings from agents/_orchestrate.md.
+# - It uses the standard stage prompt strings from agents/_orchestrate.md, plus optional
+#   install-time extensions (for example, agents/_ministart.md when complexity routing is enabled).
 # - It uses agents/status.md as the signaling contract.
 # - On hard blockers (post-troubleshoot), it auto-demotes the active card into
 #   agents/tasksbackburner.md and continues to the next card.
@@ -49,13 +50,15 @@ NOTIFY_ON_BLOCKER="${NOTIFY_ON_BLOCKER:-true}"
 DAEMON_MODE="${DAEMON_MODE:-false}"
 IDLE_MODE="${IDLE_MODE:-auto}"
 IDLE_POLL_SECS="${IDLE_POLL_SECS:-3600}"
-IDLE_DEBOUNCE_SECS="${IDLE_DEBOUNCE_SECS:-120}"
+IDLE_DEBOUNCE_SECS="${IDLE_DEBOUNCE_SECS:-300}"
 IDLE_WATCH_TOOL=""
 
 SCRIPT_START_EPOCH="$(date +%s)"
 TASKS_COMPLETED=0
 TASKS_DEMOTED=0
 CARD_DEMOTED=0
+LAST_RUN_FAILURE_KIND="none"
+LAST_RUN_MODEL=""
 
 ensure_repo_root() {
   # Long-running loops can end up with an "unlinked" cwd (e.g., WSL/drive remounts),
@@ -368,8 +371,28 @@ parse_model_config() {
         HOTFIX_MODEL) HOTFIX_MODEL="$value" ;;
         DOUBLECHECK_RUNNER) DOUBLECHECK_RUNNER="$value" ;;
         DOUBLECHECK_MODEL) DOUBLECHECK_MODEL="$value" ;;
+        UPDATE_RUNNER) UPDATE_RUNNER="$value" ;;
+        UPDATE_MODEL) UPDATE_MODEL="$value" ;;
         TROUBLESHOOT_RUNNER) TROUBLESHOOT_RUNNER="$value" ;;
         TROUBLESHOOT_MODEL) TROUBLESHOOT_MODEL="$value" ;;
+        SMALL_BUILDER_MODEL_CHAIN) SMALL_BUILDER_MODEL_CHAIN="$value" ;;
+        SMALL_HOTFIX_MODEL_CHAIN) SMALL_HOTFIX_MODEL_CHAIN="$value" ;;
+        MODERATE_BUILDER_MODEL_CHAIN) MODERATE_BUILDER_MODEL_CHAIN="$value" ;;
+        MODERATE_HOTFIX_MODEL_CHAIN) MODERATE_HOTFIX_MODEL_CHAIN="$value" ;;
+        LARGE_BUILDER_MODEL_CHAIN) LARGE_BUILDER_MODEL_CHAIN="$value" ;;
+        LARGE_HOTFIX_MODEL_CHAIN) LARGE_HOTFIX_MODEL_CHAIN="$value" ;;
+        QA_SMALL_MODEL) QA_SMALL_MODEL="$value" ;;
+        QA_SMALL_EFFORT) QA_SMALL_EFFORT="$value" ;;
+        QA_MODERATE_MODEL) QA_MODERATE_MODEL="$value" ;;
+        QA_MODERATE_EFFORT) QA_MODERATE_EFFORT="$value" ;;
+        QA_LARGE_MODEL) QA_LARGE_MODEL="$value" ;;
+        QA_LARGE_EFFORT) QA_LARGE_EFFORT="$value" ;;
+        DOUBLECHECK_SMALL_MODEL) DOUBLECHECK_SMALL_MODEL="$value" ;;
+        DOUBLECHECK_SMALL_EFFORT) DOUBLECHECK_SMALL_EFFORT="$value" ;;
+        DOUBLECHECK_MODERATE_MODEL) DOUBLECHECK_MODERATE_MODEL="$value" ;;
+        DOUBLECHECK_MODERATE_EFFORT) DOUBLECHECK_MODERATE_EFFORT="$value" ;;
+        DOUBLECHECK_LARGE_MODEL) DOUBLECHECK_LARGE_MODEL="$value" ;;
+        DOUBLECHECK_LARGE_EFFORT) DOUBLECHECK_LARGE_EFFORT="$value" ;;
         *) : ;;
       esac
     fi
@@ -391,6 +414,30 @@ parse_model_config() {
   # Troubleshooter defaults (older configs may omit these).
   : "${TROUBLESHOOT_RUNNER:=$BUILDER_RUNNER}"
   : "${TROUBLESHOOT_MODEL:=$BUILDER_MODEL}"
+  : "${UPDATE_RUNNER:=codex}"
+  : "${UPDATE_MODEL:=gpt-5.3-codex}"
+
+  # Optional complexity-routing model defaults.
+  : "${SMALL_BUILDER_MODEL_CHAIN:=$BUILDER_MODEL}"
+  : "${SMALL_HOTFIX_MODEL_CHAIN:=$HOTFIX_MODEL}"
+  : "${MODERATE_BUILDER_MODEL_CHAIN:=$BUILDER_MODEL}"
+  : "${MODERATE_HOTFIX_MODEL_CHAIN:=$HOTFIX_MODEL}"
+  : "${LARGE_BUILDER_MODEL_CHAIN:=$BUILDER_MODEL}"
+  : "${LARGE_HOTFIX_MODEL_CHAIN:=$HOTFIX_MODEL}"
+
+  : "${QA_SMALL_MODEL:=$QA_MODEL}"
+  : "${QA_SMALL_EFFORT:=medium}"
+  : "${QA_MODERATE_MODEL:=$QA_MODEL}"
+  : "${QA_MODERATE_EFFORT:=high}"
+  : "${QA_LARGE_MODEL:=$QA_MODEL}"
+  : "${QA_LARGE_EFFORT:=xhigh}"
+
+  : "${DOUBLECHECK_SMALL_MODEL:=$QA_SMALL_MODEL}"
+  : "${DOUBLECHECK_SMALL_EFFORT:=$QA_SMALL_EFFORT}"
+  : "${DOUBLECHECK_MODERATE_MODEL:=$QA_MODERATE_MODEL}"
+  : "${DOUBLECHECK_MODERATE_EFFORT:=$QA_MODERATE_EFFORT}"
+  : "${DOUBLECHECK_LARGE_MODEL:=$QA_LARGE_MODEL}"
+  : "${DOUBLECHECK_LARGE_EFFORT:=$QA_LARGE_EFFORT}"
 }
 
 parse_workflow_config() {
@@ -406,6 +453,10 @@ parse_workflow_config() {
         HEADLESS_PERMISSIONS) HEADLESS_PERMISSIONS="$value" ;;
         OPENCLAW_GATEWAY_URL) OPENCLAW_GATEWAY_URL="$value" ;;
         OPENCLAW_AGENT_ID) OPENCLAW_AGENT_ID="$value" ;;
+        COMPLEXITY_ROUTING) COMPLEXITY_ROUTING="$value" ;;
+        SPARK_COOLDOWN_MINUTES) SPARK_COOLDOWN_MINUTES="$value" ;;
+        CODEX_SPARK_EXHAUSTED_AT) CODEX_SPARK_EXHAUSTED_AT="$value" ;;
+        RUN_UPDATE_ON_EMPTY) RUN_UPDATE_ON_EMPTY="$value" ;;
         *) : ;;
       esac
     fi
@@ -417,6 +468,10 @@ parse_workflow_config() {
   : "${HEADLESS_PERMISSIONS:=Maximum}"
   : "${OPENCLAW_GATEWAY_URL:=http://127.0.0.1:18789}"
   : "${OPENCLAW_AGENT_ID:=main}"
+  : "${COMPLEXITY_ROUTING:=Off}"
+  : "${SPARK_COOLDOWN_MINUTES:=360}"
+  : "${CODEX_SPARK_EXHAUSTED_AT:=}"
+  : "${RUN_UPDATE_ON_EMPTY:=On}"
 }
 
 set_permission_flags() {
@@ -628,6 +683,86 @@ run_cycle() {
   esac
 }
 
+run_cycle_with_fallback() {
+  local runner="$1"
+  local model_chain="$2"
+  local default_model="$3"
+  local prompt="$4"
+  local stdout_path="$5"
+  local stderr_path="$6"
+  local last_path="$7"
+  local search="${8:-false}"
+  local effort="${9:-high}"
+  local label="${10:-Cycle}"
+
+  LAST_RUN_FAILURE_KIND="none"
+  LAST_RUN_MODEL=""
+
+  local chain
+  chain="$(trim "$model_chain")"
+  [ -n "$chain" ] || chain="$default_model"
+
+  local -a models=()
+  local part
+  IFS='|' read -r -a models <<< "$chain"
+
+  if [ "$runner" != "codex" ]; then
+    local chosen
+    chosen="$(trim "${models[0]:-$default_model}")"
+    [ -n "$chosen" ] || chosen="$default_model"
+    LAST_RUN_MODEL="$chosen"
+    if run_cycle "$runner" "$chosen" "$prompt" "$stdout_path" "$stderr_path" "$last_path" "$search" "$effort" "$label"; then
+      LAST_RUN_FAILURE_KIND="none"
+      return 0
+    fi
+    LAST_RUN_FAILURE_KIND="other"
+    return $?
+  fi
+
+  local attempted=0
+  local model exit_code
+  for part in "${models[@]}"; do
+    model="$(trim "$part")"
+    [ -n "$model" ] || continue
+
+    if is_spark_model "$model" && spark_cooldown_active; then
+      log "Stage $label: skipping $model due to Spark cooldown (since ${CODEX_SPARK_EXHAUSTED_AT:-unknown})"
+      continue
+    fi
+
+    attempted=1
+    LAST_RUN_MODEL="$model"
+    if run_cycle "$runner" "$model" "$prompt" "$stdout_path" "$stderr_path" "$last_path" "$search" "$effort" "$label"; then
+      LAST_RUN_FAILURE_KIND="none"
+      return 0
+    fi
+    exit_code=$?
+
+    if is_spark_model "$model" && is_usage_cap_failure "$stdout_path" "$stderr_path" "$last_path"; then
+      LAST_RUN_FAILURE_KIND="usage_cap"
+      mark_spark_exhausted_now
+      log "Stage $label: Spark usage cap detected on model=$model; trying fallback chain"
+      continue
+    fi
+
+    LAST_RUN_FAILURE_KIND="other"
+    return $exit_code
+  done
+
+  if [ "$attempted" -eq 0 ] && [ -n "$default_model" ]; then
+    LAST_RUN_MODEL="$default_model"
+    if run_cycle "$runner" "$default_model" "$prompt" "$stdout_path" "$stderr_path" "$last_path" "$search" "$effort" "$label"; then
+      LAST_RUN_FAILURE_KIND="none"
+      return 0
+    fi
+    LAST_RUN_FAILURE_KIND="other"
+    return $?
+  fi
+
+  LAST_RUN_FAILURE_KIND="${LAST_RUN_FAILURE_KIND:-other}"
+  return 1
+}
+
 should_run_integration() {
   case "${INTEGRATION_MODE:-Low}" in
     Low)
@@ -767,6 +902,301 @@ truthy() {
   esac
 }
 
+complexity_routing_enabled() {
+  truthy "${COMPLEXITY_ROUTING:-Off}"
+}
+
+normalize_complexity() {
+  local raw upper
+  raw="$(trim "${1:-}")"
+  upper="$(printf '%s' "$raw" | tr '[:lower:]' '[:upper:]')"
+  case "$upper" in
+    TRIVIAL) printf 'TRIVIAL' ;;
+    BASIC) printf 'BASIC' ;;
+    MODERATE) printf 'MODERATE' ;;
+    INVOLVED) printf 'INVOLVED' ;;
+    HEAVY) printf 'HEAVY' ;;
+    SIMPLE) printf 'BASIC' ;;
+    UNKNOWN) printf 'MODERATE' ;;
+    *) printf 'MODERATE' ;;
+  esac
+}
+
+current_task_complexity() {
+  local raw
+  raw="$(sed -n 's/^\*\*Complexity:\*\*[[:space:]]*//p' "$TASKS" | head -n 1 | tr -d '\r')"
+  normalize_complexity "$raw"
+}
+
+complexity_band() {
+  local c
+  c="$(normalize_complexity "${1:-MODERATE}")"
+  case "$c" in
+    TRIVIAL|BASIC) printf 'SMALL' ;;
+    MODERATE) printf 'MODERATE' ;;
+    INVOLVED|HEAVY) printf 'LARGE' ;;
+    *) printf 'MODERATE' ;;
+  esac
+}
+
+is_small_complexity() {
+  local c
+  c="$(normalize_complexity "${1:-MODERATE}")"
+  [ "$c" = "TRIVIAL" ] || [ "$c" = "BASIC" ]
+}
+
+is_moderate_plus_complexity() {
+  local c
+  c="$(normalize_complexity "${1:-MODERATE}")"
+  case "$c" in MODERATE|INVOLVED|HEAVY) return 0 ;; esac
+  return 1
+}
+
+assigned_skills_count() {
+  local raw count=0 item trimmed
+  raw="$(sed -n 's/^\*\*Assigned skills:\*\*[[:space:]]*//p' "$TASKS" | head -n 1 | tr -d '\r')"
+  [ -n "$raw" ] || {
+    printf '0\n'
+    return 0
+  }
+
+  raw="${raw//;/,}"
+  local IFS=','
+  for item in $raw; do
+    trimmed="$(trim "$item")"
+    [ -n "$trimmed" ] && count=$(( count + 1 ))
+  done
+  printf '%s\n' "$count"
+}
+
+small_task_missing_assigned_skills() {
+  local c n
+  c="$(current_task_complexity)"
+  if ! is_small_complexity "$c"; then
+    return 1
+  fi
+  n="$(assigned_skills_count)"
+  [ "$n" -ne 2 ]
+}
+
+workflow_set_flag() {
+  local key="$1"
+  local value="$2"
+  python3 - "$WF_CFG" "$key" "$value" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+path = Path(sys.argv[1])
+key = sys.argv[2]
+value = sys.argv[3]
+lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+pat = re.compile(rf"^(##\s*{re.escape(key)}\s*=).*$")
+
+out = []
+found = False
+for line in lines:
+    m = pat.match(line)
+    if m:
+        out.append(f"{m.group(1)}{value}")
+        found = True
+    else:
+        out.append(line)
+
+if not found:
+    out.append(f"## {key}={value}")
+
+path.write_text("\n".join(out) + "\n", encoding="utf-8")
+PY
+}
+
+now_minute_utc() {
+  date -u +%Y-%m-%dT%H:%M
+}
+
+minutes_since_utc_minute() {
+  local stamp="$1"
+  python3 - "$stamp" <<'PY'
+from datetime import datetime, timezone
+import sys
+
+s = (sys.argv[1] or "").strip()
+if not s:
+    raise SystemExit(2)
+
+try:
+    dt = datetime.strptime(s, "%Y-%m-%dT%H:%M").replace(tzinfo=timezone.utc)
+except Exception:
+    raise SystemExit(3)
+
+mins = int((datetime.now(timezone.utc) - dt).total_seconds() // 60)
+print(mins)
+PY
+}
+
+spark_cooldown_active() {
+  local stamp mins
+  stamp="$(trim "${CODEX_SPARK_EXHAUSTED_AT:-}")"
+  [ -n "$stamp" ] || return 1
+
+  mins="$(minutes_since_utc_minute "$stamp" 2>/dev/null || true)"
+  if [[ "$mins" =~ ^[0-9]+$ ]] && [ "$mins" -lt "${SPARK_COOLDOWN_MINUTES:-360}" ]; then
+    return 0
+  fi
+  return 1
+}
+
+mark_spark_exhausted_now() {
+  CODEX_SPARK_EXHAUSTED_AT="$(now_minute_utc)"
+  workflow_set_flag "CODEX_SPARK_EXHAUSTED_AT" "$CODEX_SPARK_EXHAUSTED_AT"
+}
+
+is_spark_model() {
+  case "${1:-}" in
+    *spark*|*SPARK*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_usage_cap_failure() {
+  local stdout_path="$1"
+  local stderr_path="$2"
+  local last_path="$3"
+  local files=()
+
+  [ -f "$stdout_path" ] && files+=("$stdout_path")
+  [ -f "$stderr_path" ] && files+=("$stderr_path")
+  [ -n "$last_path" ] && [ -f "$last_path" ] && files+=("$last_path")
+
+  [ "${#files[@]}" -gt 0 ] || return 1
+  rg -qi '(quota|rate[ -]?limit|too many requests|resource[_ -]?exhausted|usage cap|cap reached|429|limit reached|exhausted)' "${files[@]}"
+}
+
+builder_prompt_for_complexity() {
+  local c
+  c="$(normalize_complexity "${1:-MODERATE}")"
+  if complexity_routing_enabled && is_small_complexity "$c" && [ -f "agents/_ministart.md" ]; then
+    printf 'Open agents/_ministart.md and follow instructions.'
+    return 0
+  fi
+  printf 'Open agents/_start.md and follow instructions.'
+}
+
+builder_model_chain_for_complexity() {
+  local band
+  band="$(complexity_band "${1:-MODERATE}")"
+  case "$band" in
+    SMALL) printf '%s' "$SMALL_BUILDER_MODEL_CHAIN" ;;
+    MODERATE) printf '%s' "$MODERATE_BUILDER_MODEL_CHAIN" ;;
+    LARGE) printf '%s' "$LARGE_BUILDER_MODEL_CHAIN" ;;
+    *) printf '%s' "$BUILDER_MODEL" ;;
+  esac
+}
+
+hotfix_model_chain_for_complexity() {
+  local band
+  band="$(complexity_band "${1:-MODERATE}")"
+  case "$band" in
+    SMALL) printf '%s' "$SMALL_HOTFIX_MODEL_CHAIN" ;;
+    MODERATE) printf '%s' "$MODERATE_HOTFIX_MODEL_CHAIN" ;;
+    LARGE) printf '%s' "$LARGE_HOTFIX_MODEL_CHAIN" ;;
+    *) printf '%s' "$HOTFIX_MODEL" ;;
+  esac
+}
+
+qa_model_for_complexity() {
+  local c stage band
+  c="$(normalize_complexity "${1:-MODERATE}")"
+  stage="${2:-qa}"
+  band="$(complexity_band "$c")"
+  if [ "$stage" = "doublecheck" ]; then
+    case "$band" in
+      SMALL) printf '%s' "$DOUBLECHECK_SMALL_MODEL" ;;
+      MODERATE) printf '%s' "$DOUBLECHECK_MODERATE_MODEL" ;;
+      LARGE) printf '%s' "$DOUBLECHECK_LARGE_MODEL" ;;
+      *) printf '%s' "$DOUBLECHECK_MODEL" ;;
+    esac
+  else
+    case "$band" in
+      SMALL) printf '%s' "$QA_SMALL_MODEL" ;;
+      MODERATE) printf '%s' "$QA_MODERATE_MODEL" ;;
+      LARGE) printf '%s' "$QA_LARGE_MODEL" ;;
+      *) printf '%s' "$QA_MODEL" ;;
+    esac
+  fi
+}
+
+qa_effort_for_complexity() {
+  local c stage band
+  c="$(normalize_complexity "${1:-MODERATE}")"
+  stage="${2:-qa}"
+  band="$(complexity_band "$c")"
+  if [ "$stage" = "doublecheck" ]; then
+    case "$band" in
+      SMALL) printf '%s' "$DOUBLECHECK_SMALL_EFFORT" ;;
+      MODERATE) printf '%s' "$DOUBLECHECK_MODERATE_EFFORT" ;;
+      LARGE) printf '%s' "$DOUBLECHECK_LARGE_EFFORT" ;;
+      *) printf 'xhigh' ;;
+    esac
+  else
+    case "$band" in
+      SMALL) printf '%s' "$QA_SMALL_EFFORT" ;;
+      MODERATE) printf '%s' "$QA_MODERATE_EFFORT" ;;
+      LARGE) printf '%s' "$QA_LARGE_EFFORT" ;;
+      *) printf 'xhigh' ;;
+    esac
+  fi
+}
+
+upscope_active_card_to_moderate() {
+  python3 - "$TASKS" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+text = path.read_text(encoding="utf-8", errors="replace")
+lines = text.splitlines()
+
+done = False
+for i, line in enumerate(lines):
+    if line.startswith("**Complexity:**"):
+        lines[i] = "**Complexity:** MODERATE"
+        done = True
+        break
+
+if not done:
+    insert_at = 0
+    for i, line in enumerate(lines):
+        if line.startswith("## "):
+            insert_at = i + 1
+            break
+    lines.insert(insert_at, "**Complexity:** MODERATE")
+
+path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+PY
+}
+
+maybe_upscope_small_task() {
+  local run_dir="$1"
+  local stage="$2"
+  local why="$3"
+  local c
+
+  complexity_routing_enabled || return 1
+  c="$(current_task_complexity)"
+  is_small_complexity "$c" || return 1
+
+  if [ "${LAST_RUN_FAILURE_KIND:-other}" = "usage_cap" ]; then
+    return 1
+  fi
+
+  upscope_active_card_to_moderate
+  set_status "### IDLE"
+  write_runner_note "$run_dir" "Upscope: $stage auto-upscoped task to MODERATE ($why)"
+  log "Upscope: stage=$stage from=$c to=MODERATE reason=$why"
+  return 0
+}
+
 github_repo_slug() {
   command -v gh >/dev/null 2>&1 || return 1
   gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null | tr -d '\r'
@@ -864,6 +1294,27 @@ handle_blocker() {
 
     write_runner_note "$run_dir" "Demote: Troubleshooter already attempted; moving card to $MANUAL_BACKLOG"
     demote_active_card_to_manual_backlog_and_clear "$run_dir" "$stage" "$why (Troubleshooter already attempted)" "$diag_dir" "### BLOCKED"
+    set_status "### IDLE"
+
+    CARD_DEMOTED=1
+    LAST_WAS_TROUBLESHOOT=0
+    TASKS_DEMOTED=$(( TASKS_DEMOTED + 1 ))
+    local elapsed
+    elapsed=$(( $(date +%s) - SCRIPT_START_EPOCH ))
+    log "Progress: tasks_completed=$TASKS_COMPLETED tasks_demoted=$TASKS_DEMOTED elapsed=$(format_duration "$elapsed") demoted_task=\"$task\""
+    return 0
+  fi
+
+  local current_complexity
+  current_complexity="$(current_task_complexity)"
+  if ! is_moderate_plus_complexity "$current_complexity" || [ ! -f "agents/_troubleshoot.md" ]; then
+    set_status "### BLOCKED"
+    echo "BLOCKED: $stage: $why (Troubleshooter not eligible for complexity=$current_complexity or entrypoint missing)" >&2
+    echo "Diagnostics: $diag_dir" >&2
+    notify_blocker "$run_dir" "$stage" "$why (Troubleshooter not eligible for complexity=$current_complexity or entrypoint missing)" "$diag_dir"
+
+    write_runner_note "$run_dir" "Demote: Troubleshooter skipped (complexity=$current_complexity or missing agents/_troubleshoot.md); moving card to $MANUAL_BACKLOG"
+    demote_active_card_to_manual_backlog_and_clear "$run_dir" "$stage" "$why (Troubleshooter skipped for complexity=$current_complexity)" "$diag_dir" "### BLOCKED"
     set_status "### IDLE"
 
     CARD_DEMOTED=1
@@ -982,16 +1433,40 @@ EOF
 
   parse_model_config
   parse_workflow_config
+
+  case "${COMPLEXITY_ROUTING:-Off}" in
+    Off|OFF|off|On|ON|on|true|TRUE|false|FALSE) ;;
+    *)
+      echo "Invalid COMPLEXITY_ROUTING: ${COMPLEXITY_ROUTING} (expected Off|On)" >&2
+      exit 1
+      ;;
+  esac
+  if ! [[ "${SPARK_COOLDOWN_MINUTES:-360}" =~ ^[0-9]+$ ]] || [ "${SPARK_COOLDOWN_MINUTES:-360}" -lt 1 ]; then
+    echo "Invalid SPARK_COOLDOWN_MINUTES: ${SPARK_COOLDOWN_MINUTES} (expected integer >= 1)" >&2
+    exit 1
+  fi
+  case "${RUN_UPDATE_ON_EMPTY:-On}" in
+    On|ON|on|Off|OFF|off|true|TRUE|false|FALSE) ;;
+    *)
+      echo "Invalid RUN_UPDATE_ON_EMPTY: ${RUN_UPDATE_ON_EMPTY} (expected On|Off)" >&2
+      exit 1
+      ;;
+  esac
+
   set_permission_flags
   log "Config: BUILDER=$BUILDER_RUNNER/$BUILDER_MODEL QA=$QA_RUNNER/$QA_MODEL INTEGRATION=$INTEGRATION_RUNNER/$INTEGRATION_MODEL"
-  log "Config: HOTFIX=$HOTFIX_RUNNER/$HOTFIX_MODEL DOUBLECHECK=$DOUBLECHECK_RUNNER/$DOUBLECHECK_MODEL TROUBLESHOOT=$TROUBLESHOOT_RUNNER/$TROUBLESHOOT_MODEL"
-  log "Workflow: INTEGRATION_MODE=${INTEGRATION_MODE:-Low} HEADLESS_PERMISSIONS=${HEADLESS_PERMISSIONS:-Maximum}"
+  log "Config: HOTFIX=$HOTFIX_RUNNER/$HOTFIX_MODEL DOUBLECHECK=$DOUBLECHECK_RUNNER/$DOUBLECHECK_MODEL UPDATE=$UPDATE_RUNNER/$UPDATE_MODEL TROUBLESHOOT=$TROUBLESHOOT_RUNNER/$TROUBLESHOOT_MODEL"
+  log "Workflow: INTEGRATION_MODE=${INTEGRATION_MODE:-Low} HEADLESS_PERMISSIONS=${HEADLESS_PERMISSIONS:-Maximum} COMPLEXITY_ROUTING=${COMPLEXITY_ROUTING:-Off} SPARK_COOLDOWN_MINUTES=${SPARK_COOLDOWN_MINUTES:-360} RUN_UPDATE_ON_EMPTY=${RUN_UPDATE_ON_EMPTY:-On}"
+  if complexity_routing_enabled && [ ! -f "agents/_ministart.md" ]; then
+    log "Config: COMPLEXITY_ROUTING is enabled but agents/_ministart.md is missing; small tasks will use agents/_start.md"
+  fi
 
   local runners=(
     "$BUILDER_RUNNER"
     "$QA_RUNNER"
     "$HOTFIX_RUNNER"
     "$DOUBLECHECK_RUNNER"
+    "$UPDATE_RUNNER"
     "$INTEGRATION_RUNNER"
     "$TROUBLESHOOT_RUNNER"
   )
@@ -1009,8 +1484,21 @@ EOF
 
 run_builder() {
   local run_dir="$1"
+  local c chain prompt
   set_status "### IDLE"
-  run_cycle "$BUILDER_RUNNER" "$BUILDER_MODEL" "Open agents/_start.md and follow instructions." \
+  c="$(current_task_complexity)"
+
+  if complexity_routing_enabled && is_small_complexity "$c" && small_task_missing_assigned_skills; then
+    upscope_active_card_to_moderate
+    c="MODERATE"
+    write_runner_note "$run_dir" "Upscope: Builder auto-upscoped task to MODERATE (missing/invalid Assigned skills for small task)"
+  fi
+
+  prompt="$(builder_prompt_for_complexity "$c")"
+  chain="$(builder_model_chain_for_complexity "$c")"
+  write_runner_note "$run_dir" "Builder route: complexity=$c prompt=$(printf '%q' "$prompt") model_chain=$chain"
+
+  run_cycle_with_fallback "$BUILDER_RUNNER" "$chain" "$BUILDER_MODEL" "$prompt" \
     "$run_dir/builder.stdout.log" "$run_dir/builder.stderr.log" "$run_dir/builder.last.md" false "high" "Builder"
 }
 
@@ -1023,23 +1511,112 @@ run_integration() {
 
 run_qa() {
   local run_dir="$1"
+  local c model effort
   set_status "### IDLE"
-  run_cycle "$QA_RUNNER" "$QA_MODEL" "Open agents/_check.md and follow instructions." \
-    "$run_dir/qa.stdout.log" "$run_dir/qa.stderr.log" "$run_dir/qa.last.md" true "xhigh" "QA"
+  c="$(current_task_complexity)"
+
+  if complexity_routing_enabled; then
+    model="$(qa_model_for_complexity "$c" "qa")"
+    effort="$(qa_effort_for_complexity "$c" "qa")"
+  else
+    model="$QA_MODEL"
+    effort="xhigh"
+  fi
+  write_runner_note "$run_dir" "QA route: complexity=$c model=$model effort=$effort"
+
+  run_cycle_with_fallback "$QA_RUNNER" "$model" "$QA_MODEL" "Open agents/_check.md and follow instructions." \
+    "$run_dir/qa.stdout.log" "$run_dir/qa.stderr.log" "$run_dir/qa.last.md" true "$effort" "QA"
 }
 
 run_hotfix() {
   local run_dir="$1"
+  local c chain
   set_status "### IDLE"
-  run_cycle "$HOTFIX_RUNNER" "$HOTFIX_MODEL" "Open agents/_hotfix.md and follow instructions." \
+  c="$(current_task_complexity)"
+  chain="$(hotfix_model_chain_for_complexity "$c")"
+  write_runner_note "$run_dir" "Hotfix route: complexity=$c model_chain=$chain"
+  run_cycle_with_fallback "$HOTFIX_RUNNER" "$chain" "$HOTFIX_MODEL" "Open agents/_hotfix.md and follow instructions." \
     "$run_dir/hotfix.stdout.log" "$run_dir/hotfix.stderr.log" "$run_dir/hotfix.last.md" false "medium" "Hotfix"
 }
 
 run_doublecheck() {
   local run_dir="$1"
+  local c model effort
   set_status "### IDLE"
-  run_cycle "$DOUBLECHECK_RUNNER" "$DOUBLECHECK_MODEL" "Open agents/_doublecheck.md and follow instructions." \
-    "$run_dir/doublecheck.stdout.log" "$run_dir/doublecheck.stderr.log" "$run_dir/doublecheck.last.md" true "xhigh" "Doublecheck"
+  c="$(current_task_complexity)"
+
+  if complexity_routing_enabled; then
+    model="$(qa_model_for_complexity "$c" "doublecheck")"
+    effort="$(qa_effort_for_complexity "$c" "doublecheck")"
+  else
+    model="$DOUBLECHECK_MODEL"
+    effort="xhigh"
+  fi
+  write_runner_note "$run_dir" "Doublecheck route: complexity=$c model=$model effort=$effort"
+
+  run_cycle_with_fallback "$DOUBLECHECK_RUNNER" "$model" "$DOUBLECHECK_MODEL" "Open agents/_doublecheck.md and follow instructions." \
+    "$run_dir/doublecheck.stdout.log" "$run_dir/doublecheck.stderr.log" "$run_dir/doublecheck.last.md" true "$effort" "Doublecheck"
+}
+
+run_update() {
+  local run_dir="$1"
+  set_status "### IDLE"
+  write_runner_note "$run_dir" "Update route: runner=$UPDATE_RUNNER model_chain=$UPDATE_MODEL effort=medium"
+  run_cycle_with_fallback "$UPDATE_RUNNER" "$UPDATE_MODEL" "$UPDATE_MODEL" "Open agents/_update.md and follow instructions." \
+    "$run_dir/update.stdout.log" "$run_dir/update.stderr.log" "$run_dir/update.last.md" false "medium" "Update"
+}
+
+handle_update_blocker_without_active_card() {
+  local run_dir="$1"
+  local stage="$2"
+  local why="$3"
+
+  local diag_dir
+  diag_dir="$(create_diagnostics_and_block "$run_dir" "Stage=$stage :: $why")"
+  log "Blocker: stage=$stage why=$why"
+  log "Blocker: diagnostics=$diag_dir"
+
+  set_status "### BLOCKED"
+  echo "BLOCKED: $stage: $why" >&2
+  echo "Diagnostics: $diag_dir" >&2
+  notify_blocker "$run_dir" "$stage" "$why (no active task card)" "$diag_dir"
+  write_runner_note "$run_dir" "Update blocker (no active task): $why"
+  return 1
+}
+
+run_update_on_empty_backlog() {
+  local run_id run_dir st exit_code=0
+  run_id="$(now_run_id)"
+  run_dir="$RUNS_DIR/$run_id"
+  mkdir -p "$run_dir"
+  echo "$run_id" >"$TMP_DIR/current_run.txt"
+  printf 'Run: %s\nStarted: %s\n' "$run_id" "$(date '+%F %T %Z')" >"$run_dir/runner_notes.md"
+  write_runner_note "$run_dir" "Update trigger: backlog empty"
+  log "Run: $run_id"
+  log "Update: backlog empty maintenance cycle"
+
+  if run_update "$run_dir"; then
+    exit_code=0
+  else
+    exit_code=$?
+  fi
+  st="$(read_status)"
+  log "Update: exit=$exit_code status=$st"
+
+  if [ "$exit_code" -eq 0 ] && [ "$st" = "### IDLE" ]; then
+    # Be resilient if Update exits 0 without writing its terminal marker.
+    write_runner_note "$run_dir" "Update: synthesized UPDATE_COMPLETE (exit=0 status=### IDLE)"
+    set_status "### UPDATE_COMPLETE"
+    st="### UPDATE_COMPLETE"
+  fi
+
+  if [ "$st" = "### UPDATE_COMPLETE" ]; then
+    write_runner_note "$run_dir" "Update: UPDATE_COMPLETE"
+    set_status "### IDLE"
+    return 0
+  fi
+
+  handle_update_blocker_without_active_card "$run_dir" "Update" "exit=$exit_code status=$st"
 }
 
 finalize_success() {
@@ -1059,6 +1636,7 @@ finalize_success() {
 
 main_loop() {
   LAST_WAS_TROUBLESHOOT=0
+  local EMPTY_UPDATE_DONE=0
 
   while true; do
     ensure_repo_root
@@ -1066,10 +1644,19 @@ main_loop() {
     # Ensure active card.
     if ! has_active_card; then
       if has_backlog_cards; then
+        EMPTY_UPDATE_DONE=0
         local promoted
         promoted="$(promote_next_card)"
         log "Promote: $promoted"
       else
+        if truthy "${RUN_UPDATE_ON_EMPTY:-On}" && [ "$EMPTY_UPDATE_DONE" -eq 0 ]; then
+          if run_update_on_empty_backlog; then
+            EMPTY_UPDATE_DONE=1
+          else
+            exit 1
+          fi
+        fi
+
         if truthy "$DAEMON_MODE"; then
           local backlog_mtime
           backlog_mtime="$(stat_mtime "$BACKLOG")"
@@ -1079,6 +1666,7 @@ main_loop() {
             log "Backlog update detected; debounce=${IDLE_DEBOUNCE_SECS}s"
             debounce_quiet_period "$BACKLOG" "$IDLE_DEBOUNCE_SECS"
           fi
+          EMPTY_UPDATE_DONE=0
           continue
         fi
 
@@ -1105,7 +1693,16 @@ main_loop() {
         set_status "### IDLE"
         st="### IDLE"
         ;;
+      "### UPDATE_COMPLETE")
+        set_status "### IDLE"
+        st="### IDLE"
+        ;;
       "### BLOCKED")
+        if maybe_upscope_small_task "$run_dir" "Resume" "agents/status.md was ### BLOCKED at loop start"; then
+          LAST_WAS_TROUBLESHOOT=0
+          st="### IDLE"
+          continue
+        fi
         if ! handle_blocker "$run_dir" "Resume" "agents/status.md is ### BLOCKED at loop start"; then
           exit 1
         fi
@@ -1115,9 +1712,14 @@ main_loop() {
         fi
         st="$(read_status)"
         ;;
-      "### IDLE"|"### BUILDER_COMPLETE"|"### INTEGRATION_COMPLETE"|"### QUICKFIX_NEEDED"|"### QA_COMPLETE")
+      "### IDLE"|"### BUILDER_COMPLETE"|"### INTEGRATION_COMPLETE"|"### QUICKFIX_NEEDED"|"### QA_COMPLETE"|"### UPDATE_COMPLETE")
         ;;
       *)
+        if maybe_upscope_small_task "$run_dir" "Resume" "Unexpected status flag at loop start: $st"; then
+          LAST_WAS_TROUBLESHOOT=0
+          st="### IDLE"
+          continue
+        fi
         if ! handle_blocker "$run_dir" "Resume" "Unexpected status flag at loop start: $st"; then
           exit 1
         fi
@@ -1154,6 +1756,12 @@ main_loop() {
         if [ "$st" = "### BUILDER_COMPLETE" ]; then
           LAST_WAS_TROUBLESHOOT=0
           break
+        fi
+
+        if maybe_upscope_small_task "$run_dir" "Builder" "exit=$exit_code status=$st model=${LAST_RUN_MODEL:-unknown}"; then
+          LAST_WAS_TROUBLESHOOT=0
+          st="### IDLE"
+          continue
         fi
 
         if ! handle_blocker "$run_dir" "Builder" "exit=$exit_code status=$st"; then
@@ -1212,6 +1820,12 @@ EOF
             break
           fi
 
+          if maybe_upscope_small_task "$run_dir" "Integration" "exit=$exit_code status=$st model=${LAST_RUN_MODEL:-unknown}"; then
+            LAST_WAS_TROUBLESHOOT=0
+            st="### IDLE"
+            continue
+          fi
+
           if ! handle_blocker "$run_dir" "Integration" "exit=$exit_code status=$st"; then
             exit 1
           fi
@@ -1240,6 +1854,12 @@ EOF
         if [ "$st" = "### QA_COMPLETE" ] || [ "$st" = "### QUICKFIX_NEEDED" ]; then
           LAST_WAS_TROUBLESHOOT=0
           break
+        fi
+
+        if maybe_upscope_small_task "$run_dir" "QA" "exit=$exit_code status=$st model=${LAST_RUN_MODEL:-unknown}"; then
+          LAST_WAS_TROUBLESHOOT=0
+          st="### IDLE"
+          continue
         fi
 
         if ! handle_blocker "$run_dir" "QA" "exit=$exit_code status=$st"; then
@@ -1273,6 +1893,12 @@ EOF
           break
         fi
 
+        if maybe_upscope_small_task "$run_dir" "QA" "exit=$exit_code status=$st model=${LAST_RUN_MODEL:-unknown}"; then
+          LAST_WAS_TROUBLESHOOT=0
+          st="### IDLE"
+          continue
+        fi
+
         if ! handle_blocker "$run_dir" "QA" "exit=$exit_code status=$st"; then
           exit 1
         fi
@@ -1293,6 +1919,10 @@ EOF
     fi
 
     if [ "$st" != "### QUICKFIX_NEEDED" ]; then
+      if maybe_upscope_small_task "$run_dir" "Orchestrator" "Unexpected status after QA: $st"; then
+        LAST_WAS_TROUBLESHOOT=0
+        continue
+      fi
       if ! handle_blocker "$run_dir" "Orchestrator" "Unexpected status after QA: $st"; then
         exit 1
       fi
@@ -1315,6 +1945,12 @@ EOF
           if [ "$st" = "### BUILDER_COMPLETE" ]; then
             LAST_WAS_TROUBLESHOOT=0
             break
+        fi
+
+        if maybe_upscope_small_task "$run_dir" "Hotfix" "attempt=$attempt exit=$exit_code status=$st model=${LAST_RUN_MODEL:-unknown}"; then
+          LAST_WAS_TROUBLESHOOT=0
+          st="### IDLE"
+          continue
         fi
 
         if ! handle_blocker "$run_dir" "Hotfix" "attempt=$attempt exit=$exit_code status=$st"; then
@@ -1341,6 +1977,12 @@ EOF
           if [ "$st" = "### QA_COMPLETE" ] || [ "$st" = "### QUICKFIX_NEEDED" ]; then
             LAST_WAS_TROUBLESHOOT=0
             break
+        fi
+
+        if maybe_upscope_small_task "$run_dir" "Doublecheck" "attempt=$attempt exit=$exit_code status=$st model=${LAST_RUN_MODEL:-unknown}"; then
+          LAST_WAS_TROUBLESHOOT=0
+          st="### IDLE"
+          continue
         fi
 
         if ! handle_blocker "$run_dir" "Doublecheck" "attempt=$attempt exit=$exit_code status=$st"; then

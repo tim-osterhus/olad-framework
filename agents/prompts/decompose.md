@@ -104,13 +104,15 @@ Use clear bullets and concrete acceptance criteria. Flag anything speculative.
 
 ### 6) Generate ordered task cards
 
-Open `agents/skills/task-card-authoring-repo-exact/SKILL.md` and use its Task card template verbatim. Using that skill, create 5-15 task cards and insert them near the top of `agents/tasksbacklog.md`, under the `# Tasks Backlog` header.
+Open `agents/skills/task-card-authoring-repo-exact/SKILL.md` and use its Task card template verbatim. Using that skill, create 5-15 task cards and insert them into `agents/tasksbacklog.md` at a best-judgment location based on prerequisite ordering already present in the backlog.
 
 Rules:
 
 - Each card must start with `## YYYY-MM-DD -- <Task Title>`.
 - Each card must be small enough to complete in one Builder + QA cycle.
 - Cards must be **ordered** (foundation -> features -> polish -> hardening).
+- Each card must include `**Complexity:** TRIVIAL|BASIC|MODERATE|INVOLVED|HEAVY`.
+- If `Complexity` is `TRIVIAL` or `BASIC`, include `**Assigned skills:** skill-a, skill-b` with exactly two relevant skills.
 - Every card must include:
   - Goal
   - Context
@@ -129,6 +131,7 @@ For Acceptance quality, use these constraints:
 ### 7) Create relevant skills if necessary
 
 After adding task cards, generate a list of 5-15 unique, relevant skills (one per task) that would materially help execute those tasks.
+For any card marked `TRIVIAL` or `BASIC`, assign exactly two of those skills in the card's `**Assigned skills:**` metadata.
 
 Then, check `agents/skills/skills_index.md` to see which already exist. Treat near-duplicates as existing (e.g., "modern-javascript-patterns" vs "best-javascript-practices") and do NOT create a new skill in that case.
 
